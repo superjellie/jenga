@@ -1,7 +1,7 @@
 ## Jenga.Mathj
 Математический модуль
 Индекс:
-- [Lerp](#lerp)
+- [Lerp](#lerp) Линейная интерполяция
 ### Lerp
 ```cs
 Lerp(T a, T b, float t)
