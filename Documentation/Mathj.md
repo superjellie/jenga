@@ -1,6 +1,7 @@
 ## Jenga.Mathj
 Математический модуль
-
+Индекс:
+- [Lerp](#lerp)
 ### Lerp
 ```cs
 Lerp(T a, T b, float t)
