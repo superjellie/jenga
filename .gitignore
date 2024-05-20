@@ -1,5 +1,7 @@
 *.sublime-project
 *.sublime-workspace
+*.sublime-workspace.meta
+*.sublime-workspace.meta
 
 # This .gitignore file should be placed at the root of your Unity project directory
 #
