@@ -1,10 +1,10 @@
 ## Jenga.Mathj
 Математический модуль
 Индекс:
-- [Lerp](#lerp) Линейная интерполяция
-### Lerp
+- [Интерполяция](#интерполяция)
+### Интерполяция
 ```cs
-Lerp(T a, T b, float t)
+T Lerp(T a, T b, float t)
 ``` 
 `T` это `float`, `Vector2` или `Vector3`.
 
@@ -15,3 +15,15 @@ Lerp(T a, T b, float t)
 
 Эквивалентно Mathf.Lerp, Vector2.Lerp, Vector3.Lerp.
 Существует для удобства.
+
+```cs
+Quaternion Slerp(Quaternion a, Quaternion b, float t)
+``` 
+
+Представляет собой сферическую интерполяцию между кватернионами `a` и `b` с параметром `t`
+Если `t` плавно менять от `0` до `1` то результат будет плавно меняться
+от `a` к `b`.
+
+Эквивалентно Quaternion.Slerp.
+Существует для удобства.
+
