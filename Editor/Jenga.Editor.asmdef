@@ -1,7 +1,9 @@
 {
     "name": "Jenga.Editor",
     "rootNamespace": "Jenga",
-    "references": [],
+    "references": [
+        "GUID:a53fcf77f9d40b44eba2b41590cc1227"
+    ],
     "includePlatforms": [
         "Editor"
     ],
