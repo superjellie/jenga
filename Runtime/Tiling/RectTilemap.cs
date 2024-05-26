@@ -17,7 +17,6 @@ namespace Jenga {
                 this.tiles[position].GetComponent<T>()
                 : null;
 
-        [Message] void OnDrawGizmos() { }
         [Message] void Awake() => this.RebuildMap();
 
         [ContextMenu("Rebuild Map")]
@@ -34,6 +33,7 @@ namespace Jenga {
     #if UNITY_EDITOR
         [Header("Debug")]
         public bool autoRebuildMapOnTileMoves = true;
+        [Message] void OnDrawGizmos() { }
     #endif
     }
 }
