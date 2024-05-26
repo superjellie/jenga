@@ -50,6 +50,8 @@ namespace Jenga {
         public static Color Color4(int r, int g, int b, int a) 
             => new Color((float)r, (float)g, (float)b, (float)a);
 
+
+
         // public static float Float0(float v) => Float1( 0f);
         // public static float Float1(float v) => Float1( 1f);
         public static Vector2 Vec00(float v) => Vec2( 0f,  0f);
@@ -126,6 +128,7 @@ namespace Jenga {
         public static Vector4Int Int1101(float v) => Int4( 1f,  1f,  0f,  1f);
         public static Vector4Int Int1110(float v) => Int4( 1f,  1f,  1f,  0f);
         public static Vector4Int Int1111(float v) => Int4( 1f,  1f,  1f,  1f);
+
         public static float Float0(Vector2 v) => Float1( 0f);
         public static float Float1(Vector2 v) => Float1( 1f);
         public static float FloatX(Vector2 v) => Float1(v.x);
