@@ -25,11 +25,17 @@ namespace Jenga {
                     type, FindObjectsSortMode.None
                 ).ToList();
 
-                bool missing = value == null || !objs.Contains(value);
-                if (missing) objs.Add(value);
+                EditorGUILayout.LabelField($"{objs.Count()}");
+
+                var missing = value == null || !objs.Contains(value);
+
+                if (self.allowNone || missing)
+                    objs.Add(null);
+
                 int index = objs.FindIndex(x => x == value);
                 var names = objs.Select(x => x != null ? x.name : "None").
                     ToArray();
+
                 if (missing && value != null) 
                     names[index] = $"{names[index]} (Missing)";
 

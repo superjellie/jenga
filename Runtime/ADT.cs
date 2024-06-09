@@ -38,6 +38,7 @@ namespace Jenga {
             public bool ContainsKey(T key) => dict.ContainsKey(key);
             public bool ContainsValue(Q value) => dict.ContainsValue(value);
             public void Clear() => dict.Clear();
+            public Dictionary<T, Q> Items() => this.dict;
 
             public int Count() => dict.Count;
         }

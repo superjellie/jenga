@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace Jenga {
 
+    public class Vector4Int {
+        public int x; public int y; public int z; public int w;
+        public Vector4Int(int x, int y, int z, int w) {
+            this.x = x; this.y = y; this.z = z; this.w = w;
+        }
+    }
+
     public static partial class Math {
 
         public const float SMALL = .01f;
@@ -85,6 +92,9 @@ namespace Jenga {
                 Clamp(x.y, min.y, max.y),
                 Clamp(x.z, min.z, max.z)
             );
+
+
+            
         // public static 
         // Vector4Int Clamp(Vector4Int x, Vector4Int min, Vector4Int max)
         //     => Int4(
@@ -145,6 +155,17 @@ namespace Jenga {
         public static Vector3Int CeilToInt(Vector3 x) 
             => Int3(CeilToInt(x.x), CeilToInt(x.y), CeilToInt(x.z));
 
+        public static Vector4Int FloorToInt(Vector4 x) 
+            => Int4(
+                FloorToInt(x.x), FloorToInt(x.y), 
+                FloorToInt(x.z), FloorToInt(x.w)
+            );
+        public static Vector4Int CeilToInt(Vector4 x) 
+            => Int4(
+                CeilToInt(x.x), CeilToInt(x.y), 
+                CeilToInt(x.z), CeilToInt(x.w)
+            );
+
         // Projection
         public static Vector2 Project(Vector2 x, Vector2 y) 
             => Dot(x, y) / Dot(y, y) * y;
@@ -166,6 +187,12 @@ namespace Jenga {
         public static float Atan(float x) => Mathf.Atan(x);
         public static float Acos(float x) => Mathf.Acos(x);
         public static float Asin(float x) => Mathf.Asin(x);
+
+
+        public static int Mod(int x, int y) 
+            => (Math.Abs(x * y) + x) % y;
+        public static int Div(int x, int y) 
+            => x * y >= 0 ? x / y : (x - y + 1) / y;
     }
 
 }

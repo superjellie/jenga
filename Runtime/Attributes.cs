@@ -7,6 +7,7 @@ namespace Jenga {
     
     public class EnumStyleAttribute : PropertyAttribute {
         // public bool includeAssets = false;
+        public bool allowNone = true;
     }
 
     public class ReadOnlyAttribute : PropertyAttribute { }

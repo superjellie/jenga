@@ -76,6 +76,33 @@ namespace Jenga {
                 x => Math.Distance(x, direction)
             );
 
-        // Tile transform
+        // Chunk support
+        public static 
+        Vector3Int TileChunk(Vector3Int chunkSize, Vector3Int tile) 
+        => Math.Int3(
+            Math.Div(tile.x, chunkSize.x), 
+            Math.Div(tile.y, chunkSize.y), 
+            Math.Div(tile.z, chunkSize.z)
+        ); 
+
+        public static 
+        Vector3Int ChunkOrigin(Vector3Int chunkSize, Vector3Int chunk) 
+        => Math.Int3(
+            chunk.x * chunkSize.x, 
+            chunk.y * chunkSize.y, 
+            chunk.z * chunkSize.z
+        );
+
+        public static 
+        Vector3Int TileInChunkIndex(Vector3Int chunkSize, Vector3Int tile) 
+        => Math.Int3(
+            Math.Mod(tile.x, chunkSize.x), 
+            Math.Mod(tile.y, chunkSize.y), 
+            Math.Mod(tile.z, chunkSize.z)
+        );
+
+        public static bool AreTilesInOneChunks(
+            Vector3Int chunkSize, Vector3Int oldTile, Vector3Int newTile
+        ) => TileChunk(chunkSize, oldTile) == TileChunk(chunkSize, newTile);
     }
 }

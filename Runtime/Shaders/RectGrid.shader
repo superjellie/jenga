@@ -68,8 +68,18 @@ Shader "Jenga/RectGrid" {
                 float depth = length(position - cameraPos);
                 float alpha = 1 - pow(1 + fogStrength, -fogDensity * depth);
 
-                float a = dot(position - origin, axisA) / dot(axisA, axisA);
-                float b = dot(position - origin, axisB) / dot(axisB, axisB);
+                vec4 axisC = vec4(cross(axisA.xyz, axisB.xyz), 0);
+                mat4 mat;
+                mat[0] = axisA;
+                mat[1] = axisB;
+                mat[2] = axisC;
+                mat[3] = vec4(origin.xyz, 1);
+
+                mat4 inv = inverse(mat);
+                vec4 gridPosition = inv * vec4(position.xyz, 1);
+
+                float a = gridPosition.x;
+                float b = gridPosition.y;
 
                 float tileA = 0;
                 float tileB = 0;

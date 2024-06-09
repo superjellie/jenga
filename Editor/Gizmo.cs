@@ -8,10 +8,16 @@ namespace Jenga {
 
         public static Material matGrid = null;
 
+        public static bool ShouldDrawGizmos<T>() {
+            if (!Handles.ShouldRenderGizmos()) return false;
+            if (GizmoUtility.TryGetGizmoInfo(typeof(T), out var info)) 
+                return info.gizmoEnabled;
+            return true;
+        }
+
         public static void DrawGrid(
             Vector3 origin, Vector3 axisA, Vector3 axisB
         ) {
-            // if (!Handles.ShouldRenderGizmos()) return;
             if (matGrid == null) return;
             matGrid.SetVector("origin", origin);
             matGrid.SetVector("axisA", axisA);
@@ -28,10 +34,10 @@ namespace Jenga {
             GL.PushMatrix();
             matGrid.SetPass(0);
             GL.Begin(GL.QUADS);
-            GL.Vertex(origin + axisA * 10000f + axisB * 10000f);
-            GL.Vertex(origin - axisA * 10000f + axisB * 10000f);
-            GL.Vertex(origin - axisA * 10000f - axisB * 10000f);
-            GL.Vertex(origin + axisA * 10000f - axisB * 10000f);
+            GL.Vertex(origin + Math.Vec3( 10000f, 0f,  10000f));
+            GL.Vertex(origin + Math.Vec3(-10000f, 0f,  10000f));
+            GL.Vertex(origin + Math.Vec3(-10000f, 0f, -10000f));
+            GL.Vertex(origin + Math.Vec3( 10000f, 0f, -10000f));
             GL.End();
             GL.PopMatrix();
         }

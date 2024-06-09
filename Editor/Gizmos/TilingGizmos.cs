@@ -8,7 +8,7 @@ namespace Jenga {
 
         [InitializeOnLoadMethod]
         static void Init() {
-            EditorCallbacks.CallOnSceneGUI<RectTile>(RectTileOnMove);
+            // EditorCallbacks.CallOnSceneGUI<RectTile>(RectTileOnMove);
             // EditorCallbacks.CallOnDestroyObject(RectTileOnDestroy);
             EditorCallbacks.CallOnSceneGUI<RectTilemap>(RectTilemapOnGizmos);
         }
@@ -22,53 +22,86 @@ namespace Jenga {
         //         tm.RebuildMap();
         // }
 
-        static void RectTileOnMove(RectTile self, SceneView view) {
-            if (self.tilemap == null) return;
+        // static void RectTileOnMove(RectTile self, SceneView view) {
+        //     var parent = self.transform.parent;
+        //     var position = self.transform.position;
+        //     var map = self.tilemap;
+        //     var mapTransform = map != null ? map.transform : null;
+        //     var name = self.gameObject.name;
+        //     var mapName = map != null ? map.gameObject.name : "";
+        //     var oldTilePos = self.position;
 
-            var pos = self.transform.position;
-            var basis = self.tilemap.basis;
+        //     if (parent != mapTransform) {
+        //         Undo.SetTransformParent(self.transform, mapTransform, 
+        //             map != null ? $"Snap tile {name} to {mapName}"
+        //             : $"Deparent tile {name}"
+        //         );
 
-            var tile = RectTiling.WorldToTile(basis, pos);
-            var newWorld = RectTiling.TileCenter(basis, tile);
+        //         var oldMap = parent.GetComponent<RectTilemap>();
 
-            if (Math.Distance(pos, newWorld) > Math.TINY 
-                || self.position != tile) {
-                // Debug.Log($"pos = {pos}, tile = {tile}, newWorld = {newWorld}");
-                Undo.RecordObject(
-                    self.transform, 
-                    $"Snap {self.gameObject.name} to Tilemap"
-                );
-                self.transform.position = newWorld;
-                var oldPosition = self.position;
-                self.position = tile;
-                if (self.tilemap.autoRebuildMapOnTileMoves)
-                    if (oldPosition != tile)
-                        self.tilemap.RebuildMap();
-            }
+        //         if (oldMap != null) {
+        //             oldMap.RemoveTile(self);
+        //             oldMap.ReturnDuplicates(oldTilePos);
+        //         }
 
-            if (self.transform.parent != self.tilemap.transform) {
-                var parentTilemap = 
-                    self.transform.parent != null ?
-                        self.transform.parent.GetComponent<RectTilemap>()
-                    : null;
-                Undo.SetTransformParent(
-                    self.transform, self.tilemap.transform,
-                    $"Snap {self.gameObject.name} to Tilemap"
-                );
+        //         if (map != null) {
+        //             var oldTile = map.GetTile(newTilePos);
+        //             if (oldTile != null) map.AddDuplicate(oldTile);
+        //             map.SetTile(newTilePos, self);
+        //         }
+        //     }
 
-                if (parentTilemap != null) 
-                    if (self.tilemap.autoRebuildMapOnTileMoves)
-                        parentTilemap.RebuildMap();
-                if (self.tilemap.autoRebuildMapOnTileMoves)
-                    self.tilemap.RebuildMap();
-            }
-        }
+        //     if (map == null) return;
+
+        //     var basis = map.basis;
+        //     var newTilePos = RectTiling.WorldToTile(basis, position); 
+
+        //     if (newTilePos != oldTilePos) {
+        //         map.RemoveTile(self);
+        //         map.ReturnDuplicates(oldTilePos);
+        //         var oldTile = map.GetTile(position);
+        //         if (oldTile != null) map.AddDuplicate(oldTile);
+        //         map.SetTile(position, self);
+        //     }
+        // }
 
         static void RectTilemapOnGizmos(RectTilemap self, SceneView view) {
+            if (!Gizmo.ShouldDrawGizmos<RectTilemap>()) return;
             Gizmo.DrawGrid(
                 self.basis.origin, self.basis.axisX, 
                 view.in2DMode ? self.basis.axisY : self.basis.axisZ
             );
+
+            if (self.collectSetTimes) 
+            foreach (var (chunkPos, chunk) in self.chunks.Items())
+            for(int x = 0; x < RectTilemap.chunkSizeX; ++x) 
+            // for(int y = 0; y < RectTilemap.chunkSizeY; ++y)  
+            for(int z = 0; z < RectTilemap.chunkSizeZ; ++z) { 
+                // Debug.Log($"{chunkPos}, {chunk}");
+                var chunkIndex = Math.Int3(x, 0, z);
+                var currentTime = (float)EditorApplication.timeSinceStartup;
+                var time = (currentTime - chunk.times[x, 0, z]) / 10f;
+                var alpha = 1f - 2 / Math.PI * Math.Atan(time);
+                var tile 
+                    = RectTiling.ChunkOrigin(RectTilemap.chunkSize, chunkPos)
+                    + chunkIndex;
+                var pos = RectTiling.TileOrigin(self.basis, tile);
+
+                var p00 = pos;
+                var p01 = pos + self.basis.axisZ; 
+                var p11 = pos + self.basis.axisX + self.basis.axisZ;
+                var p10 = pos + self.basis.axisX;
+
+                var col = Math.Lerp(
+                    new Color(0f, 0f, 0f, .2f), 
+                    new Color(0f, 1f, 0f, .2f), 
+                    alpha
+                );
+                Handles.DrawSolidRectangleWithOutline(
+                    new Vector3[] { p00, p01, p11, p10 },
+                    col, Color.black
+                );
+            }
         }
 
     }
