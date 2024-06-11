@@ -68,11 +68,11 @@ namespace Jenga {
             => TileOrigin(basis, WorldToTile(basis, point));
         public static Vector3 SnapToAxes(Basis basis, Vector3 direction)
             => direction.magnitude * AQRY.MinBy(
-                new Vector3[] {
+                AQRY.Segment(
                     basis.axisX, -basis.axisX,
                     basis.axisY, -basis.axisY,
-                    basis.axisZ, -basis.axisZ,
-                },
+                    basis.axisZ, -basis.axisZ
+                ),
                 x => Math.Distance(x, direction)
             );
 
