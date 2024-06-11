@@ -92,6 +92,14 @@ namespace Jenga {
                 (array[i], array[j]) = (array[j], array[i]);
             }
             return array;
+        } 
+
+        public static ArraySegment<T> SortBy<T>(
+            ArraySegment<T> array, System.Func<T, float> by
+        ) {
+            var arr = array.ToArray();
+            System.Array.Sort(arr, (x, y) => by(x).CompareTo(by(y)));
+            return arr;
         }
     }
 }
