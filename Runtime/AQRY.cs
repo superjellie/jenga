@@ -81,14 +81,14 @@ namespace Jenga {
 
         public static T TakeRandom<T>(RNGi rng, ArraySegment<T> array) {
             if (array.Count == 0) return default(T);
-            return array[rng() % array.Count];
+            return array[Math.Mod(rng(), array.Count)];
         }
 
         public static ArraySegment<T> Shuffle<T>(
             RNGi rng, ArraySegment<T> array
         ) {
             for (int i = 0; i < array.Count - 2; ++i) {
-                int j = i + rng() % (array.Count - i);
+                int j = i + Math.Mod(rng(), array.Count - i);
                 (array[i], array[j]) = (array[j], array[i]);
             }
             return array;
