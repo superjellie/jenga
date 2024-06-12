@@ -189,10 +189,13 @@ namespace Jenga {
         public static float Asin(float x) => Mathf.Asin(x);
 
 
-        public static int Mod(int x, int y) 
-            => (Math.Abs(x * y) + x) % y;
-        public static int Div(int x, int y) 
-            => x * y >= 0 ? x / y : (x - y + 1) / y;
+        public static int Mod(int x, int y) {
+            if (y < 0) return Mod(-x, -y);
+            var r = x % y;
+            return r >= 0 ? r : r + y;
+        }
+        
+        public static int Div(int x, int y) => x / y - (x % y < 0 ? 1 : 0);
     }
 
 }
