@@ -18,7 +18,7 @@ namespace Jenga {
                     yield return new WaitForFixedUpdate();
                 }
 
-                tweener(1f);
+                tweener(curve.Evaluate(1f));
             }
 
             return master.StartCoroutine(Play());
