@@ -65,6 +65,22 @@ namespace Jenga {
             return false;  
         }
 
+        public static bool Contains<T>(
+            ArraySegment<T> array, System.Func<T, int, bool> condition
+        ) {
+            for (int i = 0; i < array.Count; ++i) 
+                if (condition(array[i], i)) return true;
+            return false;  
+        }
+
+        public static (T item, int index) Search<T>(
+            ArraySegment<T> array, System.Func<T, int, bool> condition
+        ) {
+            for (int i = 0; i < array.Count; ++i) 
+                if (condition(array[i], i)) return (array[i], i);
+            return (default(T), -1);  
+        }
+
         public static T[] Copy<T>(ArraySegment<T> array) => array.ToArray();
 
         public static ArraySegment<T> Where<T>(
