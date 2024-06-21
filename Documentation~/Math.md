@@ -1,8 +1,8 @@
-## Jenga.Math
+## Jenga.Mathx
 Математический модуль.
 Цель &mdash; собирать тут все математические функции работающие с малым набором данных.
 Таким образом сюда потихоньку переезжает контент из 
-Mathf, Vector2, Vector3, Vector2Int, Vector3Int, Vector4 и т.п.
+Mathxf, Vector2, Vector3, Vector2Int, Vector3Int, Vector4 и т.п.
 
 **TODO**: Внести последние изменения.
 
@@ -30,7 +30,7 @@ T Lerp(T a, T b, float t)
 от `a` к `b`.
 Формально равно `a * (1 - t) + b * t`.
 
-*Эквивалентно Mathf.Lerp, Vector2.Lerp, Vector3.Lerp.
+*Эквивалентно Mathxf.Lerp, Vector2.Lerp, Vector3.Lerp.
 Существует для удобства.*
 
 #### Slerp
@@ -76,11 +76,11 @@ Color Color***(T v);
 
 Например:
 ```cs
-var a = Math.Vec3(1f, 2f, 3f);
-var b = Math.VecZ0X(a); // (3f, 0f, 1f)
-var c = Math.VecY0(a); // (2f, 0f)
-var d = Math.IntX1XY(a); // (1, 1, 1, 2)
-var e = Math.Vec0101(a); // (0f, 1f, 0f, 1f)
+var a = Mathx.Vec3(1f, 2f, 3f);
+var b = Mathx.VecZ0X(a); // (3f, 0f, 1f)
+var c = Mathx.VecY0(a); // (2f, 0f)
+var d = Mathx.IntX1XY(a); // (1, 1, 1, 2)
+var e = Mathx.Vec0101(a); // (0f, 1f, 0f, 1f)
 ```
 
 **TODO**: Убрать аргементы там где лишнее.

@@ -3,7 +3,7 @@ import itertools
 tabs = "    "
 print(f"using UnityEngine;");
 print(f"namespace Jenga {{");
-print(f"{tabs}public static partial class Math {{");
+print(f"{tabs}public static partial class Mathx {{");
 
 print(f"{tabs * 2}public static Vector2 Vec2(float x, float y)")
 print(f"{tabs * 3}=> new Vector2(x, y);")

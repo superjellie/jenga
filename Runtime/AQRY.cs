@@ -81,14 +81,14 @@ namespace Jenga {
 
         public static T TakeRandom<T>(RNGi rng, ArraySegment<T> array) {
             if (array.Count == 0) return default(T);
-            return array[Math.Mod(rng(), array.Count)];
+            return array[Mathx.Mod(rng(), array.Count)];
         }
 
         public static ArraySegment<T> Shuffle<T>(
             RNGi rng, ArraySegment<T> array
         ) {
             for (int i = 0; i < array.Count - 2; ++i) {
-                int j = i + Math.Mod(rng(), array.Count - i);
+                int j = i + Mathx.Mod(rng(), array.Count - i);
                 (array[i], array[j]) = (array[j], array[i]);
             }
             return array;
@@ -100,6 +100,19 @@ namespace Jenga {
             var arr = array.ToArray();
             System.Array.Sort(arr, (x, y) => by(x).CompareTo(by(y)));
             return arr;
+        }
+
+        public static ArraySegment<T> Where<T>(
+            ArraySegment<T> array, System.Func<T, int, bool> condition
+        ) {
+            var firstBad = 0;
+            for (int i = 0; i < array.Count; ++i) {
+                if (condition(array[i], i)) {
+                    (array[firstBad], array[i]) = (array[i], array[firstBad]);
+                    firstBad++;
+                }
+            }
+            return new ArraySegment<T>(array.Array, array.Offset, firstBad);
         }
     }
 }

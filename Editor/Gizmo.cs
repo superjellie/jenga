@@ -34,10 +34,10 @@ namespace Jenga {
             GL.PushMatrix();
             matGrid.SetPass(0);
             GL.Begin(GL.QUADS);
-            GL.Vertex(origin + Math.Vec3( 10000f, 0f,  10000f));
-            GL.Vertex(origin + Math.Vec3(-10000f, 0f,  10000f));
-            GL.Vertex(origin + Math.Vec3(-10000f, 0f, -10000f));
-            GL.Vertex(origin + Math.Vec3( 10000f, 0f, -10000f));
+            GL.Vertex(origin + Mathx.Vec3( 10000f, 0f,  10000f));
+            GL.Vertex(origin + Mathx.Vec3(-10000f, 0f,  10000f));
+            GL.Vertex(origin + Mathx.Vec3(-10000f, 0f, -10000f));
+            GL.Vertex(origin + Mathx.Vec3( 10000f, 0f, -10000f));
             GL.End();
             GL.PopMatrix();
         }

@@ -11,7 +11,7 @@ namespace Jenga {
         }
     }
 
-    public static partial class Math {
+    public static partial class Mathx {
 
         public const float SMALL = .01f;
         public const float TINY  = .0001f;
@@ -110,10 +110,10 @@ namespace Jenga {
         public static float Dot(Vector3 a, Vector3 b)
             => a.x * b.x + a.y * b.y + a.z * b.z;
         public static float Distance(Vector2 a, Vector2 b)
-            => Math.Sqrt(Math.Sqr(a.x - b.x) + Math.Sqr(a.y - b.y));
+            => Mathx.Sqrt(Mathx.Sqr(a.x - b.x) + Mathx.Sqr(a.y - b.y));
         public static float Distance(Vector3 a, Vector3 b)
-            => Math.Sqrt(
-                Math.Sqr(a.x - b.x) + Math.Sqr(a.y - b.y) + Math.Sqr(a.z - b.z)
+            => Mathx.Sqrt(
+                Mathx.Sqr(a.x - b.x) + Mathx.Sqr(a.y - b.y) + Mathx.Sqr(a.z - b.z)
             );
 
         // Abs

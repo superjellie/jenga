@@ -78,10 +78,10 @@ namespace Jenga {
             // for(int y = 0; y < RectTilemap.chunkSizeY; ++y)  
             for(int z = 0; z < RectTilemap.chunkSizeZ; ++z) { 
                 // Debug.Log($"{chunkPos}, {chunk}");
-                var chunkIndex = Math.Int3(x, 0, z);
+                var chunkIndex = Mathx.Int3(x, 0, z);
                 var currentTime = (float)EditorApplication.timeSinceStartup;
                 var time = (currentTime - chunk.times[x, 0, z]) / 10f;
-                var alpha = 1f - 2 / Math.PI * Math.Atan(time);
+                var alpha = 1f - 2 / Mathx.PI * Mathx.Atan(time);
                 var tile 
                     = RectTiling.ChunkOrigin(RectTilemap.chunkSize, chunkPos)
                     + chunkIndex;
@@ -92,7 +92,7 @@ namespace Jenga {
                 var p11 = pos + self.basis.axisX + self.basis.axisZ;
                 var p10 = pos + self.basis.axisX;
 
-                var col = Math.Lerp(
+                var col = Mathx.Lerp(
                     new Color(0f, 0f, 0f, .2f), 
                     new Color(0f, 1f, 0f, .2f), 
                     alpha

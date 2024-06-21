@@ -10,7 +10,7 @@ namespace Jenga {
         public const int chunkSizeY = 1;
         public const int chunkSizeZ = 4;
         public static Vector3Int chunkSize 
-            = Math.Int3(chunkSizeX, chunkSizeY, chunkSizeZ);
+            = Mathx.Int3(chunkSizeX, chunkSizeY, chunkSizeZ);
 
         [System.Serializable]
         public class Chunk {

@@ -14,10 +14,10 @@ namespace Jenga {
 
             public Matrix4x4 localToWorld { get {
                 var m = new Matrix4x4();
-                m.SetColumn(0, Math.Vec4(axisX.x, axisX.y, axisX.z, 0f));
-                m.SetColumn(1, Math.Vec4(axisY.x, axisY.y, axisY.z, 0f));
-                m.SetColumn(2, Math.Vec4(axisZ.x, axisZ.y, axisZ.z, 0f));
-                m.SetColumn(3, Math.Vec4(origin.x, origin.y, origin.z, 1f));
+                m.SetColumn(0, Mathx.Vec4(axisX.x, axisX.y, axisX.z, 0f));
+                m.SetColumn(1, Mathx.Vec4(axisY.x, axisY.y, axisY.z, 0f));
+                m.SetColumn(2, Mathx.Vec4(axisZ.x, axisZ.y, axisZ.z, 0f));
+                m.SetColumn(3, Mathx.Vec4(origin.x, origin.y, origin.z, 1f));
                 return m;
             }}
 
@@ -27,7 +27,7 @@ namespace Jenga {
 
         // Coordinate transforms
         public static Vector3Int WorldToTile(Basis basis, Vector3 point) 
-            => Math.FloorToInt((Vector3)(basis.worldToLocal * point));
+            => Mathx.FloorToInt((Vector3)(basis.worldToLocal * point));
 
         public static Vector3 TileCenter(Basis basis, Vector3Int tile) 
             => basis.origin 
@@ -53,13 +53,13 @@ namespace Jenga {
 
         // Distance on grid
         public static int Distance(Vector3Int a, Vector3Int b)
-            => Math.Abs(a.x - b.x) 
-            + Math.Abs(a.y - b.y) 
-            + Math.Abs(a.z - b.z);
+            => Mathx.Abs(a.x - b.x) 
+            + Mathx.Abs(a.y - b.y) 
+            + Mathx.Abs(a.z - b.z);
 
         public static 
         float DistanceWorld(Basis basis, Vector3Int a, Vector3Int b)
-            => Math.Distance(TileCenter(basis, a), TileCenter(basis, b));
+            => Mathx.Distance(TileCenter(basis, a), TileCenter(basis, b));
 
         // Snapping
         public static Vector3 SnapToTileCenter(Basis basis, Vector3 point)
@@ -73,21 +73,21 @@ namespace Jenga {
                     basis.axisY, -basis.axisY,
                     basis.axisZ, -basis.axisZ
                 ),
-                x => Math.Distance(x, direction)
+                x => Mathx.Distance(x, direction)
             );
 
         // Chunk support
         public static 
         Vector3Int TileChunk(Vector3Int chunkSize, Vector3Int tile) 
-        => Math.Int3(
-            Math.Div(tile.x, chunkSize.x), 
-            Math.Div(tile.y, chunkSize.y), 
-            Math.Div(tile.z, chunkSize.z)
+        => Mathx.Int3(
+            Mathx.Div(tile.x, chunkSize.x), 
+            Mathx.Div(tile.y, chunkSize.y), 
+            Mathx.Div(tile.z, chunkSize.z)
         ); 
 
         public static 
         Vector3Int ChunkOrigin(Vector3Int chunkSize, Vector3Int chunk) 
-        => Math.Int3(
+        => Mathx.Int3(
             chunk.x * chunkSize.x, 
             chunk.y * chunkSize.y, 
             chunk.z * chunkSize.z
@@ -95,10 +95,10 @@ namespace Jenga {
 
         public static 
         Vector3Int TileInChunkIndex(Vector3Int chunkSize, Vector3Int tile) 
-        => Math.Int3(
-            Math.Mod(tile.x, chunkSize.x), 
-            Math.Mod(tile.y, chunkSize.y), 
-            Math.Mod(tile.z, chunkSize.z)
+        => Mathx.Int3(
+            Mathx.Mod(tile.x, chunkSize.x), 
+            Mathx.Mod(tile.y, chunkSize.y), 
+            Mathx.Mod(tile.z, chunkSize.z)
         );
 
         public static bool AreTilesInOneChunks(

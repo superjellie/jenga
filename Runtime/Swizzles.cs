@@ -1,6 +1,6 @@
 using UnityEngine;
 namespace Jenga {
-    public static partial class Math {
+    public static partial class Mathx {
         public static Vector2 Vec2(float x, float y)
             => new Vector2(x, y);
         public static Vector3 Vec3(float x, float y, float z)
