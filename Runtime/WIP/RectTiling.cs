@@ -68,38 +68,38 @@ namespace Jenga {
             => TileOrigin(basis, WorldToTile(basis, point));
         public static Vector3 SnapToAxes(Basis basis, Vector3 direction)
             => direction.magnitude * AQRY.MinBy(
-                AQRY.Segment(
+                ArrayView.Params(
                     basis.axisX, -basis.axisX,
                     basis.axisY, -basis.axisY,
                     basis.axisZ, -basis.axisZ
                 ),
-                x => Mathx.Distance(x, direction)
+                (x, i) => Mathx.Distance(x, direction)
             );
 
         // Chunk support
         public static 
         Vector3Int TileChunk(Vector3Int chunkSize, Vector3Int tile) 
-        => Mathx.Int3(
-            Mathx.Div(tile.x, chunkSize.x), 
-            Mathx.Div(tile.y, chunkSize.y), 
-            Mathx.Div(tile.z, chunkSize.z)
-        ); 
+            => Mathx.Int3(
+                Mathx.Div(tile.x, chunkSize.x), 
+                Mathx.Div(tile.y, chunkSize.y), 
+                Mathx.Div(tile.z, chunkSize.z)
+            ); 
 
         public static 
         Vector3Int ChunkOrigin(Vector3Int chunkSize, Vector3Int chunk) 
-        => Mathx.Int3(
-            chunk.x * chunkSize.x, 
-            chunk.y * chunkSize.y, 
-            chunk.z * chunkSize.z
-        );
+            => Mathx.Int3(
+                chunk.x * chunkSize.x, 
+                chunk.y * chunkSize.y, 
+                chunk.z * chunkSize.z
+            );
 
         public static 
         Vector3Int TileInChunkIndex(Vector3Int chunkSize, Vector3Int tile) 
-        => Mathx.Int3(
-            Mathx.Mod(tile.x, chunkSize.x), 
-            Mathx.Mod(tile.y, chunkSize.y), 
-            Mathx.Mod(tile.z, chunkSize.z)
-        );
+            => Mathx.Int3(
+                Mathx.Mod(tile.x, chunkSize.x), 
+                Mathx.Mod(tile.y, chunkSize.y), 
+                Mathx.Mod(tile.z, chunkSize.z)
+            );
 
         public static bool AreTilesInOneChunks(
             Vector3Int chunkSize, Vector3Int oldTile, Vector3Int newTile

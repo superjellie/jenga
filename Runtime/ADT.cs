@@ -8,10 +8,10 @@ namespace Jenga {
         [System.Serializable]
         public class Map<T, Q> : ISerializationCallbackReceiver {
 
-            [SerializeField] private List<T> keys = new List<T>(); 
-            [SerializeField] private List<Q> values = new List<Q>();
+            [SerializeField] private List<T> keys = new(); 
+            [SerializeField] private List<Q> values = new();
 
-            private Dictionary<T, Q> dict = new Dictionary<T, Q>();
+            private Dictionary<T, Q> dict = new();
 
             public void OnBeforeSerialize() {
                 this.keys.Clear();
