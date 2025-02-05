@@ -70,15 +70,15 @@ namespace Jenga {
         public static float Clamp(float x, float min, float max)
             => x < min ? min : x > max ? max : x;
         public static Vector2 Clamp(Vector2 x, Vector2 min, Vector2 max)
-            => Vec2(Clamp(x.x, min.x, max.x), Clamp(x.y, min.y, max.y));
+            => new(Clamp(x.x, min.x, max.x), Clamp(x.y, min.y, max.y));
         public static Vector3 Clamp(Vector3 x, Vector3 min, Vector3 max)
-            => Vec3(
+            => new(
                 Clamp(x.x, min.x, max.x), 
                 Clamp(x.y, min.y, max.y),
                 Clamp(x.z, min.z, max.z)
             ); 
         public static Vector4 Clamp(Vector4 x, Vector4 min, Vector4 max)
-            => Vec4(
+            => new(
                 Clamp(x.x, min.x, max.x), 
                 Clamp(x.y, min.y, max.y),
                 Clamp(x.z, min.z, max.z),
@@ -88,10 +88,12 @@ namespace Jenga {
             => x < min ? min : x > max ? max : x;
         public static 
         Vector2Int Clamp(Vector2Int x, Vector2Int min, Vector2Int max)
-            => Int2(Clamp(x.x, min.x, max.x), Clamp(x.y, min.y, max.y));
+            => new(
+                Clamp(x.x, min.x, max.x), Clamp(x.y, min.y, max.y)
+            );
         public static 
         Vector3Int Clamp(Vector3Int x, Vector3Int min, Vector3Int max)
-            => Int3(
+            => new(
                 Clamp(x.x, min.x, max.x), 
                 Clamp(x.y, min.y, max.y),
                 Clamp(x.z, min.z, max.z)
@@ -125,15 +127,15 @@ namespace Jenga {
         public static int Abs(int x) => x < 0 ? -x : x;
 
         public static Vector2 Abs(Vector2 x) 
-            => Vec2(Abs(x.x), Abs(x.y));
+            => new(Abs(x.x), Abs(x.y));
         public static Vector3 Abs(Vector3 x) 
-            => Vec3(Abs(x.x), Abs(x.y), Abs(x.z));
+            => new(Abs(x.x), Abs(x.y), Abs(x.z));
         public static Vector4 Abs(Vector4 x) 
-            => Vec4(Abs(x.x), Abs(x.y), Abs(x.z), Abs(x.w));
+            => new(Abs(x.x), Abs(x.y), Abs(x.z), Abs(x.w));
         public static Vector2Int Abs(Vector2Int x) 
-            => Int2(Abs(x.x), Abs(x.y));
+            => new(Abs(x.x), Abs(x.y));
         public static Vector3Int Abs(Vector3Int x) 
-            => Int3(Abs(x.x), Abs(x.y), Abs(x.z));
+            => new(Abs(x.x), Abs(x.y), Abs(x.z));
 
         // Floor & Ceil
         public static float Floor(float x) => Mathf.Floor(x);
@@ -142,30 +144,30 @@ namespace Jenga {
         public static int CeilToInt(float x) => Mathf.CeilToInt(x);
 
         public static Vector2 Floor(Vector2 x) 
-            => Vec2(Floor(x.x), Floor(x.y));
+            => new(Floor(x.x), Floor(x.y));
         public static Vector2 Ceil(Vector2 x) 
-            => Vec2(Ceil(x.x), Ceil(x.y));
+            => new(Ceil(x.x), Ceil(x.y));
         public static Vector2Int FloorToInt(Vector2 x) 
-            => Int2(FloorToInt(x.x), FloorToInt(x.y));
+            => new(FloorToInt(x.x), FloorToInt(x.y));
         public static Vector2Int CeilToInt(Vector2 x) 
-            => Int2(CeilToInt(x.x), CeilToInt(x.y));
+            => new(CeilToInt(x.x), CeilToInt(x.y));
 
         public static Vector3 Floor(Vector3 x) 
-            => Vec3(Floor(x.x), Floor(x.y), Floor(x.z));
+            => new(Floor(x.x), Floor(x.y), Floor(x.z));
         public static Vector3 Ceil(Vector3 x) 
-            => Vec3(Ceil(x.x), Ceil(x.y), Ceil(x.z));
+            => new(Ceil(x.x), Ceil(x.y), Ceil(x.z));
         public static Vector3Int FloorToInt(Vector3 x) 
-            => Int3(FloorToInt(x.x), FloorToInt(x.y), FloorToInt(x.z));
+            => new(FloorToInt(x.x), FloorToInt(x.y), FloorToInt(x.z));
         public static Vector3Int CeilToInt(Vector3 x) 
-            => Int3(CeilToInt(x.x), CeilToInt(x.y), CeilToInt(x.z));
+            => new(CeilToInt(x.x), CeilToInt(x.y), CeilToInt(x.z));
 
         public static Vector4Int FloorToInt(Vector4 x) 
-            => Int4(
+            => new(
                 FloorToInt(x.x), FloorToInt(x.y), 
                 FloorToInt(x.z), FloorToInt(x.w)
             );
         public static Vector4Int CeilToInt(Vector4 x) 
-            => Int4(
+            => new(
                 CeilToInt(x.x), CeilToInt(x.y), 
                 CeilToInt(x.z), CeilToInt(x.w)
             );
