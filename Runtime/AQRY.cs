@@ -11,9 +11,10 @@ namespace Jenga {
     // In future AQRY will also be optimised better i hope 
     public static class AQRY {
 
-        public delegate bool Filter<T>(T x, int i); 
-        public delegate float Measure<T>(T x, int i); 
-        public delegate Q Transformer<T, Q>(T x, int i); 
+        public delegate bool  Filter<T>         (T x, int i); 
+        public delegate float Measure<T>        (T x, int i); 
+        public delegate Q     Transformer<T, Q> (T x, int i); 
+        public delegate T     Generator<T>      (int i); 
 
         // Min, Max, Sum
         public static T MinBy<T>(ArrayView<T> array, Measure<T> by) {
@@ -80,14 +81,22 @@ namespace Jenga {
             return ArrayView.Slice(array, 0, firstBad);
         }
 
-        public static Q[] Transform<T, Q>(
+        public static ArrayView<Q> Transform<T, Q>(
+            ArrayView<T> array, ArrayView<Q> destination, 
+            Transformer<T, Q> transformer
+        ) {
+            // var qArray = new Q[array.length];
+            var len = Mathx.Min(destination.length, array.length);
+            for (int i = 0; i < len; ++i) 
+                destination[i] = transformer(array[i], i);
+            
+            return ArrayView.Slice(destination, 0, len);
+        }
+
+        public static ArrayView<Q> CopyTransform<T, Q>(
             ArrayView<T> array, Transformer<T, Q> transformer
         ) {
-            var qArray = new Q[array.length];
-            for (int i = 0; i < array.length; ++i) 
-                qArray[i] = transformer(array[i], i);
-            
-            return qArray;
+            return MakeArray(array.length, (i) => transformer(array[i], i));
         }
 
         public static ArrayView<T> Select<T>(
@@ -128,6 +137,21 @@ namespace Jenga {
 
                 array.Swap(i, minIndex);
             }
+            return array;
+        }
+
+        public static ArrayView<T> Populate<T>(
+            ArrayView<T> array, Generator<T> generator
+        ) {
+            for (int i = 0; i < array.length; ++i)
+                array[i] = generator(i);
+            return array;
+        }
+
+        public static T[] MakeArray<T>(int num, Generator<T> generator) {
+            var array = new T[num];
+            for (int i = 0; i < array.Length; ++i)
+                array[i] = generator(i);
             return array;
         }
     }

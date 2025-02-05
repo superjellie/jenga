@@ -61,6 +61,10 @@ namespace Jenga {
         public static float Min(params float[] fs) => AQRY.Min(fs);
         public static float Max(params float[] fs) => AQRY.Max(fs);
         public static float Sum(params float[] fs) => AQRY.Sum(fs);
+        public static int Min(params int[] fs) 
+            => AQRY.MinBy<int>(fs, (x, i) => x);
+        public static int Max(params int[] fs) 
+            => AQRY.MaxBy<int>(fs, (x, i) => x);
 
         // Clamping
         public static float Clamp(float x, float min, float max)
