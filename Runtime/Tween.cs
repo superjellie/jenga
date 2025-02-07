@@ -25,9 +25,4 @@ namespace Jenga {
         }
     }
 
-    // public class Task : IEnumerator {
-    //     public object Current { get => null; }
-    //     public bool MoveNext() => false;
-    //     public void Reset() {}
-    // }
 }

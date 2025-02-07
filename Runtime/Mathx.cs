@@ -99,17 +99,6 @@ namespace Jenga {
                 Clamp(x.z, min.z, max.z)
             );
 
-
-            
-        // public static 
-        // Vector4Int Clamp(Vector4Int x, Vector4Int min, Vector4Int max)
-        //     => Int4(
-        //         Clamp(x.x, min.x, max.x), 
-        //         Clamp(x.y, min.y, max.y),
-        //         Clamp(x.z, min.z, max.z),
-        //         Clamp(x.w, min.w, max.w)
-        //     );
-
         // Dot & Distance
         public static float Dot(Vector2 a, Vector2 b)
             => a.x * b.x + a.y * b.y;

@@ -9,6 +9,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.ui",
+            "expression": "1.0.0",
+            "define": "USE_UNITY_UI"
+        }
+    ],
     "noEngineReferences": false
 }
