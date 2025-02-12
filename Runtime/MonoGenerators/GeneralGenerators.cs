@@ -36,7 +36,8 @@ namespace Jenga {
     }
 
 
-    public class SequenceGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
+    public class SequenceGenerator<T> : MonoGenerator<T> {
+
         [ALay.ListView(showFoldoutHeader = false)] 
         public MonoGeneratorReference<T>[] items = { };
 
@@ -133,7 +134,7 @@ namespace Jenga {
 
     public class OptionalGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
         [Tooltip("Checks condition once per generation")]
-        public MonoConditionReference condition;
+        [SerializeReference] public MonoCondition condition;
         public MonoGeneratorReference<T> ifTrue;
         public MonoGeneratorReference<T> ifFalse;
 

@@ -5,9 +5,10 @@ using UnityEngine;
 namespace Jenga {
     [System.Serializable]
     public class SpriteAnimation {
-        // [ALay.StartLine]
+        // [ALay.BeginRowGroup]
         public Texture2D texture;
 
+        // [ALay.EndGroup]
         // [ALay.EndLine, ALay.HideLabel, ALay.MaxWidth(30f)]
         public float fps = 20f;
         

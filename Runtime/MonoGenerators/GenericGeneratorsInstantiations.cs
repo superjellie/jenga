@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Jenga {
 	// int
+	[System.Serializable]
+	public class MonoGeneratorInt : MonoGenerator<int> { }
 	[AddTypeMenu(typeof(MonoGenerator<int>), "General/Nothing", 0)]
 	public class NothingGeneratorInt : NothingGenerator<int> { }
 	[AddTypeMenu(typeof(MonoGenerator<int>), "General/Int", 1), InlinePropertyEditor]

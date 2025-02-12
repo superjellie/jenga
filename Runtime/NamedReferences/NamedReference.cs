@@ -30,9 +30,9 @@ namespace Jenga {
 
         [System.Serializable]
         public struct RefData : ALay.ILayoutMe {
-            [ALay.StartLine, ALay.HideLabel, ALay.MaxWidth(100f)] 
+            [ALay.BeginRowGroup, ALay.HideLabel, ALay.MaxWidth(100f)] 
             public T reference;
-            [ALay.EndLine, ALay.HideLabel, ALay.FlexGrow(1f)]  
+            [ALay.EndGroup, ALay.HideLabel, ALay.FlexGrow(1f)]  
             public string name;
             
             [ALay.HideLabel]
@@ -42,7 +42,7 @@ namespace Jenga {
         // public int nextID = 1; 
         public string categoryName = "Default";
 
-        [ALay.LayoutField, ALay.HideLabel]
+        [ALay.LayoutMe, ALay.HideLabel]
         public ADT.Map<int, RefData> references = new();
 
         public bool HasID(int id) => references.ContainsKey(id);

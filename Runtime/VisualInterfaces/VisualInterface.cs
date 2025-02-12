@@ -15,7 +15,7 @@ namespace Jenga {
             public string name;
     #endif
             public int id;
-            public MonoConditionReference condition;
+            public MonoCondition condition;
         }
 
         // State is updated automaticaly, based on conditions

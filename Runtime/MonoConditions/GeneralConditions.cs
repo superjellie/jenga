@@ -6,10 +6,11 @@ using UnityEngine.Serialization;
 namespace Jenga {
     [AddTypeMenu(typeof(MonoCondition), "General/AND", 2)]
     [System.Serializable]
-    public class AndCondition : MonoCondition, ALay.ILayoutMe {
+    public class AndCondition : MonoCondition {
+
         [ALay.ListView(showFoldoutHeader = false)]
         public MonoConditionReference[] items = { };
-
+ 
         public override bool Check(GameObject go) {
             foreach (var condition in items) 
                 if (!condition.Check(go)) return false;
@@ -19,7 +20,7 @@ namespace Jenga {
 
     [AddTypeMenu(typeof(MonoCondition), "General/OR", 3)]
     [System.Serializable]
-    public class OrCondition : MonoCondition, ALay.ILayoutMe {
+    public class OrCondition : MonoCondition {
         [ALay.ListView(showFoldoutHeader = false)]
         public MonoConditionReference[] items = { };
 
@@ -34,7 +35,7 @@ namespace Jenga {
     [AddTypeMenu(typeof(MonoCondition), "General/NOT", 1)]
     [System.Serializable]
     [InlinePropertyEditor]
-    public class NotCondition : MonoCondition, ALay.ILayoutMe {
+    public class NotCondition : MonoCondition {
 
         public MonoConditionReference condition = new ConstCondition();
 
@@ -45,7 +46,7 @@ namespace Jenga {
     [AddTypeMenu(typeof(MonoCondition), "General/Const", 0)]
     [InlinePropertyEditor]
     [System.Serializable]
-    public class ConstCondition : MonoCondition, ALay.ILayoutMe {
+    public class ConstCondition : MonoCondition {
         public enum BoolEnum { True = 1, False = 0 } 
 
         [ALay.HideLabel]

@@ -9,19 +9,19 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
 namespace Jenga {
-    [CustomPropertyDrawer(typeof(MonoConditionReference), true)]
-    public class MonoConditionReferencePropertyDrawer : PropertyDrawer {
+    // [CustomPropertyDrawer(typeof(MonoConditionReference), true)]
+    // public class MonoConditionReferencePropertyDrawer : PropertyDrawer {
 
-        public override VisualElement CreatePropertyGUI(
-            SerializedProperty prop
-        ) {
-            return new ManagedReferenceField() {
-                property = prop.FindPropertyRelative("serializedValue"),
-                typeFamily = typeof(MonoCondition),
-                labelText = preferredLabel
-            };
-        }
-    }
+    //     public override VisualElement CreatePropertyGUI(
+    //         SerializedProperty prop
+    //     ) {
+    //         return new ManagedReferenceField() {
+    //             property = prop.FindPropertyRelative("serializedValue"),
+    //             typeFamily = typeof(MonoCondition),
+    //             labelText = preferredLabel
+    //         };
+    //     }
+    // }
 }
 
 #endif

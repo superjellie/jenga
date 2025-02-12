@@ -14,7 +14,7 @@ namespace Jenga {
         public enum RNGType { Xorshift32 }
         public RNGType type;
 
-        [ALay.LayoutField, ALay.UsageToggle("useSeed")] 
+        [ALay.LayoutMe, ALay.UsageToggle("useSeed")] 
         public uint seed = 0xAABB;
         
         [HideInInspector] 

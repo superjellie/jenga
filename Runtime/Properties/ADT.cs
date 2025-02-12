@@ -12,9 +12,9 @@ namespace Jenga {
 
             [System.Serializable]
             public class Pair : ALay.ILayoutMe {
-                [ALay.StartLine, ALay.HideLabel, ALay.MinWidth(100f)]
+                [ALay.BeginRowGroup, ALay.HideLabel, ALay.MinWidth(100f)]
                 public T key;
-                [ALay.EndLine, ALay.HideLabel, ALay.FlexGrow(1f)]   
+                [ALay.EndGroup, ALay.HideLabel, ALay.FlexGrow(1f)]
                 public Q value;
             }
 
