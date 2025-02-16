@@ -10,13 +10,14 @@ namespace Jenga {
         public class Map<T, Q> 
             : ISerializationCallbackReceiver, ALay.ILayoutMe {
 
-            [System.Serializable]
+            [System.Serializable, ALay.HideHeader]
             public class Pair : ALay.ILayoutMe {
-                [ALay.BeginRowGroup, ALay.HideLabel, ALay.MinWidth(100f)]
+                [ALay.HideLabel, ALay.MinWidth(100f)]
                 public T key;
-                [ALay.EndGroup, ALay.HideLabel, ALay.FlexGrow(1f)]
+
+                // [ALay.FlexGrow(1f)]
                 public Q value;
-            }
+            } 
 
             [ALay.ListView(showFoldoutHeader = false)]
             public List<Pair> pairs = new(); 

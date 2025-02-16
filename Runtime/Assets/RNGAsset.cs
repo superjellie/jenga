@@ -17,7 +17,7 @@ namespace Jenga {
         [ALay.LayoutMe, ALay.UsageToggle("useSeed")] 
         public uint seed = 0xAABB;
         
-        [HideInInspector] 
+        // [HideInInspector] 
         public bool useSeed = true;
 
         public uint GetUint() {

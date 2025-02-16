@@ -28,21 +28,18 @@ namespace Jenga {
         : ScriptableObject
         where UsageStrategy : INamedReferenceUsageStrategy<T> {
 
-        [System.Serializable]
+        [System.Serializable, ALay.HideHeader]
         public struct RefData : ALay.ILayoutMe {
             [ALay.BeginRowGroup, ALay.HideLabel, ALay.MaxWidth(100f)] 
             public T reference;
             [ALay.EndGroup, ALay.HideLabel, ALay.FlexGrow(1f)]  
             public string name;
             
-            [ALay.HideLabel]
+            // [ALay.HideLabel]
             public UsageStrategy strategy;
         }
 
-        // public int nextID = 1; 
-        public string categoryName = "Default";
-
-        [ALay.LayoutMe, ALay.HideLabel]
+        // [ALay.LayoutMe]
         public ADT.Map<int, RefData> references = new();
 
         public bool HasID(int id) => references.ContainsKey(id);

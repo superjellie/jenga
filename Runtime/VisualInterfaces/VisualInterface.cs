@@ -9,16 +9,18 @@ namespace Jenga {
     // State ID should be less then 32
     public class VisualInterface : MonoBehaviour {
 
-        [System.Serializable]
-        public struct StateDescription {
+        [System.Serializable, ALay.HideHeader]
+        public class StateDescription {
+            public int id = 1;
     #if UNITY_EDITOR
             public string name;
     #endif
-            public int id;
-            public MonoCondition condition;
+            public MonoConditionReference condition
+                = new ConstCondition();
         }
 
         // State is updated automaticaly, based on conditions
+        [HideInInspector]
         public int state;
 
         // You should subscribe to event in transition handler components
@@ -29,15 +31,14 @@ namespace Jenga {
 
         // 0 is ALWAYS Disabled state
         // Other states are specified in editor
+        [ALay.ListView(showFoldoutHeader = false)]
         public StateDescription[] stateDescriptions = { };
-
-
 
         // Private
         void Update() => UpdateState();
 
         void SetState(int newState, bool immediate) {
-            if (state != newState)
+            if (state != newState && onStateChange != null)
                 onStateChange(state, newState, immediate);
             state = newState;
         }
@@ -58,7 +59,7 @@ namespace Jenga {
     // Use this class in transition components to setup per-state data 
     // Sadly data will be null-initialized
     [System.Serializable]
-    public class VisualStateData<T> {
+    public class VisualStateData<T>{
 
         [System.Serializable]
         public struct StateData {

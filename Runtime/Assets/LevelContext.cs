@@ -76,9 +76,6 @@ namespace Jenga {
                         ops.Add(SceneManager.LoadSceneAsync(toLoad, mode));
 
 
-                foreach (var toUnload in scenesToUnload)
-                    ops.Add(SceneManager.UnloadSceneAsync(toUnload));
-
                 var allDone = false;
                 while (!allDone) {
                     allDone = true;
@@ -95,6 +92,25 @@ namespace Jenga {
                 }
 
                 SceneManager.SetActiveScene(mainScene.Get());
+
+                foreach (var toUnload in scenesToUnload) {
+                    // Debug.Log(toUnload);
+                    // ops.Add(SceneManager.UnloadSceneAsync(toUnload));
+                    SceneManager.UnloadSceneAsync(toUnload);
+                }
+
+                Resources.UnloadUnusedAssets();
+
+                for (int i = 0; i < SceneManager.sceneCount; ++i) {
+                    var scene = SceneManager.GetSceneAt(i);
+                    if (!scene.isLoaded) continue;
+
+                    foreach (var go in scene.GetRootGameObjects())
+                        go.BroadcastMessage(
+                            "OnLevelLoad", null,
+                            SendMessageOptions.DontRequireReceiver
+                        );
+                }
 
                 Destroy(go);
             }

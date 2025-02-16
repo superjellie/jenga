@@ -9,6 +9,6 @@ namespace Jenga {
         order = 1010
     )]
     public class LevelSequencer : ScriptableObject {
-        [SerializeReference] public MonoGenerator<LevelContext> levelGenerator;
+        public MonoGeneratorReference<LevelContext> levelGenerator;
     }
 }

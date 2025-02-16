@@ -28,30 +28,6 @@ namespace Jenga {
             if (type == null)
                 type = SerializedPropertyUtility.GetFieldType(fieldInfo);
 
-            Build(root, type, prop);
-
-            root.schedule.Execute(() => {
-                var newType 
-                    = prop.propertyType == SerializedPropertyType.ManagedReference
-                        ? SerializedPropertyUtility.GetManagedType(prop)
-                        : SerializedPropertyUtility.GetFieldType(fieldInfo);
-
-                if (newType == null)
-                    newType = SerializedPropertyUtility.GetFieldType(fieldInfo);
-
-                if (newType != type)
-                    Build(root, newType, prop);
-
-                type = newType;
-            }).Every(500);
-
-            return root;
-        }
-
-        void Build(
-            VisualElement root, System.Type type, SerializedProperty prop
-        ) {
-            root.Clear();
             var container = new FieldContainer() { labelText = preferredLabel };
 
             var groupStack = new Stack<VisualElement>();
@@ -102,33 +78,35 @@ namespace Jenga {
                 prop, rootStack,
                 preferredLabel
             );
-        }
-    }
-
-    [CustomPropertyDrawer(typeof(ALay.LayoutMeAttribute))]
-    public class ALaySinglePropertyDrawer : PropertyDrawer {
-
-        public override VisualElement CreatePropertyGUI(
-            SerializedProperty prop
-        ) {
-            var root = new VisualElement() 
-                { name = "Jenga.ALay:layout-me-root"};
-            var groupStack = new Stack<VisualElement>();
-            groupStack.Push(root);
-
-            var field = new PropertyField(prop);
-
-            ALayImpl.LayoutElement(
-                field, fieldInfo,
-                fieldInfo.GetCustomAttributes(false), 
-                prop, groupStack,
-                preferredLabel
-            );
 
             return root;
         }
-
     }
+
+    // [CustomPropertyDrawer(typeof(ALay.LayoutMeAttribute))]
+    // public class ALaySinglePropertyDrawer : PropertyDrawer {
+
+    //     public override VisualElement CreatePropertyGUI(
+    //         SerializedProperty prop
+    //     ) {
+    //         // var root = new VisualElement() 
+    //         //     { name = "Jenga.ALay:layout-me-root"};
+    //         // var groupStack = new Stack<VisualElement>();
+    //         // groupStack.Push(root);
+
+    //         // var field = new PropertyField(prop);
+
+    //         // ALayImpl.LayoutElement(
+    //         //     field, fieldInfo,
+    //         //     fieldInfo.GetCustomAttributes(false),  
+    //         //     prop, groupStack,
+    //         //     preferredLabel
+    //         // );
+
+    //         return new PropertyField(prop);
+    //     }
+
+    // }
 
 
     public static class ALayImpl {
@@ -272,7 +250,7 @@ namespace Jenga {
         [CustomLayouterAttribute(typeof(ALay.ListViewAttribute))]
         public class ListViewLayouter : Layouter {
             public override void OnLayout()
-                => element.schedule.Execute(OnSchedule).StartingIn(10);
+                => element.schedule.Execute(OnSchedule).StartingIn(100);
 
             void OnSchedule() {
                 var attr = (ALay.ListViewAttribute)attribute;
@@ -285,6 +263,23 @@ namespace Jenga {
                 lv.showBoundCollectionSize = attr.showBoundCollectionSize;
                 lv.virtualizationMethod 
                     = CollectionVirtualizationMethod.DynamicHeight;
+
+                lv.itemsAdded += (indices) => {
+                    foreach (var index in indices) {
+                        var propItem = property.GetArrayElementAtIndex(index);
+                        var endProp = propItem.GetEndProperty(true);
+
+                        while (propItem.Next(true) 
+                            && !SerializedProperty
+                                .EqualContents(property, endProp)
+                        ) if (propItem.propertyType 
+                            == SerializedPropertyType.ManagedReference)
+                            propItem.managedReferenceId 
+                                = ManagedReferenceUtility.RefIdNull;
+                    }
+
+                    property.serializedObject.ApplyModifiedProperties();
+                };
 
                 lv.Rebuild();
             }
@@ -369,14 +364,14 @@ namespace Jenga {
 
             public override void OnLayout() {
                 // element.RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-                element.schedule.Execute(OnSchedule).StartingIn(10);
+                element.schedule.Execute(OnSchedule).StartingIn(100);
             }
 
             void OnSchedule() {
-                var root = FindParent(element, property.propertyPath);
-                var header = QueryHeader(root); 
+                // var root = FindParent(element, property.propertyPath);
+                var header = QueryHeader(element); 
+                var label = header?.Q<Label>();
                 var attr = (ALay.HideLabelAttribute)attribute;
-                var label = header?.Q<Label>() ?? root?.Q<Label>();
                 if (label != null)
                     label.style.display = DisplayStyle.None;
             }
@@ -387,7 +382,7 @@ namespace Jenga {
 
             public override void OnLayout() {
                 // element.RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-                element.schedule.Execute(OnSchedule).StartingIn(10);
+                element.schedule.Execute(OnSchedule).StartingIn(100);
             }
  
             void OnSchedule() {
@@ -451,13 +446,13 @@ namespace Jenga {
 
             public override void OnLayout() {
                 // Debug.Log("Hide Header");
-                element.schedule.Execute(OnSchedule).StartingIn(10);
+                element.schedule.Execute(OnSchedule).StartingIn(100);
             }
 
             void OnSchedule() {
-                var root = FindParent(element, property.propertyPath);
-                var header = QueryHeader(root); 
-                var content = QueryContent(root); 
+                // var root = FindParent(element, property.propertyPath);
+                var header = QueryHeader(element); 
+                var content = QueryContent(element); 
                 var attr = (ALay.HideHeaderAttribute)attribute;
 
                 var toggle = header?.Q<Toggle>();
@@ -515,7 +510,7 @@ namespace Jenga {
         public class TypeSelectorLayouter : Layouter {
 
             public override void OnLayout() {
-                element.schedule.Execute(OnSchedule).StartingIn(10);
+                element.schedule.Execute(OnSchedule).StartingIn(100);
             }
 
             void OnSchedule() {
@@ -533,10 +528,12 @@ namespace Jenga {
                         = SerializedPropertyUtility.GetManagedType(prop),
                     typeFamily = attr.typeFamily,
                     onSelect = (type) => {
+                        element.Unbind();
                         SerializedPropertyUtility
                             .SetManagedReference(prop, type);
                         prop.serializedObject.ApplyModifiedProperties();
                         prop.serializedObject.Update();
+                        element.Bind(prop.serializedObject);
                     },
                     style = { 
                         minWidth = 150f, maxWidth = 150f

@@ -24,7 +24,11 @@ namespace Jenga {
             TransformSnapshot from, TransformSnapshot to, float t
         ) => new TransformSnapshot() {
             localPosition = Vector3.Lerp(from.localPosition, to.localPosition, t),
-            localEuler = Vector3.Slerp(from.localEuler, to.localEuler, t),
+            localEuler = Quaternion.Slerp(
+                Quaternion.Euler(from.localEuler), 
+                Quaternion.Euler(to.localEuler), 
+                t
+            ).eulerAngles,
             localScale = Vector3.Lerp(from.localScale, to.localScale, t)
         };
     }

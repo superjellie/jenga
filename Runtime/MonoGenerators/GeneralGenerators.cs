@@ -7,7 +7,7 @@ namespace Jenga {
 
     public class ItemGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
 
-        [ALay.HideLabel] public T item;
+        public T item;
 
         [HideInInspector] public bool isDone = false;
          
@@ -16,6 +16,30 @@ namespace Jenga {
 
         public override T Current => item;
         public override void Reset() => isDone = false;
+    }
+
+    public class AssetGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
+
+        public MonoGeneratorAsset<T> asset;
+        
+        MonoGeneratorAsset<T> instance;
+
+        public override bool MoveNext(GameObject go) {
+            if (instance == null)
+                instance = ScriptableObject.Instantiate(asset);
+
+            return instance.generator.MoveNext(go);
+        }
+
+        public override T Current => 
+            instance != null 
+                ? instance.generator.Current
+                : default(T);
+
+        public override void Reset() {
+            if (instance != null) 
+                instance.generator.Reset();
+        }
     }
 
     public class RepeatGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {

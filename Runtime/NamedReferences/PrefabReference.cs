@@ -9,16 +9,18 @@ namespace Jenga {
         : BaseNamedReference<T, PrefabUsageStrategy<T>>
         where T : Component { }
 
-    [System.Serializable]
+    [System.Serializable, ALay.HideHeader]
     public class PrefabUsageStrategy<T> 
-        : INamedReferenceUsageStrategy<T>
+        : INamedReferenceUsageStrategy<T>, ALay.ILayoutMe
         where T : Component {
 
         public enum Strategy { Activate, Instantiate, InstantiateAndActivate };
-        public Strategy type;
+
+        // [ALay.Label("Usage strategy")]
+        public Strategy usageStrategy;
 
         public T Aquire(T item) {
-            switch (type) {
+            switch (usageStrategy) {
             case Strategy.Activate:
                 item.gameObject.SetActive(true);
                 return item;
@@ -37,7 +39,7 @@ namespace Jenga {
         }
 
         public void Release(T item) {
-            switch (type) {
+            switch (usageStrategy) {
             case Strategy.Activate:
                 item.gameObject.SetActive(false);
                 break;

@@ -12,9 +12,8 @@ namespace Jenga {
         public VisualInterface vi => GetComponent<VisualInterface>();
 
         public VisualStateData<TransformSnapshot> statePositions = new();
-        public VisualTransitionData<CurveWithDuration> curves = new() {
-            fallback = new CurveWithDuration()
-        };
+        public VisualTransitionData<CurveWithDuration> curves 
+            = new() { fallback = new CurveWithDuration() };
 
         void Awake() {
             vi.onStateChange += OnStateChange;
@@ -45,12 +44,8 @@ namespace Jenga {
 
         void DrawLabelFor(string name, TransformSnapshot snapshot) {
             var content = new GUIContent($"{name}");
-            var style = new GUIStyle(GUI.skin.button) {
-                alignment = TextAnchor.MiddleCenter,
-
-            };
-
-            // var size = style.CalcSize(content);
+            var style = new GUIStyle(GUI.skin.button) 
+                { alignment = TextAnchor.MiddleCenter };
 
             var color = GUI.backgroundColor;
             GUI.backgroundColor = new Color(.2f, .4f, 0f, 1f);
