@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Jenga {
     // Runtime simple general save and load system
@@ -23,7 +24,7 @@ namespace Jenga {
         public static bool isBusy => isSaving || isLoading;
 
         //
-        public static Dictionary<string, ADT.Map<string, string>> 
+        public static Dictionary<string, Dictionary<string, object>> 
             loadedProfiles = new();
 
 
@@ -43,24 +44,27 @@ namespace Jenga {
         public static void SaveProfilesToDisk() {
             isSaving = true;
 
-            var tasks = new List<Task<bool>>();
+            if (onSave != null)
+                onSave.Invoke();
+
+            var tasks = new List<System.Threading.Tasks.Task>();
+
             foreach (var (profile, data) in loadedProfiles) {
                 var path = $"{savesPath}/{profile}";
-
-                if (!File.Exists(path)) File.Create(path);
+                Directory.CreateDirectory(path);
                 if (!loadedProfiles.ContainsKey(profile)) 
-                    loadedProfiles[profile] = new ADT.Map<string, string>();
+                    loadedProfiles[profile] = new();
 
-                var profileData = JsonUtility.ToJson(data);
+                var profileData 
+                    = JsonConvert.SerializeObject(data, Formatting.Indented);
 
-                tasks.Add(
-                    File.WriteAllTextAsync(profile, profileData)
-                        .ContinueWith((task) => isSaving = false)
-                );
+                tasks.Add(File.WriteAllTextAsync(path, profileData));
             }
 
             System.Threading.Tasks.Task.WhenAll(tasks)
-                .ContinueWith((task) => isSaving = false);
+                .ContinueWith((task) => {
+                    isSaving = false;
+                });
         }
 
         // Initiate load
@@ -70,23 +74,28 @@ namespace Jenga {
             var tasks = new List<System.Threading.Tasks.Task>();
             foreach (var profile in profiles) {
                 var path = $"{savesPath}/{profile}";
-                if (!File.Exists(path)) File.Create(path);
+                if (!File.Exists(path)) {
+                    loadedProfiles[profile] = new();
+                    continue;
+                }
 
                 tasks.Add(
                     File.ReadAllTextAsync(path)
                         .ContinueWith((task) => {
-                            var result = task.Result;
-                            var map = JsonUtility
-                                .FromJson<ADT.Map<string, string>>(result);
-                            loadedProfiles[profile] = map;
-
-                            isLoading = false;
+                            var json = task.Result;
+                            loadedProfiles[profile] 
+                                = JsonConvert.DeserializeObject
+                                        <Dictionary<string, object>>(json);
                         })
                 );
             }
 
             System.Threading.Tasks.Task.WhenAll(tasks)
-                .ContinueWith((task) => isLoading = false);
+                .ContinueWith((task) => {
+                    if (onLoad != null)
+                        onLoad.Invoke();
+                    isLoading = false;
+                });
         }
 
         // Removes loaded profile instance
@@ -98,15 +107,14 @@ namespace Jenga {
         // Reads value from loaded profile
         public static T ReadValue<T>(string profile, string key) {
             if (!loadedProfiles.ContainsKey(profile)) return default(T);
-
-            return JsonUtility.FromJson<T>(loadedProfiles[profile][key]);
+            if (loadedProfiles[profile][key] is T t) return t;
+            return default(T);
         }
 
         // Writes file to loaded profile
         public static void WriteValue<T>(string profile, string key, T value) {
             if (!loadedProfiles.ContainsKey(profile)) return;
-
-            loadedProfiles[profile][key] = JsonUtility.ToJson(value);
+            loadedProfiles[profile][key] = value;
         }
 
         public static string[] GetAllProfiles() 

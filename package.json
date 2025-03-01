@@ -2,5 +2,8 @@
   "name": "com.github.superjellie.jenga",
   "version": "0.0.1",
   "description": "My personal library shared between games",
-  "displayName": "Jenga"
+  "displayName": "Jenga",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  }
 }

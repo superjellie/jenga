@@ -29,13 +29,14 @@ namespace Jenga {
 
         public static float loadingProgress = 0f;
         public static bool  waitingForActivation = false;
+        public static bool  isLoading = false;
         public static bool  allowActivation = false;
 
         public void Load(
             bool unloadOtherScenes = true, 
             bool completeAutomatically = true
         ) {
-
+            isLoading = true;
             allowActivation = completeAutomatically;
 
             var scenesToLoad = new HashSet<string>();
@@ -82,6 +83,7 @@ namespace Jenga {
                     waitingForActivation = true;
 
                     foreach (var op in ops) {
+                        if (op == null) continue;
                         if (!op.isDone) allDone = false;
                         if (op.progress < .9f) waitingForActivation = false;
                         loadingProgress = Mathf.Min(loadingProgress, op.progress);
@@ -111,7 +113,8 @@ namespace Jenga {
                             SendMessageOptions.DontRequireReceiver
                         );
                 }
-
+                
+                isLoading = false;
                 Destroy(go);
             }
 
