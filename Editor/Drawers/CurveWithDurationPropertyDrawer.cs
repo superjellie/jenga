@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomPropertyDrawer(typeof(CurveWithDuration))]
+// [CustomPropertyDrawer(typeof(CurveWithDuration))]
 public class CurveWithDurationPropertyDrawer : PropertyDrawer {
 
     public override void OnGUI(

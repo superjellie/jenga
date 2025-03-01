@@ -76,14 +76,19 @@ namespace Jenga {
         // End group on item
         public class EndGroupAttribute : FieldAttribute { }
 
+        public class InlineAttribute : FieldAttribute { }
+
 
         // Make callback that triggered when field is changed
         // Method should be of signature:
         // static void OnItemChange(SerializedProperty property) { ... }
-        // public class OnChangeCallbackAttribute : FieldAttribute {
-        //     public string methodName = null;
-        //     public OnChangeCallbackAttribute(string name) => methodName = name;
-        // }
+        public class OnChangeCallbackAttribute : FieldAttribute {
+            public string methodName;
+            public bool inClass;
+            public OnChangeCallbackAttribute(string name) {
+                methodName = name;
+            }
+        }
 
         // Make method that emits custom field
         // Method should be of signature:

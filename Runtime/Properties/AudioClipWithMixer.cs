@@ -7,10 +7,10 @@ namespace Jenga {
     [System.Serializable, ALay.HideHeader]
     public class AudioClipWithMixer : ALay.ILayoutMe {
 
-        [ALay.BeginRowGroup, ALay.FlexGrow(1f)] 
+        [ALay.BeginRowGroup, ALay.UseRootLabel, ALay.FlexGrow(1f)] 
         public AudioClip clip;
 
-        [ALay.EndGroup, ALay.HideLabel, ALay.MaxWidth(70f)]
+        [ALay.EndGroup, ALay.HideLabel, ALay.MaxWidth(80f), ALay.MinWidth(80f)]
         public AudioMixerGroup group;
 
         public AudioSource Play(Vector3 pos) {

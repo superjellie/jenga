@@ -389,11 +389,9 @@ namespace Jenga {
                 var root = FindParent(element, property.propertyPath);
                 var header = QueryHeader(element)?.Q<Label>();
 
-                if (header != null) {
-                    header.style.flexGrow = 1f;
+                if (header != null) 
                     header.text = preferredParentLabel; 
-                    // Debug.Log(preferredParentLabel);
-                }
+                
             }
         }
 
@@ -440,6 +438,36 @@ namespace Jenga {
                     layouter.OnAfterLayout();
             }
         }
+
+        // [CustomLayouterAttribute(typeof(ALay.OnChangeCallbackAttribute))]
+        // public class OnChangeCallbackLayouter : Layouter {
+            
+        //     public override void OnLayout() {
+        //         var attr = (ALay.OnChangeCallbackAttribute)attribute;
+        //         var flags 
+        //             = BindingFlags.Static 
+        //             | BindingFlags.NonPublic
+        //             | BindingFlags.Public;
+
+        //         var myType 
+        //             = SerializedPropertyUtility
+        //                 .GetFieldType(memberInfo as FieldInfo);
+
+        //         var methodInfo 
+        //             = attr.inClass 
+        //                 ? (myType?.GetMethod(attr.name, flags))
+        //                 : memberInfo.DeclaringType.GetMethod(attr.name, flags);
+
+        //         if (methodInfo == null) return;
+
+        //         element.schedule.Execute(() => {
+                    
+        //         })
+        //         methodInfo.Invoke(null, new object[] { property });
+
+
+        //     }
+        // }
 
         [CustomLayouterAttribute(typeof(ALay.HideHeaderAttribute))]
         public class HideHeaderLayouter : Layouter {
