@@ -17,7 +17,18 @@ namespace Jenga {
         public override VisualElement CreatePropertyGUI(
             SerializedProperty property
         ) {
-            var root = new FieldContainer() { label = preferredLabel };
+            var root = new VisualElement();
+            Rebuild(root, property);
+            return root;
+        }
+
+        public void Rebuild(VisualElement root, SerializedProperty property) {
+            // Debug.Log(property.propertyPath);
+            property.serializedObject.Update();
+
+            root.Clear();
+
+            var main = new FieldContainer() { label = preferredLabel };
 
             var flags 
                 = BindingFlags.Public | BindingFlags.NonPublic
@@ -33,54 +44,20 @@ namespace Jenga {
 
                 if (member.GetCustomAttributes(typeof(HideInInspector), false)
                         .Length > 0) continue;
-
-                var memberProp = property.FindPropertyRelative(member.Name);
-
-                var memberPath = memberProp != null
-                    ? memberProp.propertyPath
-                    : $"{property.propertyPath}+{member.Name}";
-
-                var attrs = member.GetCustomAttributes(false);
-
-                var ve = memberProp != null
-                    ? new PropertyField(memberProp) 
-                        { name = $"ALay:{memberPath}" }
-                    : new VisualElement()
-                        { name = $"ALay:{memberPath}" }; 
-
-                var wasLayouted = false;
-                foreach (var attr in attrs) {
-                    var layouter = ALayLayouter.Get(attr.GetType());
-                    if (layouter == null) continue;
-
-                    var ctx = new ALayContext(
-                        member, memberPath, attr,
-                        property.serializedObject
-                    );
-
-                    layouter.Layout(ve, ctx);
-                    wasLayouted = true;
-                }
-
-                if (memberProp == null && !wasLayouted)
-                    continue;
-
-                root.content.Add(ve);
-            }
-
-            foreach (var attr in myType.GetCustomAttributes(true)) {
-                var layouter = ALayLayouter.Get(attr.GetType());
-                if (layouter == null) continue; 
-
-                var ctx = new ALayContext(
-                    fieldInfo, property.propertyPath, attr,
-                    property.serializedObject
+                var ve = ALayLayouter.LayoutMember(
+                    member, property, () => Rebuild(root, property)
                 );
 
-                layouter.Layout(root, ctx);
+                if (ve != null)
+                    main.content.Add(ve);
             }
 
-            return root;
+            ALayLayouter.LayoutSelf(
+                main, fieldInfo, property, () => Rebuild(root, property)
+            );
+
+            root.Add(main);
+            root.Bind(property.serializedObject);
         }
     }
 
@@ -98,18 +75,21 @@ namespace Jenga {
         public MemberInfo memberInfo;
         public object attribute;
         public SerializedObject serializedObject;
+        public System.Action refreshCallback;
 
         public SerializedProperty property;
 
         public ALayContext(
             MemberInfo memberInfo, string path,
-            object attribute, SerializedObject so
+            object attribute, SerializedObject so,
+            System.Action refreshCallback
         ) {
             this.memberInfo = memberInfo;
             this.path = path;
             this.attribute = attribute;
             this.serializedObject = so;
             this.name = memberInfo.Name;
+            this.refreshCallback = refreshCallback;
 
             if (memberInfo is FieldInfo fieldInfo) 
                 property = so.FindProperty(path);
@@ -134,6 +114,70 @@ namespace Jenga {
                         type.GetCustomAttributes
                             (typeof(CustomLayouterAttribute), false)) 
                         layouters[((CustomLayouterAttribute)attr).type] = type;
+        }
+
+        public static void LayoutSelf(
+            VisualElement ve, FieldInfo fieldInfo, SerializedProperty property,
+            System.Action refreshCallback
+        ) {
+
+
+            var myType = property.propertyType 
+                == SerializedPropertyType.ManagedReference 
+                    ? (SerializedPropertyUtility.GetManagedType(property)
+                        ?? fieldInfo.FieldType)
+                    : SerializedPropertyUtility.GetFieldType(fieldInfo); 
+
+            foreach (var attr in myType.GetCustomAttributes(true)) {
+                var layouter = ALayLayouter.Get(attr.GetType());
+                if (layouter == null) continue; 
+
+                var ctx = new ALayContext(
+                    fieldInfo, property.propertyPath, attr,
+                    property.serializedObject, refreshCallback
+                );
+
+                layouter.Layout(ve, ctx);
+            }
+
+        }
+
+        public static VisualElement LayoutMember(
+            MemberInfo member, SerializedProperty property, 
+            System.Action refreshCallback
+        ) {
+            var wasLayouted = false;
+
+            var memberProp = property.FindPropertyRelative(member.Name);
+
+            var memberPath = memberProp != null
+                ? memberProp.propertyPath
+                : $"{property.propertyPath}+{member.Name}";
+
+            var attrs = member.GetCustomAttributes(false);
+
+            var ve = memberProp != null
+                ? new PropertyField(memberProp) 
+                    { name = $"ALay:{memberPath}" }
+                : new VisualElement()
+                    { name = $"ALay:{memberPath}" }; 
+
+            // Debug.Log(attrs.Length);
+
+            foreach (var attr in attrs) {
+                var layouter = ALayLayouter.Get(attr.GetType());
+                if (layouter == null) continue;
+
+                var ctx = new ALayContext(
+                    member, memberPath, attr,
+                    property.serializedObject, refreshCallback
+                );
+
+                layouter.Layout(ve, ctx);
+                wasLayouted = true;
+            }
+
+            return wasLayouted || memberProp != null ? ve : null;
         }
 
         public static ALayLayouter Get(System.Type type)
@@ -196,7 +240,9 @@ namespace Jenga {
 
         public override void Layout(VisualElement ve, ALayContext ctx) {
             var attr = ctx.GetAttribute<ALay.TypeSelectorAttribute>();
-            var prop = ctx.property.FindPropertyRelative(attr.path);
+            var prop = attr.path != null 
+                ? ctx.property.FindPropertyRelative(attr.path)
+                : ctx.property;
             if (ve is FieldContainer container && prop != null) {
                 container.header.Add(new TypeSelectorField() {
                     typeFamily = attr.typeFamily,
@@ -205,6 +251,7 @@ namespace Jenga {
                     onSelect = (t) => {
                         SerializedPropertyUtility.SetManagedReference(prop, t);
                         prop.serializedObject.ApplyModifiedProperties();
+                        ctx.refreshCallback();
                     }
                 });
             }
@@ -275,7 +322,7 @@ namespace Jenga {
 
                 var delayedCtx = new ALayContext(
                     ctx.memberInfo, ctx.path, delayedAttr,
-                    ctx.serializedObject
+                    ctx.serializedObject, ctx.refreshCallback
                 );
 
                 layouter.Layout(ve, delayedCtx);

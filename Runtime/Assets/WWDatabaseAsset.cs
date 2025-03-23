@@ -83,6 +83,7 @@ namespace Jenga {
                 var myColumn = columnsValues[id].data;
 
                 foreach (var ptr in matchedPointers) {
+                    if (ptr < 0) continue;
                     var valueIndex = pointers[ptr].indicesInSorted[id];
                     result[i]      = myColumn[valueIndex].data;
 
