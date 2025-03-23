@@ -9,7 +9,7 @@ namespace Jenga {
     // Inherit from this class to write custom generators
     // You also need to instantiate generic (see GenericGeneratorsInstantiations.cs)
     // (inflated generic are not serialized by Unity)
-    [System.Serializable]
+    [System.Serializable, ALay.HideHeader]
     public class MonoGenerator<T> : ALay.ILayoutMe {
 
         public virtual bool MoveNext(GameObject go) => false;
@@ -28,14 +28,14 @@ namespace Jenga {
     // Does some serialization & ui magic
     [System.Serializable] 
     [ALay.DelayAttribute("GetSelectorAttribute", inClass = true)]
-    public class MonoGeneratorReference<T> 
-        : ISerializationCallbackReceiver, ALay.ILayoutMe {
+    public class MonoGeneratorReference<T> : ALay.ILayoutMe {
 
-        [System.NonSerialized] public MonoGenerator<T> generator;
 
         [SerializeReference] 
-        [ALay.HideHeader]
         public object serializedValue;
+        
+        public MonoGenerator<T> generator 
+            => serializedValue as MonoGenerator<T>;
 
         static ALay.FieldAttribute GetSelectorAttribute()
             => new ALay.TypeSelectorAttribute(typeof(MonoGenerator<T>))
@@ -48,19 +48,19 @@ namespace Jenga {
         public IEnumerable<T> GenerateWith(GameObject go) 
             => generator.GenerateWith(go);
 
-        public void OnBeforeSerialize() {
-            if (generator?.GetType().IsGenericType ?? true)
-                serializedValue = null;
-            else
-                serializedValue = generator;
-        }
+        // public void OnBeforeSerialize() {
+        //     if (generator?.GetType().IsGenericType ?? true)
+        //         serializedValue = null;
+        //     else
+        //         serializedValue = generator;
+        // }
         
-        public void OnAfterDeserialize() 
-            => generator = serializedValue as MonoGenerator<T>;
+        // public void OnAfterDeserialize() 
+        //     => generator = serializedValue as MonoGenerator<T>;
 
         public static implicit operator 
         MonoGeneratorReference<T>(MonoGenerator<T> generator) 
-            => new MonoGeneratorReference<T>() { generator = generator };
+            => new MonoGeneratorReference<T>() { serializedValue = generator };
     }
     
 }

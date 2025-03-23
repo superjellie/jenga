@@ -9,6 +9,9 @@ using UnityEditor.UIElements;
 
 public class TypeSelectorField : VisualElement {
     
+    //
+	public const string ussClassName = "jenga-type-selector";
+
 	public delegate void OnSelectDelegate(System.Type type);
 
 	//
@@ -23,10 +26,19 @@ public class TypeSelectorField : VisualElement {
 		selector = new CategorizedPopupSelector();
 	
 		Add(selector);
+		EnableInClassList(ussClassName, true);
 
 		RegisterCallback<AttachToPanelEvent>(
 			OnAttachToPanel, TrickleDown.TrickleDown
 		);
+
+		this.AddManipulator(new ContextualMenuManipulator((evt) => {
+            evt.menu.AppendAction(
+            	"[TODO] Edit Script", 
+            	(x) => OpenScriptAsset(), 
+            	DropdownMenuAction.AlwaysEnabled
+            );
+        }));
 	}
 
 	void OnAttachToPanel(AttachToPanelEvent evt) {
@@ -57,6 +69,13 @@ public class TypeSelectorField : VisualElement {
         };
 
         selector.itemsCount = registry.Count;
+	}
+
+	void OpenScriptAsset() {
+		// var filter = $"t:MonoScript {currentType?.Name ?? typeFamily.Name}";
+		// var paths = AssetDatabase.FindAssets(filter);
+		// if (paths.Length == 0) return;
+		// AssetDatabase.LoadAssetAtPath(paths[0], );
 	}
 }
 #endif

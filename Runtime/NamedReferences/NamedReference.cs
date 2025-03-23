@@ -8,15 +8,44 @@ namespace Jenga {
         void Release(T aquired);
     }
 
-    [System.Serializable]
-    public class BaseNamedReference<T, UsageStrategy>
+    [System.Serializable, ALay.Inline]
+    public class BaseNamedReference<T, UsageStrategy> : ALay.ILayoutMe
         where UsageStrategy : INamedReferenceUsageStrategy<T> { 
 
+        [ALay.Style(width = 100f)]
         public NamedReferenceRegistry<T, UsageStrategy> registry;
+        
+        [ALay.Style(flexGrow = 1f)]
+        [ALay.Options("MakeIDOptions")]
         public int id = 0; 
 
         public T Aquire() => registry.Aquire(id);
         public void Release(T item) => registry.Release(id, item);
+    
+    #if UNITY_EDITOR
+        static void MakeIDOptions(
+            UnityEditor.SerializedProperty self, ALay.OptionsAttribute.Map map
+        ) {
+            var reg = self.FindPropertyRelative("registry");
+
+            if (reg.objectReferenceValue == null) 
+                { map.SetError("No Registry"); return; }
+
+            var refs = reg.FindPropertyRelative("references")
+                .FindPropertyRelative("pairs");
+
+            for (int i = 0; i < refs.arraySize; ++i) {
+                var pair = refs.GetArrayElementAtIndex(i);
+                var id   = pair.FindPropertyRelative("key"); 
+                var name = pair.FindPropertyRelative("value")
+                    .FindPropertyRelative("name"); 
+
+                map.Add(name.stringValue, id.intValue);
+            }
+
+            map.UpdateWith(reg.propertyPath);
+        }
+    #endif 
     }
 
     [System.Serializable]
@@ -28,14 +57,13 @@ namespace Jenga {
         : ScriptableObject
         where UsageStrategy : INamedReferenceUsageStrategy<T> {
 
-        [System.Serializable, ALay.HideHeader]
+        [System.Serializable, ALay.Inline]
         public struct RefData : ALay.ILayoutMe {
-            [ALay.BeginRowGroup, ALay.HideLabel, ALay.MaxWidth(100f)] 
+            [ALay.Style(width = 100f)] 
             public T reference;
-            [ALay.EndGroup, ALay.HideLabel, ALay.FlexGrow(1f)]  
+            [ALay.Style(flexGrow = 1f)]  
             public string name;
-            
-            // [ALay.HideLabel]
+            [ALay.Style(width = 100f)] 
             public UsageStrategy strategy;
         }
 

@@ -15,563 +15,272 @@ namespace Jenga {
     public class ALayPropertyDrawer : PropertyDrawer {
 
         public override VisualElement CreatePropertyGUI(
-            SerializedProperty prop
+            SerializedProperty property
         ) {
-            var root = new VisualElement()
-                { name = $"Jenga.ALay:{prop.propertyPath}" };
+            var root = new FieldContainer() { label = preferredLabel };
 
-            var type 
-                = prop.propertyType == SerializedPropertyType.ManagedReference
-                    ? SerializedPropertyUtility.GetManagedType(prop)
-                    : SerializedPropertyUtility.GetFieldType(fieldInfo);
+            var flags 
+                = BindingFlags.Public | BindingFlags.NonPublic
+                | BindingFlags.Static | BindingFlags.Instance;
 
-            if (type == null)
-                type = SerializedPropertyUtility.GetFieldType(fieldInfo);
+            var myType = property.propertyType 
+                == SerializedPropertyType.ManagedReference 
+                    ? (SerializedPropertyUtility.GetManagedType(property)
+                        ?? fieldInfo.FieldType)
+                    : SerializedPropertyUtility.GetFieldType(fieldInfo); 
 
-            var container = new FieldContainer() { labelText = preferredLabel };
+            foreach (var member in myType.GetMembers(flags)) {
 
-            var groupStack = new Stack<VisualElement>();
-            groupStack.Push(container.content);
+                if (member.GetCustomAttributes(typeof(HideInInspector), false)
+                        .Length > 0) continue;
 
-            var bindings 
-                = BindingFlags.Static | BindingFlags.Instance 
-                | BindingFlags.Public | BindingFlags.NonPublic;
+                var memberProp = property.FindPropertyRelative(member.Name);
 
-            foreach (var memberInfo in type.GetMembers(bindings)) {
-                var name = memberInfo.Name;
-                var propItem = prop.FindPropertyRelative(name);
+                var memberPath = memberProp != null
+                    ? memberProp.propertyPath
+                    : $"{property.propertyPath}+{member.Name}";
 
-                if (memberInfo
-                        .GetCustomAttributes(typeof(HideInInspector), false)
-                            .Length > 0) continue;
+                var attrs = member.GetCustomAttributes(false);
 
-                var element = propItem != null 
-                    ? new PropertyField(propItem)
-                    : new VisualElement();
+                var ve = memberProp != null
+                    ? new PropertyField(memberProp) 
+                        { name = $"ALay:{memberPath}" }
+                    : new VisualElement()
+                        { name = $"ALay:{memberPath}" }; 
 
-                if (memberInfo.DeclaringType    
-                        .IsSubclassOf(typeof(ALay.ILayoutMe)))
+                var wasLayouted = false;
+                foreach (var attr in attrs) {
+                    var layouter = ALayLayouter.Get(attr.GetType());
+                    if (layouter == null) continue;
+
+                    var ctx = new ALayContext(
+                        member, memberPath, attr,
+                        property.serializedObject
+                    );
+
+                    layouter.Layout(ve, ctx);
+                    wasLayouted = true;
+                }
+
+                if (memberProp == null && !wasLayouted)
                     continue;
 
-                element.name 
-                    = propItem != null 
-                        ? $"Jenga.ALay:{propItem.propertyPath}"
-                        : $"Jenga.ALay:{prop.propertyPath}+{name}";
-
-                ALayImpl.LayoutElement(
-                    element, memberInfo, memberInfo.GetCustomAttributes(false),
-                    propItem, groupStack,
-                    preferredLabel
-                );
+                root.content.Add(ve);
             }
 
-            var attrs = new List<object>(type.GetCustomAttributes(true));
-            attrs.AddRange(fieldInfo.GetCustomAttributes(false));
+            foreach (var attr in myType.GetCustomAttributes(true)) {
+                var layouter = ALayLayouter.Get(attr.GetType());
+                if (layouter == null) continue; 
 
-            // Debug.Log($"{prop.propertyPath}: {string.Concat(attrs.Select(x => x.GetType().Name + " "))}");
-            var rootStack = new Stack<VisualElement>();
-            rootStack.Push(root);
+                var ctx = new ALayContext(
+                    fieldInfo, property.propertyPath, attr,
+                    property.serializedObject
+                );
 
-            ALayImpl.LayoutElement(
-                container, fieldInfo,
-                attrs.ToArray(), 
-                prop, rootStack,
-                preferredLabel
-            );
+                layouter.Layout(root, ctx);
+            }
 
             return root;
         }
     }
 
-    // [CustomPropertyDrawer(typeof(ALay.LayoutMeAttribute))]
-    // public class ALaySinglePropertyDrawer : PropertyDrawer {
+    [System.AttributeUsage(System.AttributeTargets.Class)]
+    public class CustomLayouterAttribute : System.Attribute {
+        public System.Type type;
 
-    //     public override VisualElement CreatePropertyGUI(
-    //         SerializedProperty prop
-    //     ) {
-    //         // var root = new VisualElement() 
-    //         //     { name = "Jenga.ALay:layout-me-root"};
-    //         // var groupStack = new Stack<VisualElement>();
-    //         // groupStack.Push(root);
+        public CustomLayouterAttribute(System.Type type)
+            => this.type = type;
+    }
 
-    //         // var field = new PropertyField(prop);
+    public class ALayContext {
+        public string name;
+        public string path;
+        public MemberInfo memberInfo;
+        public object attribute;
+        public SerializedObject serializedObject;
 
-    //         // ALayImpl.LayoutElement(
-    //         //     field, fieldInfo,
-    //         //     fieldInfo.GetCustomAttributes(false),  
-    //         //     prop, groupStack,
-    //         //     preferredLabel
-    //         // );
+        public SerializedProperty property;
 
-    //         return new PropertyField(prop);
-    //     }
+        public ALayContext(
+            MemberInfo memberInfo, string path,
+            object attribute, SerializedObject so
+        ) {
+            this.memberInfo = memberInfo;
+            this.path = path;
+            this.attribute = attribute;
+            this.serializedObject = so;
+            this.name = memberInfo.Name;
 
-    // }
-
-
-    public static class ALayImpl {
-
-        public class Layouter {
-            public object attribute;
-            public MemberInfo memberInfo;
-            public SerializedProperty property;
-            public VisualElement element;
-            public Stack<VisualElement> groupStack;
-            public string preferredParentLabel;
-
-            public virtual void OnLayout() { }
-            public virtual void OnAfterLayout() { }
+            if (memberInfo is FieldInfo fieldInfo) 
+                property = so.FindProperty(path);
         }
 
-        [System.AttributeUsage(
-            System.AttributeTargets.Class, AllowMultiple = true
-        )]
-        public class CustomLayouterAttribute : System.Attribute {
-            public System.Type attributeType;
-            public CustomLayouterAttribute(System.Type type)
-                => attributeType = type;
-        }
+        public T GetAttribute<T>() where T : System.Attribute
+            => attribute as T; 
+        public FieldInfo fieldInfo => memberInfo as FieldInfo;
 
-        public static Dictionary<System.Type, System.Type> 
-            attrLayouters = new();
+        // public void Ref 
+    }
 
-        static ALayImpl() {
+    public class ALayLayouter {
+        public virtual void Layout(VisualElement element, ALayContext ctx) { }
+
+        static Dictionary<System.Type, System.Type> layouters = new();
+        static ALayLayouter() {
             var assemblies = System.AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
                 foreach (var type in assembly.GetTypes())
-                    foreach (var attr in type.GetCustomAttributes(
-                        typeof(CustomLayouterAttribute), false
-                    )) attrLayouters
-                        [((CustomLayouterAttribute)attr).attributeType] = type;
+                    foreach (var attr in 
+                        type.GetCustomAttributes
+                            (typeof(CustomLayouterAttribute), false)) 
+                        layouters[((CustomLayouterAttribute)attr).type] = type;
         }
 
-        public static void AddLayouter<T, Q>()
-            where T : System.Attribute 
-            where Q : Layouter {
-            attrLayouters[typeof(T)] = typeof(Q);
-            // Debug.Log($"{typeof(T).Name}: {typeof(T).Name}");
-        }
-
-        public static Layouter MakeLayouter(System.Type type)
-            => attrLayouters.ContainsKey(type) 
-                ? (Layouter)System.Activator.CreateInstance(attrLayouters[type])
+        public static ALayLayouter Get(System.Type type)
+            => layouters.ContainsKey(type)
+                ? System.Activator.CreateInstance(layouters[type])
+                    as ALayLayouter
                 : null;
-
-        public static void LayoutElement(
-            VisualElement element,
-            MemberInfo memberInfo, 
-            IEnumerable<object> attributes, 
-            SerializedProperty propItem,
-            Stack<VisualElement> groupStack,
-            string preferredParentLabel
-        ) {
-            var layouters = new List<ALayImpl.Layouter>();
-
-            foreach (var attr in attributes) {
-                var layouter = MakeLayouter(attr.GetType());
-                if (layouter == null) continue;
-
-                layouter.property = propItem;
-                layouter.element = element;
-                layouter.memberInfo = memberInfo;
-                layouter.groupStack = groupStack;
-                layouter.attribute = attr;
-                layouter.preferredParentLabel = preferredParentLabel;
-                layouters.Add(layouter);
-
-                layouter.OnLayout();
-            }
-
-            if (propItem != null || layouters.Count > 0)
-                if (groupStack.TryPeek(out var parent))
-                    parent.Add(element);
-
-            foreach (var layouter in layouters)
-                layouter.OnAfterLayout();
-        }
-
-        // Queries
-        public static VisualElement QueryHeader(VisualElement root) 
-            => root?.Query<VisualElement>()
-                .Where(ve => 
-                    ve.ClassListContains("custom-field-container__header")
-                    || ve.ClassListContains("unity-foldout__toggle")
-                    || ve.ClassListContains("unity-base-field")
-                ).First();
-
-        public static VisualElement QueryContent(VisualElement root) 
-            => root?.Query<VisualElement>()
-                .Where(ve => 
-                    ve.ClassListContains("custom-field-container__content")
-                    || ve.ClassListContains("unity-foldout__content")
-                ).First();
-
-        public static VisualElement FindParent(
-            VisualElement element, string path
-        ) {
-            var ve = element;
-            for (;
-                ve != null && ve.name != $"Jenga.ALay:{path}"
-                && ve.name != $"PropertyField:{path}";
-                ve = ve.parent);
-
-            return ve;
-        }
-
-        // Style layouters
-        [CustomLayouterAttribute(typeof(ALay.FlexGrowAttribute))]
-        public class FlexGrowLayouter : Layouter {
-            public override void OnLayout()
-                => element.style.flexGrow 
-                    = ((ALay.FlexGrowAttribute)attribute).value;
-        }
-
-        [CustomLayouterAttribute(typeof(ALay.FlexShrinkAttribute))]
-        public class FlexShrinkLayouter : Layouter {
-            public override void OnLayout()
-                => element.style.flexShrink
-                    = ((ALay.FlexShrinkAttribute)attribute).value;
-        }
-
-        [CustomLayouterAttribute(typeof(ALay.MinWidthAttribute))]
-        public class MinWidthLayouter : Layouter {
-            public override void OnLayout()
-                => element.style.minWidth
-                    = ((ALay.MinWidthAttribute)attribute).value;
-        }
-
-        [CustomLayouterAttribute(typeof(ALay.MaxWidthAttribute))]
-        public class MaxWidthLayouter : Layouter {
-            public override void OnLayout()
-                => element.style.maxWidth
-                    = ((ALay.MaxWidthAttribute)attribute).value;
-        }
-
-        [CustomLayouterAttribute(typeof(ALay.ListViewAttribute))]
-        public class ListViewLayouter : Layouter {
-            public override void OnLayout()
-                => element.schedule.Execute(OnSchedule).StartingIn(100);
-
-            void OnSchedule() {
-                var attr = (ALay.ListViewAttribute)attribute;
-                var lv = element.Q<ListView>();
-                if (lv == null) return; 
-
-                lv.reorderable = attr.reorderable;
-                lv.showFoldoutHeader = attr.showFoldoutHeader;
-                lv.showAddRemoveFooter = attr.showAddRemoveFooter;
-                lv.showBoundCollectionSize = attr.showBoundCollectionSize;
-                lv.virtualizationMethod 
-                    = CollectionVirtualizationMethod.DynamicHeight;
-
-                lv.itemsAdded += (indices) => {
-                    foreach (var index in indices) {
-                        var propItem = property.GetArrayElementAtIndex(index);
-                        var endProp = propItem.GetEndProperty(true);
-
-                        while (propItem.Next(true) 
-                            && !SerializedProperty
-                                .EqualContents(property, endProp)
-                        ) if (propItem.propertyType 
-                            == SerializedPropertyType.ManagedReference)
-                            propItem.managedReferenceId 
-                                = ManagedReferenceUtility.RefIdNull;
-                    }
-
-                    property.serializedObject.ApplyModifiedProperties();
-                };
-
-                lv.Rebuild();
-            }
-        }
-
-        // Groups & Placement
-        [CustomLayouterAttribute(typeof(ALay.BeginRowGroupAttribute))]
-        public class BeginRowGroupLayouter : Layouter {
-            public override void OnLayout() {
-                if (groupStack.TryPeek(out var parent)) {
-                    var newParent = new VisualElement() {
-                        style = { flexDirection = FlexDirection.Row },
-                        name = $"Jenga.ALay:group-row--{groupStack.Count}"
-                    };
-
-                    parent.Add(newParent);
-                    
-                    groupStack.Push(newParent);
-                }
-            }
-        }
-
-        [CustomLayouterAttribute(typeof(ALay.EndGroupAttribute))]
-        public class EndGroupLayouter : Layouter {
-            public override void OnAfterLayout() => groupStack.Pop();
-        }
-
-        [CustomLayouterAttribute(typeof(ALay.PlaceInHeaderAttribute))]
-        public class PlaceInHeaderLayouter : Layouter {
-
-            public override void OnLayout() {
-                element.RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-            }
-
-            void OnAttachToPanel(AttachToPanelEvent evt) {
-                element.UnregisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-                var root = FindParent(element, property.propertyPath);
-                var header = QueryHeader(root); 
-                var attr = (ALay.PlaceInHeaderAttribute)attribute;
-
-                if (header != null) {
-                    element.RemoveFromHierarchy();
-                    header.Insert(attr.pos, element);
-                }
-            }
-        }
-
-        [CustomLayouterAttribute(typeof(ALay.LabelAttribute))]
-        public class LabelLayouter : Layouter {
-
-            public override void OnLayout() {
-                element.RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-            }
-
-            void OnAttachToPanel(AttachToPanelEvent evt) {
-                element.UnregisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-                var root = FindParent(element, property.propertyPath);
-                var header = QueryHeader(root); 
-                var attr = (ALay.LabelAttribute)attribute;
-                var label = header?.Q<Label>();
-
-                if (label != null)
-                    label.text = attr.value;
-            }
-        }
-
-        // [CustomLayouterAttribute(typeof(ALay.EmitFieldAttribute))]
-        // public class EmitFieldLayouter : Layouter {
-
-        //     public override void OnLayout() {
-        //         var methodInfo = memberInfo as MethodInfo;
-        //         var res = methodInfo.Invoke(null, null);
-
-        //         if (res is ALay.FieldAttribute[] attrs) 
-
-
-        //     }
-        // }
-
-        [CustomLayouterAttribute(typeof(ALay.HideLabelAttribute))]
-        public class HideLabelLayouter : Layouter {
-
-            public override void OnLayout() {
-                // element.RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-                element.schedule.Execute(OnSchedule).StartingIn(100);
-            }
-
-            void OnSchedule() {
-                // var root = FindParent(element, property.propertyPath);
-                var header = QueryHeader(element); 
-                var label = header?.Q<Label>();
-                var attr = (ALay.HideLabelAttribute)attribute;
-                if (label != null)
-                    label.style.display = DisplayStyle.None;
-            }
-        }
-
-        [CustomLayouterAttribute(typeof(ALay.UseRootLabelAttribute))]
-        public class UseRootLabelLayouter : Layouter {
-
-            public override void OnLayout() {
-                // element.RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-                element.schedule.Execute(OnSchedule).StartingIn(100);
-            }
+    }
  
-            void OnSchedule() {
-                var root = FindParent(element, property.propertyPath);
-                var header = QueryHeader(element)?.Q<Label>();
+    [CustomLayouter(typeof(ALay.InlineAttribute))]
+    public class ALayInlineLayouter : ALayLayouter {
 
-                if (header != null) 
-                    header.text = preferredParentLabel; 
-                
-            }
-        }
+        FieldContainer container;
 
-        [CustomLayouterAttribute(typeof(ALay.DelayAttributeAttribute))]
-        public class DelayAttributeLayouter : Layouter {
-            
-            Layouter layouter;
-
-            public override void OnLayout() {
-                var attr = (ALay.DelayAttributeAttribute)attribute;
-                var flags 
-                    = BindingFlags.Static 
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Public;
-
-                var myType 
-                    = SerializedPropertyUtility
-                        .GetFieldType(memberInfo as FieldInfo);
-
-                var methodInfo 
-                    = attr.inClass 
-                        ? (myType?.GetMethod(attr.name, flags))
-                        : memberInfo.DeclaringType.GetMethod(attr.name, flags);
-
-                if (methodInfo == null) return;
-
-                var newAttr = methodInfo.Invoke(null, null);
-                if (newAttr == null) return;
-
-                layouter = MakeLayouter(newAttr.GetType());
-                
-                layouter.property = property;
-                layouter.element = element;
-                layouter.memberInfo = memberInfo;
-                layouter.groupStack = groupStack;
-                layouter.attribute = newAttr;
-                layouter.preferredParentLabel = preferredParentLabel;
-
-                layouter.OnLayout();
-            }
-
-            public override void OnAfterLayout() {
-                if (layouter != null)
-                    layouter.OnAfterLayout();
-            }
-        }
-
-        // [CustomLayouterAttribute(typeof(ALay.OnChangeCallbackAttribute))]
-        // public class OnChangeCallbackLayouter : Layouter {
-            
-        //     public override void OnLayout() {
-        //         var attr = (ALay.OnChangeCallbackAttribute)attribute;
-        //         var flags 
-        //             = BindingFlags.Static 
-        //             | BindingFlags.NonPublic
-        //             | BindingFlags.Public;
-
-        //         var myType 
-        //             = SerializedPropertyUtility
-        //                 .GetFieldType(memberInfo as FieldInfo);
-
-        //         var methodInfo 
-        //             = attr.inClass 
-        //                 ? (myType?.GetMethod(attr.name, flags))
-        //                 : memberInfo.DeclaringType.GetMethod(attr.name, flags);
-
-        //         if (methodInfo == null) return;
-
-        //         element.schedule.Execute(() => {
-                    
-        //         })
-        //         methodInfo.Invoke(null, new object[] { property });
-
-
-        //     }
-        // }
-
-        [CustomLayouterAttribute(typeof(ALay.HideHeaderAttribute))]
-        public class HideHeaderLayouter : Layouter {
-
-            public override void OnLayout() {
-                // Debug.Log("Hide Header");
-                element.schedule.Execute(OnSchedule).StartingIn(100);
-            }
-
-            void OnSchedule() {
-                // var root = FindParent(element, property.propertyPath);
-                var header = QueryHeader(element); 
-                var content = QueryContent(element); 
-                var attr = (ALay.HideHeaderAttribute)attribute;
-
-                var toggle = header?.Q<Toggle>();
-
-                if (toggle != null)
-                    toggle.value = true;
-                if (header != null)
-                    header.style.display = DisplayStyle.None;
-                if (content != null)
-                    content.style.marginLeft = 0f;
-            }
-        }
-
-        // Visuals
-        [CustomLayouterAttribute(typeof(ALay.UsageToggleAttribute))]
-        public class UsageToggleLayouter : Layouter {
-
-            public override void OnLayout() {
-                var group = new VisualElement() {
-                    name = $"Jenga.ALay:group-usage--{groupStack.Count}",
-                    style = { 
-                        flexDirection = FlexDirection.Row, 
-                        alignItems = Align.Center,
-                        flexGrow = 1f
-                    },
-                };
-
-                if (groupStack.TryPeek(out var parent))
-                    parent.Add(group);
-
-                var toggle = new Toggle() {
-                    label = "",
-                    bindingPath = ((ALay.UsageToggleAttribute)attribute).path,
-                    style = {
-                        minWidth = 20f,
-                        flexShrink = 1f
-                    }
-                };
-
-                element.style.flexGrow = 1f;
-                element.SetEnabled(toggle.value);
-
-                toggle.RegisterValueChangedCallback(
-                    evt => element.SetEnabled(evt.newValue)
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            if (ve is FieldContainer container) {
+                container.inline = true;
+                container.hideToggle = true;
+                container.content.EnableInClassList(
+                    SerializedPropertyUtility.ussNoLabelsInChildrenClassName,
+                    true
                 );
-                
-                group.Add(toggle);
-                groupStack.Push(group);
             }
-
-            public override void OnAfterLayout() => groupStack.Pop();
         }
+    }
 
-        [CustomLayouterAttribute(typeof(ALay.TypeSelectorAttribute))]
-        public class TypeSelectorLayouter : Layouter {
+    [CustomLayouter(typeof(ALay.StyleAttribute))]
+    public class ALayStyleLayouter : ALayLayouter {
 
-            public override void OnLayout() {
-                element.schedule.Execute(OnSchedule).StartingIn(100);
-            }
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            var attr = ctx.GetAttribute<ALay.StyleAttribute>();
 
-            void OnSchedule() {
-                var root = FindParent(element, property.propertyPath);
-                var header = QueryHeader(root); 
-                var attr = (ALay.TypeSelectorAttribute)attribute;
-                var prop = attr.path != null 
-                    ? property.FindPropertyRelative(attr.path) 
-                    : property;
+            if (!float.IsNaN(attr.flexGrow))   ve.style.flexGrow   = attr.flexGrow;
+            if (!float.IsNaN(attr.flexShrink)) ve.style.flexShrink = attr.flexShrink;
+            if (!float.IsNaN(attr.minWidth))   ve.style.minWidth   = attr.minWidth;
+            if (!float.IsNaN(attr.minHeight))  ve.style.minHeight  = attr.minHeight;
+            if (!float.IsNaN(attr.maxWidth))   ve.style.maxWidth   = attr.maxWidth;
+            if (!float.IsNaN(attr.maxHeight))  ve.style.maxHeight  = attr.maxHeight;
+            if (!float.IsNaN(attr.width))      ve.style.width      = attr.width;
+            if (!float.IsNaN(attr.height))     ve.style.height     = attr.height;
+        }
+    }
 
-                if (header == null) return;
+    [CustomLayouter(typeof(ALay.HideHeaderAttribute))]
+    public class ALayHideHeaderLayouter : ALayLayouter { 
+        public override void Layout(VisualElement ve, ALayContext ctx) { 
+            ve.schedule.Execute(() => {
+                var container = ve.Q<FieldContainer>();
+                if (container == null) return;
 
-                var typeSelector = new TypeSelectorField() {
-                    currentType 
-                        = SerializedPropertyUtility.GetManagedType(prop),
+                container.hideHeader = true;
+                container.removeContentMargins = true;
+            }).StartingIn(100);
+        }
+    }
+
+
+    [CustomLayouter(typeof(ALay.TypeSelectorAttribute))]
+    public class ALayTypeSelectorLayouter : ALayLayouter {
+
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            var attr = ctx.GetAttribute<ALay.TypeSelectorAttribute>();
+            var prop = ctx.property.FindPropertyRelative(attr.path);
+            if (ve is FieldContainer container && prop != null) {
+                container.header.Add(new TypeSelectorField() {
                     typeFamily = attr.typeFamily,
-                    onSelect = (type) => {
-                        element.Unbind();
-                        SerializedPropertyUtility
-                            .SetManagedReference(prop, type);
+                    currentType = SerializedPropertyUtility
+                        .GetManagedType(prop),
+                    onSelect = (t) => {
+                        SerializedPropertyUtility.SetManagedReference(prop, t);
                         prop.serializedObject.ApplyModifiedProperties();
-                        prop.serializedObject.Update();
-                        element.Bind(prop.serializedObject);
-                    },
-                    style = { 
-                        minWidth = 150f, maxWidth = 150f
                     }
-                };
-
-                header.Insert(header.childCount, typeSelector);
+                });
             }
         }
+    }
 
+    [CustomLayouter(typeof(ALay.OptionsAttribute))]
+    public class ALayOptionsLayouter : ALayLayouter {
+
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            var attr = ctx.GetAttribute<ALay.OptionsAttribute>();
+
+            // var type = ctx.property != null
+            //     ? ctx.property.propertyType 
+            //         == SerializedPropertyType.ManagedReference
+            //         ? SerializedPropertyUtility.GetManagedType(ctx.property) 
+            //         : SerializedPropertyUtility.GetFieldType(ctx.fieldInfo)
+            //     : ctx.fieldInfo.FieldType;
+
+            // var parentType = ctx.fieldInfo.DeclaringType;
+            // var flags = BindingFlags.Public | BindingFlags.NonPublic
+            //     | BindingFlags.Static;
+            // var method = parentType?.GetMethod(attr.provider, flags);
+
+            // if (method == null) return;
+
+
+            var field = new PopupField<(object, string)>() { 
+                style = { flexGrow = 1f }
+            };
+
+            // ve.Clear();
+            ve.Add(field);
+        }
+
+        static void UpdateFiekd(MethodInfo method, PopupField<object> field) {
+            // var map = new ALay.OptionsAttribute.Map(); 
+            // method.Invoke(null, { ctx.property, map });
+            
+            // field.choices = map.options;
+        }
+    }
+
+    [CustomLayouter(typeof(ALay.DelayAttributeAttribute))]
+    public class ALayDelayAttributeLayouter : ALayLayouter {
+
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            var attr = ctx.GetAttribute<ALay.DelayAttributeAttribute>();
+            var clss = attr.inClass  
+                ? ctx.property != null
+                    ? ctx.property.propertyType 
+                        == SerializedPropertyType.ManagedReference
+                        ? SerializedPropertyUtility.GetManagedType(ctx.property) 
+                        : SerializedPropertyUtility.GetFieldType(ctx.fieldInfo)
+                    : ctx.fieldInfo.FieldType
+                : ctx.fieldInfo.DeclaringType;
+
+            var flags = BindingFlags.Public | BindingFlags.NonPublic
+                | BindingFlags.Static;
+            var mthd = clss?.GetMethod(attr.name, flags);
+
+            if (mthd != null) {
+                var delayedAttr = mthd.Invoke(null, null);
+                if (delayedAttr == null) return;
+
+                var layouter = ALayLayouter.Get(delayedAttr.GetType());
+                if (layouter == null) return;
+
+                var delayedCtx = new ALayContext(
+                    ctx.memberInfo, ctx.path, delayedAttr,
+                    ctx.serializedObject
+                );
+
+                layouter.Layout(ve, delayedCtx);
+            }
+        }
     }
 
 }
