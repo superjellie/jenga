@@ -2,13 +2,13 @@ using UnityEngine;
 
 namespace Jenga {
 
-    [System.Serializable, ALay.HideHeader]
+    [System.Serializable, ALay.Inline]
     public class CurveWithDuration : ALay.ILayoutMe {
 
-        [ALay.BeginRowGroup, ALay.UseRootLabel, ALay.FlexGrow(1f)] 
+        [ALay.Style(flexGrow = 1f)] 
         public AnimationCurve curve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
         
-        [ALay.EndGroup, ALay.HideLabel, ALay.MaxWidth(50f), ALay.MinWidth(50f)]
+        [ALay.Style(width = 50f)]
         public float duration = .2f;
 
         public CurveWithDuration(float duration) {

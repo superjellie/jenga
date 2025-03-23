@@ -35,7 +35,7 @@ namespace Jenga {
             Add(container);        
 
             RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-            styleSheets.Add(SerializedPropertyUtility.customStyle);
+            styleSheets.Add(SerializedPropertyUtility.jengaStyle);
             
             EnableInClassList(ussManagedReferenceClassName, true);
 
@@ -45,7 +45,7 @@ namespace Jenga {
             => SerializedPropertyUtility.GetManagedType(property);
 
         void OnAttachToPanel(AttachToPanelEvent evt) {
-            container.labelText = labelText;
+            container.label = labelText;
             RebuildHierarchy();
         }
 
@@ -61,9 +61,9 @@ namespace Jenga {
             propertyField = new PropertyField() 
                 { bindingPath = property.propertyPath, label = "" };
             propertyField.EnableInClassList(ussPropertyFieldClassName, true);
-            propertyField.EnableInClassList(
-                SerializedPropertyUtility.ussNoLabelPropertyClassName, true
-            );
+            // propertyField.EnableInClassList(
+            //     SerializedPropertyUtility.ussNoLabelPropertyClassName, true
+            // );
             container.content.Add(propertyField);
 
             typeSelector = new TypeSelectorField() {
