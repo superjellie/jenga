@@ -70,7 +70,7 @@ namespace Jenga {
             // Find pointers (read lines) that matched our keys
             var matchedPointers = MatchPointers(matchKeys);
 
-            if (matchedPointers == null || matchedPointers.Count == 0)
+            if (matchedPointers == null || matchedPointers.Length == 0)
                 return null;
 
             // Now we want to gather result from pointers
@@ -99,7 +99,7 @@ namespace Jenga {
         }
 
         // Matches pointers (read table lines) to key query
-        public HashSet<int> MatchPointers(Match[] matchKeys) {
+        public int[] MatchPointers(Match[] matchKeys) {
             var cmpData = new DataComparer();
 
             HashSet<int> matchedPointers = null;
@@ -127,7 +127,7 @@ namespace Jenga {
                     );
 
                 // 
-                if (valueIndex < 0) return null;
+                if (valueIndex < 0) return new int[0];
 
                 // Go though range and gather matched pointers
                 var myMatch = new HashSet<int>();
@@ -147,7 +147,12 @@ namespace Jenga {
                     matchedPointers.IntersectWith(myMatch);
             }
 
-            return matchedPointers;
+            if (matchedPointers == null) return new int[0];
+
+            var result = new int[matchedPointers.Count];
+            matchedPointers.CopyTo(result);
+            System.Array.Sort(result);
+            return result;
         }
 
         // Populate build contxt with lines from table

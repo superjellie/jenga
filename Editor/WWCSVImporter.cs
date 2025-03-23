@@ -206,15 +206,9 @@ namespace Jenga {
             // Preview Table
             if (EditorGUI.EndChangeCheck() || previewPointers == null) {
                 so.ApplyModifiedProperties();
-                
                 if (previewMatches.Length > 0) {
-                    var pointersSet = asset.MatchPointers(previewMatches);
-
-                    if (pointersSet != null) {
-                        previewPointers = new int[pointersSet.Count];
-                        pointersSet.CopyTo(previewPointers); 
-                        System.Array.Sort(previewPointers);
-                    } else previewPointers = new int[0];
+                    previewPointers = asset.MatchPointers(previewMatches);
+                // Debug.Log(previewPointers);
                 } else {
                     previewPointers = new int[asset.pointers.Length];
                     for (int i = 0; i < previewPointers.Length; ++i)
