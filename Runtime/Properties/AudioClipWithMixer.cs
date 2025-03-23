@@ -14,6 +14,7 @@ namespace Jenga {
         public AudioMixerGroup group;
 
         public AudioSource Play(Vector3 pos) {
+            if (clip == null) return null;
             var go = new GameObject("AudioClipPlayer", typeof(AudioSource));
 
             var source = go.GetComponent<AudioSource>();
@@ -28,6 +29,7 @@ namespace Jenga {
         }
 
         public AudioSource PlayLooped(Vector3 pos) {
+            if (clip == null) return null;
             var source = Play(pos);
             source.loop = true;
             return source;

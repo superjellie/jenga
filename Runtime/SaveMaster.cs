@@ -51,7 +51,8 @@ namespace Jenga {
 
             foreach (var (profile, data) in loadedProfiles) {
                 var path = $"{savesPath}/{profile}";
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(savesPath);
+                
                 if (!loadedProfiles.ContainsKey(profile)) 
                     loadedProfiles[profile] = new();
 
@@ -74,6 +75,7 @@ namespace Jenga {
             var tasks = new List<System.Threading.Tasks.Task>();
             foreach (var profile in profiles) {
                 var path = $"{savesPath}/{profile}";
+                
                 if (!File.Exists(path)) {
                     loadedProfiles[profile] = new();
                     continue;
