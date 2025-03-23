@@ -144,7 +144,7 @@ namespace Jenga {
                 if (matchedPointers == null)
                     matchedPointers = myMatch;
                 else 
-                    matchedPointers.ExceptWith(myMatch);
+                    matchedPointers.IntersectWith(myMatch);
             }
 
             return matchedPointers;
@@ -153,13 +153,14 @@ namespace Jenga {
         // Populate build contxt with lines from table
         public class BuildContext {
             public string columnPrefix = "Column:";
+            public string columnEnd    = "Column:End";
             public List<List<string>> lines = new();
             public HashSet<string> columns = new();
 
             public void AddLine(List<string> line) {
                 lines.Add(line);
                 foreach (var entry in line)
-                    if (entry.StartsWith(columnPrefix))
+                    if (entry.StartsWith(columnPrefix) && entry != columnEnd)
                         columns.Add(entry.Substring(columnPrefix.Length));
             }
         }
@@ -200,6 +201,8 @@ namespace Jenga {
                     if (string.IsNullOrEmpty(line[k]))          continue;
                     if (currentColumns[k] < 0)                  continue;
                     if (line[k].StartsWith(ctx.columnPrefix))   continue;
+                    if (line[k] == ctx.columnEnd)
+                        { currentColumns[k] = -1; continue; }
                 
                     columnLists[currentColumns[k]]
                         .Add(new Data() { data = line[k], ptrID = nextPtr });

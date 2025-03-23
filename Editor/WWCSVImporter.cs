@@ -20,6 +20,7 @@ namespace Jenga {
         
         // [Header("Parser")]
         public string columnPrefix = "Column:";
+        public string columnEnd    = "Column:End";
         public char   escape       = '\\';
         public char   separator    = ',';
         public char   quote        = '"';
@@ -47,7 +48,7 @@ namespace Jenga {
 
             var lines = File.ReadAllLines(ctx.assetPath);
             var buildCtx = new WWDatabaseAsset.BuildContext() 
-                { columnPrefix = columnPrefix };
+                { columnPrefix = columnPrefix, columnEnd = columnEnd };
 
             foreach (var line in lines) 
                 buildCtx.AddLine(ReadCSVLine(line));
@@ -136,6 +137,7 @@ namespace Jenga {
 
             // Parser settings
             var propColumnPrefix = so.FindProperty("columnPrefix");
+            var propColumnEnd    = so.FindProperty("columnEnd");
             var propEscape       = so.FindProperty("escape");
             var propSeparator    = so.FindProperty("separator");
             var propQuote        = so.FindProperty("quote");
@@ -145,6 +147,7 @@ namespace Jenga {
 
             if (parserFoldout) {
                 EditorGUILayout.PropertyField(propColumnPrefix);
+                EditorGUILayout.PropertyField(propColumnEnd);
                 EditorGUILayout.PropertyField(propEscape);
                 EditorGUILayout.PropertyField(propSeparator);
                 EditorGUILayout.PropertyField(propQuote);
@@ -342,6 +345,13 @@ namespace Jenga {
             var text = new StringBuilder();
             foreach (var req in requests) {
                 text.Append(req.downloadHandler.text);
+
+                // Add column ends for correcteness
+                text.Append("\n");
+                for (int i = 0; i < 100; ++i) 
+                    text.Append($"\"{importer.columnEnd}\",");
+                
+
                 text.Append("\n");
             }
 
