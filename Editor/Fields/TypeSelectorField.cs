@@ -19,13 +19,8 @@ public class TypeSelectorField : VisualElement {
 	public System.Type currentType;
 	public OnSelectDelegate onSelect = (t) => { };
 
-	//
-	CategorizedPopupSelector selector;
-
 	public TypeSelectorField() {
-		selector = new CategorizedPopupSelector();
-	
-		Add(selector);
+
 		EnableInClassList(ussClassName, true);
 
 		RegisterCallback<AttachToPanelEvent>(
@@ -44,31 +39,45 @@ public class TypeSelectorField : VisualElement {
 	void OnAttachToPanel(AttachToPanelEvent evt) {
 		var registry = AddTypeMenuAttribute.registries[typeFamily];
 
-        var myIndex = registry.FindIndex((reg) => reg.type == currentType);
-
-        selector.selectedIndex = myIndex;
-
-		selector.onSelect = (i) => {
-        	if (i < 0 || i >= registry.Count) return;
-			onSelect(registry[i].type);
-			currentType = registry[i].type;
+		var field = new PopupField<AddTypeMenuAttribute.Registration>() {
+			choices = registry,
+			formatListItemCallback = (reg) => reg.path,
+			formatSelectedValueCallback 
+				= (reg) => reg.path?.Substring(reg.path.LastIndexOf('/') + 1),
+			index = registry.FindIndex((reg) => reg.type == currentType)
 		};
 
-        selector.getItemCategory = (i) => {
-        	if (i < 0 || i >= registry.Count) return "[None]";
-            var split = registry[i].path.Split('/'); 
-            if (split.Length == 0) return "Default";
-            return split[0];
-        };
+		Add(field);
 
-        selector.getItemName = (i) => {
-        	if (i < 0 || i >= registry.Count) return "[None]";
-            var split = registry[i].path.Split('/'); 
-            if (split.Length == 0) return registry[i].path;
-            return split[split.Length - 1];
-        };
+		field.RegisterCallback<ChangeEvent<AddTypeMenuAttribute.Registration>>(
+			(evt) => onSelect(evt.newValue.type)
+		);
 
-        selector.itemsCount = registry.Count;
+        // var myIndex = registry.FindIndex((reg) => reg.type == currentType);
+
+        // selector.selectedIndex = myIndex;
+
+		// selector.onSelect = (i) => {
+        // 	if (i < 0 || i >= registry.Count) return;
+		// 	onSelect(registry[i].type);
+		// 	currentType = registry[i].type;
+		// };
+
+        // selector.getItemCategory = (i) => {
+        // 	if (i < 0 || i >= registry.Count) return "[None]";
+        //     var split = registry[i].path.Split('/'); 
+        //     if (split.Length == 0) return "Default";
+        //     return split[0];
+        // };
+
+        // selector.getItemName = (i) => {
+        // 	if (i < 0 || i >= registry.Count) return "[None]";
+        //     var split = registry[i].path.Split('/'); 
+        //     if (split.Length == 0) return registry[i].path;
+        //     return split[split.Length - 1];
+        // };
+
+        // selector.itemsCount = registry.Count;
 	}
 
 	void OpenScriptAsset() {
