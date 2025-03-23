@@ -71,8 +71,9 @@ namespace Jenga {
             for (int i = 0; i < line.Length; ++i) {
 
                 // If we right after escape, just add character to last word
+                // And forget the escape
                 if (state == ST_QUOTED_ESCAPE)
-                    values[^1] += line[i];
+                    { values[^1] += line[i]; state = ST_QUOTED_REGULAR; }
 
                 // If encounter escape inside quoted part, skip and 
                 // enter ST_QUOTER_ESCAPE
