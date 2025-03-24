@@ -244,17 +244,78 @@ namespace Jenga {
                 ? ctx.property.FindPropertyRelative(attr.path)
                 : ctx.property;
             if (ve is FieldContainer container && prop != null) {
-                container.header.Add(new TypeSelectorField() {
-                    typeFamily = attr.typeFamily,
-                    currentType = SerializedPropertyUtility
-                        .GetManagedType(prop),
-                    onSelect = (t) => {
-                        SerializedPropertyUtility.SetManagedReference(prop, t);
-                        prop.serializedObject.ApplyModifiedProperties();
-                        ctx.refreshCallback();
-                    }
-                });
+                container.schedule.Execute(() => {
+                    if (container.header.Query<TypeSelectorField>()
+                        .Where(x => x.parent == container.header).First()
+                        != null) return;
+                    
+                    container.header.Add(new TypeSelectorField() {
+                        typeFamily = attr.typeFamily,
+                        currentType = SerializedPropertyUtility
+                            .GetManagedType(prop),
+                        onSelect = (t) => {
+                            SerializedPropertyUtility
+                                .SetManagedReference(prop, t);
+                            prop.serializedObject.ApplyModifiedProperties();
+                            ctx.refreshCallback();
+                        }
+                    });
+                }).StartingIn(100);
             }
+        }
+    }
+
+    [CustomLayouter(typeof(ALay.ListViewAttribute))]
+    public class ALayListViewLayouter : ALayLayouter {
+
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            var attr = ctx.GetAttribute<ALay.ListViewAttribute>();
+            ve.schedule.Execute(() => {
+                var view = ve.Q<ListView>();
+                view.reorderable = attr.reorderable;
+                view.showFoldoutHeader = attr.showFoldoutHeader;
+                view.showAddRemoveFooter = attr.showAddRemoveFooter;
+                view.showBoundCollectionSize = attr.showBoundCollectionSize;
+
+                view.itemIndexChanged += (i, j) => view.Rebuild();
+                view.itemsRemoved += (i) => view.Rebuild();
+
+                view.itemsAdded += (indices) => {
+
+                    foreach (var index in indices) {
+                        var propItem = ctx.property
+                            .GetArrayElementAtIndex(index);
+
+                        var end = propItem.GetEndProperty();
+                        for (var it = propItem.Copy(); 
+                            !SerializedProperty.EqualContents(it, end); 
+                            it.Next(true)
+                        ) 
+                            if (it.propertyType 
+                                == SerializedPropertyType.ManagedReference) 
+                                it.managedReferenceId 
+                                    = ManagedReferenceUtility.RefIdNull;
+                        
+                        // if (attr.addItemCallback != null) {
+                        //     var callback = field.FieldType.GetMethod(
+                        //         attr.addItemCallback,
+                        //         BindingFlags.Public | BindingFlags.NonPublic
+                        //         | BindingFlags.Static
+                        //     );
+                            
+                        //     if (callback != null) 
+                        //         callback.Invoke(null, new object[] { propItem });
+                        // }
+                    } 
+
+                    ctx.serializedObject.ApplyModifiedProperties();
+                    
+                    view.Rebuild();
+                    view.Unbind();
+                    view.Bind(ctx.serializedObject);
+
+                };
+            }).StartingIn(100);
         }
     }
 
