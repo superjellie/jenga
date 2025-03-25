@@ -1,26 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Runtime.CompilerServices;
+using System.IO;
+
 
 [System.AttributeUsage(System.AttributeTargets.Class)]
 public class AddTypeMenuAttribute : System.Attribute {
 
     public System.Type typeFamily; 
     public string path = "Default/None";
+    public string pathToSource = "";
+    public int sourceLineNumber;
     public int order = 1000;
 
     public AddTypeMenuAttribute(
-        System.Type typeFamily, string path, int order = 1000
+        System.Type typeFamily, string path, int order = 1000,
+        [CallerFilePath] string pathToSource = null,
+        [CallerLineNumber] int sourceLineNumber = 1
     ) {
         this.typeFamily = typeFamily;
         this.path = path;
         this.order = order;
+        this.sourceLineNumber = sourceLineNumber;
+        this.pathToSource = Path.Combine(
+            "Assets", 
+            Path.GetRelativePath(Application.dataPath, pathToSource)
+        );
     }
 
     public struct Registration {
         public System.Type type;
         public string path;
         public int order;
+        public string pathToSource;
+        public int sourceLineNumber;
     } 
 
     public static Dictionary<System.Type, List<Registration>> registries 
@@ -36,7 +50,9 @@ public class AddTypeMenuAttribute : System.Attribute {
                     var atm = attr as AddTypeMenuAttribute;
 
                     var reg = new Registration() {
-                        type = type, path = atm.path, order = atm.order
+                        type = type, path = atm.path, order = atm.order,
+                        pathToSource = atm.pathToSource,
+                        sourceLineNumber = atm.sourceLineNumber
                     };
 
                     if (registries.ContainsKey(atm.typeFamily))

@@ -253,10 +253,8 @@ namespace Jenga {
                         typeFamily = attr.typeFamily,
                         currentType = SerializedPropertyUtility
                             .GetManagedType(prop),
+                        property = prop,
                         onSelect = (t) => {
-                            SerializedPropertyUtility
-                                .SetManagedReference(prop, t);
-                            prop.serializedObject.ApplyModifiedProperties();
                             ctx.refreshCallback();
                         }
                     });
