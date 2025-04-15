@@ -9,14 +9,13 @@ namespace Jenga {
         : BaseNamedReference<T, PrefabUsageStrategy<T>>
         where T : Component { }
 
-    [System.Serializable, ALay.HideHeader]
+    [System.Serializable]
     public class PrefabUsageStrategy<T> 
         : INamedReferenceUsageStrategy<T>, ALay.ILayoutMe
         where T : Component {
 
         public enum Strategy { Activate, Instantiate, InstantiateAndActivate };
 
-        // [ALay.Label("Usage strategy")]
         public Strategy usageStrategy;
 
         public T Aquire(T item) {

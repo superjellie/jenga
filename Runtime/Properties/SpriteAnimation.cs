@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jenga {
-    [System.Serializable, ALay.HideHeader]
+    [System.Serializable]
     public class SpriteAnimation /*: ALay.ILayoutMe */{
-        [ALay.BeginRowGroup, ALay.UseRootLabel, ALay.FlexGrow(1f)]
+        [ALay.Style(flexGrow = 1f)]
         public Texture2D texture;
 
-        [ALay.EndGroup, ALay.HideLabel, ALay.MaxWidth(50f), ALay.MinWidth(50f)]
+        [ALay.Style(width = 50f)]
         public float fps = 20f;
         
         [HideInInspector]

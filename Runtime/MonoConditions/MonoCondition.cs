@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Jenga {
     // Serializable generic condition
     // Check out WhenEnemy.cs for tutorial on writing custom conditions
-    [System.Serializable]
+    [System.Serializable, ALay.HideHeader]
     public class MonoCondition : ALay.ILayoutMe {
 
         // GO is object witch initiated the Check
@@ -20,7 +20,6 @@ namespace Jenga {
     public struct MonoConditionReference : ALay.ILayoutMe {
 
         [SerializeReference]
-        [ALay.HideHeader]
         public MonoCondition serializedValue;
 
         public bool Check(GameObject go) => serializedValue?.Check(go) ?? false;

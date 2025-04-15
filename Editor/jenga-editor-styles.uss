@@ -1,0 +1,55 @@
+
+/* Field Container */
+.jenga-field-container
+    > .unity-foldout
+    > .unity-toggle
+    > .unity-toggle__input
+    > .unity-toggle__text
+    { flex-grow: 1 }
+
+.jenga-field-container--inline
+    > .unity-foldout
+    { flex-direction: row }
+
+.jenga-field-container--inline
+    > .unity-foldout
+    > .unity-foldout__content
+    { flex-direction: row; margin-left: 0px; flex-grow: 1 }
+
+.jenga-field-container--no-margin
+    > .unity-foldout
+    > .unity-foldout__content
+    { margin-left: 0px; }
+
+.jenga-field-container--no-toggle
+    > .unity-foldout
+    > .unity-toggle
+    > .unity-toggle__input
+    > .unity-toggle__checkmark
+    { display: none }
+
+.jenga-field-container--no-header
+    > .unity-foldout
+    > .unity-toggle
+    { display: none }
+
+.jenga-field-container--no-toggle
+    > .unity-foldout
+    > .unity-toggle
+    { margin-left: 0px }
+
+.jenga-field-container--no-toggle
+    > .unity-foldout
+    > .unity-toggle
+    > .unity-toggle__input
+    > .unity-toggle__text
+    { margin-left: 4px }
+
+/* */
+.jenga--no-labels-in-children
+    .unity-property-field__label
+    { display: none }
+
+/* Type Selector */
+.jenga-type-selector
+    { width: 120px }

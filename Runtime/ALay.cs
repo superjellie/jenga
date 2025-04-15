@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Jenga {
 
@@ -9,7 +10,6 @@ namespace Jenga {
     public static class ALay {
 
         // Couple classes to reduce code duplication
-        // Dont use them
         [System.AttributeUsage(
             System.AttributeTargets.Field
             | System.AttributeTargets.Class
@@ -17,19 +17,21 @@ namespace Jenga {
         )]
         public class FieldAttribute : System.Attribute { }
 
+        [System.AttributeUsage(
+            System.AttributeTargets.Class
+            | System.AttributeTargets.Struct
+        )]
+        public class ClassAttribute : System.Attribute { }
+
         [System.AttributeUsage(System.AttributeTargets.Method)]
         public class MethodAttribute : System.Attribute { }
 
         // Inherit from this interface to enable ALay layouting
         public interface ILayoutMe { }
 
-        // Add to enable ALay for single item
-        public class LayoutMeAttribute : PropertyAttribute { }
-
         // Add to hide property label
         public class HideLabelAttribute : FieldAttribute { }
         public class HideHeaderAttribute : FieldAttribute { }
-        public class UseRootLabelAttribute : FieldAttribute { }
 
         // Add to replace property label
         public class LabelAttribute : FieldAttribute { 
@@ -44,9 +46,17 @@ namespace Jenga {
             public bool showAddRemoveFooter = true;
             public bool showBoundCollectionSize = false;
 
-            // Callbacks must be static methods taking SerializedProperty arg
             // Callbacks must be in #if UNITY_EDITOR ... #endif region
-            public string addItemCallback = null;
+
+            public string afterAddItemCallback    = null;
+            // static void AfterAddItem(SerializedProperty list, int index);
+
+            public string beforeRemoveItemCallback = null;
+            // static void BeforeRemoveItem(SerializedProperty list, int index);
+
+            public string beforeMoveItemCallback   = null;
+            // static void BeforeMoveItem
+            //      (SerializedProperty list, int from, int to);
         }
 
         // Add to method to create button
@@ -63,21 +73,20 @@ namespace Jenga {
             public TypeSelectorAttribute(System.Type typeFamily)
                 => this.typeFamily = typeFamily;
         }
-        
-        // Begin row group starting from item
-        public class BeginRowGroupAttribute : FieldAttribute { }
 
-        // Places group in parent's header, or in header at path
-        public class PlaceInHeaderAttribute : FieldAttribute {
+        // Place in current property header property at path inside class
+        public class PlaceInHeaderAttribute : ClassAttribute {
             public string path = null; // path is relative to parent
             public int pos = 0; 
+
+            public PlaceInHeaderAttribute(string path, int pos) { 
+                this.path = path;
+                this.pos = pos;
+            }
         }
 
-        // End group on item
-        public class EndGroupAttribute : FieldAttribute { }
-
-        public class InlineAttribute : FieldAttribute { }
-
+        // Inline current class 
+        public class InlineAttribute : ClassAttribute { }
 
         // Make callback that triggered when field is changed
         // Method should be of signature:
@@ -85,15 +94,14 @@ namespace Jenga {
         public class OnChangeCallbackAttribute : FieldAttribute {
             public string methodName;
             public bool inClass;
-            public OnChangeCallbackAttribute(string name) {
-                methodName = name;
-            }
+            public OnChangeCallbackAttribute(string name) { methodName = name; }
         }
 
         // Make method that emits custom field
         // Method should be of signature:
         // static FieldAttribute[] EmitItem() { ... }
         public class EmitFieldAttribute : MethodAttribute { }
+
         public class DelayAttributeAttribute : FieldAttribute { 
             public string name;
             public bool inClass = false;
@@ -108,29 +116,42 @@ namespace Jenga {
         }
 
         // Add flexGrow to item
-        public class FlexGrowAttribute : FieldAttribute { 
-            public float value;
-            public FlexGrowAttribute(float value) => this.value = value; 
+        public class StyleAttribute : FieldAttribute { 
+            public float flexGrow   = float.NaN;
+            public float flexShrink = float.NaN;
+            public float minWidth   = float.NaN;
+            public float minHeight  = float.NaN;
+            public float maxWidth   = float.NaN;
+            public float maxHeight  = float.NaN;
+            public float width      = float.NaN;
+            public float height     = float.NaN;
         }
 
-        // Add flexShrink to item
-        public class FlexShrinkAttribute : FieldAttribute { 
-            public float value;
-            public FlexShrinkAttribute(float value) => this.value = value; 
+        // Makes dropdown with generic options
+        public class OptionsAttribute : FieldAttribute {
+            
+            // Must be static void function name taking
+            // SerializedProperty and OptionsAttribute.Map attributes
+            // This function should populate options (name, value) list 
+            public string provider = null;
+
+            public OptionsAttribute(string provider) 
+                => this.provider = provider; 
+
+            public class Map {
+                public List<(string, object)> options = new();
+                public List<string> updateWith = new();
+                public string error = null;
+
+                // Set error if you cant populate correctly
+                public void SetError(string error) => this.error = error; 
+                public void UpdateWith(string path) => updateWith.Add(path);
+                public void Add<T>(string name, T value) 
+                    => options.Add((name, value));
+            }
+
         }
 
-        // Add minWidth to item
-        public class MinWidthAttribute : FieldAttribute { 
-            public float value;
-            public MinWidthAttribute(float value) => this.value = value; 
-        }
-
-        // Add maxWidth to item
-        public class MaxWidthAttribute : FieldAttribute { 
-            public float value;
-            public MaxWidthAttribute(float value) => this.value = value; 
-        }
-
-
+        // State Manipulators
     }
 }
