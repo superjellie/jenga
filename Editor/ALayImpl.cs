@@ -274,7 +274,7 @@ namespace Jenga {
                 view.showFoldoutHeader = attr.showFoldoutHeader;
                 view.showAddRemoveFooter = attr.showAddRemoveFooter;
                 view.showBoundCollectionSize = attr.showBoundCollectionSize;
-
+                view.selectionType = SelectionType.Multiple;
                 view.itemIndexChanged += (i, j) => view.Rebuild();
                 view.itemsRemoved += (i) => view.Rebuild();
 
@@ -386,6 +386,167 @@ namespace Jenga {
 
                 layouter.Layout(ve, delayedCtx);
             }
+        }
+    }
+
+    [CustomLayouter(typeof(ALay.MatchReferencesAttribute))]
+    public class ALayMatchReferencesAttributeLayouter : ALayLayouter {
+
+        public static string ussFixTextMarginClass = "jenga-fix-text-margin";
+
+        public static Color[] colors = {
+            Color.white,
+            Color.red,
+            Color.green,
+            Color.blue,
+            Color.green,
+            Color.yellow,
+            Color.magenta,
+            Color.cyan
+        };
+
+        // public static Dictionary<(Object, long), HashSet<FieldContainer>>
+        //     visibleContainers = new();
+
+        ALay.MatchReferencesAttribute attr;
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            attr = ctx.GetAttribute<ALay.MatchReferencesAttribute>();
+
+            if (ctx.property == null) return;
+            var propValue = ctx.property.FindPropertyRelative
+                (attr.pathToSerializedReference);
+            if (propValue == null) return;
+            if (propValue.propertyType 
+                    != SerializedPropertyType.ManagedReference) return;
+            var propName = propValue.FindPropertyRelative(attr.pathToRefName);
+            if (propName == null) return;
+            var target = ctx.property.serializedObject.targetObject;
+
+            if (ve is FieldContainer container) {
+                // container.schedule.Execute(() => {
+                var myRoot = new VisualElement() { 
+                    style = { flexDirection = FlexDirection.Row } 
+                };
+
+                var nameTextField = new TextField() {
+                    maxLength = 31,
+                    style = { width = 50f },
+                    bindingPath = propName.propertyPath,
+                    value = $"{propValue.managedReferenceId.ToString("X")}"
+                };
+
+                nameTextField.EnableInClassList(ussFixTextMarginClass, true);
+                nameTextField.RegisterCallback<ChangeEvent<string>>(evt => {
+                    SetColor(myRoot, ColorFromString(evt.newValue));
+                });
+
+                var nameMenuButton = new Button() {
+                    style = { width = 20f }
+                };
+
+                nameMenuButton.clicked += () => {
+                    var menu = new GenericMenu();
+
+                    foreach (var id in GetNamedRefs(target)) {
+                        var value = ManagedReferenceUtility
+                            .GetManagedReference(target, id);
+                        var name = GetRefName(value);
+                        menu.AddItem(
+                            new GUIContent(name), false, 
+                            () => {
+                                propValue.managedReferenceId = id;
+                                propValue.serializedObject
+                                    .ApplyModifiedProperties();
+                                SetColor(myRoot, ColorFromString(name));
+                            }
+                        );
+                    }
+
+                    menu.AddSeparator("");
+                    menu.AddItem(
+                        new GUIContent("Remove"), false, 
+                        () => {
+                            propValue.managedReferenceValue = null;
+                            propValue.serializedObject
+                                .ApplyModifiedProperties();
+                            ctx.refreshCallback();
+                        }
+                    );
+
+                    menu.ShowAsContext();
+                };
+
+                myRoot.Add(nameTextField);
+                myRoot.Add(nameMenuButton);
+                
+                SetColor(myRoot, ColorFromString(propName.stringValue));
+
+
+                container.header.Add(myRoot);
+
+
+                // container.foldout.RegisterCallback<ChangeEvent<bool>>((evt) => {
+                //     var key = (target, propValue.managedReferenceId);
+                //     if (visibleContainers.ContainsKey(key))
+                //         container.foldout.value = true;
+                // });
+
+                // if (propValue.managedReferenceValue != null) {
+                //     var key = (target, propValue.managedReferenceId);
+                //     if (!visibleContainers.ContainsKey(key))
+                //         visibleContainers.Add(key, new());
+                //     visibleContainers[key].Add(container);
+                // }
+            }
+        }
+
+        public Color ColorFromString(string name) 
+            => string.IsNullOrEmpty(name) 
+                ? Color.clear
+                : colors[Mathx.Mod(name.GetHashCode(), colors.Length)];
+
+        public void SetColor(VisualElement myRoot, Color color) {
+            myRoot.style.borderBottomColor  = color;
+            myRoot.style.borderLeftColor    = color;
+            myRoot.style.borderRightColor   = color;
+            myRoot.style.borderTopColor     = color;
+
+            myRoot.style.borderBottomWidth  = 2f;
+            myRoot.style.borderLeftWidth    = 2f;
+            myRoot.style.borderRightWidth   = 2f;
+            myRoot.style.borderTopWidth     = 2f;
+
+            myRoot.style.borderBottomLeftRadius     = 2f;
+            myRoot.style.borderBottomRightRadius    = 2f;
+            myRoot.style.borderTopRightRadius       = 2f;
+            myRoot.style.borderTopLeftRadius        = 2f;
+        }
+
+        public List<long> GetNamedRefs(Object target) {
+            var list  = new List<long>();
+            var ids = ManagedReferenceUtility.GetManagedReferenceIds(target);
+
+            foreach (var id in ids) {
+                var value = ManagedReferenceUtility
+                    .GetManagedReference(target, id);
+                var name = GetRefName(value);
+
+                if (!string.IsNullOrEmpty(name))
+                    list.Add(id);
+            }
+
+            return list;
+        }
+
+        public string GetRefName(object value) {
+            if (value == null) return null;
+
+            var type = value.GetType();
+            var field = type.GetField(attr.pathToRefName);
+            // Debug.Log($"value: {value}, field: {type}");
+            var refName = field.GetValue(value);
+
+            return (string)refName;
         }
     }
 

@@ -87,6 +87,15 @@ namespace Jenga {
 
         // Inline current class 
         public class InlineAttribute : ClassAttribute { }
+        
+        // Places reference field into header and links together
+        // all objects with same non-empty refName
+        public class MatchReferencesAttribute : ClassAttribute { 
+            public string pathToSerializedReference = "serializedValue";
+
+            // uses string property to match references inside serialized ref
+            public string pathToRefName = "refName";   
+        }
 
         // Make callback that triggered when field is changed
         // Method should be of signature:

@@ -12,6 +12,9 @@ namespace Jenga {
     [System.Serializable, ALay.HideHeader]
     public class MonoGenerator<T> : ALay.ILayoutMe {
 
+        // Used to match together references
+        [HideInInspector] public string refName;
+        
         public virtual bool MoveNext(GameObject go) => false;
         public virtual T Current => default(T);
         public virtual void Reset() { }
@@ -28,6 +31,7 @@ namespace Jenga {
     // Does some serialization & ui magic
     [System.Serializable] 
     [ALay.DelayAttribute("GetSelectorAttribute", inClass = true)]
+    [ALay.MatchReferences]
     public class MonoGeneratorReference<T> : ALay.ILayoutMe {
 
 

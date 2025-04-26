@@ -7,6 +7,9 @@ namespace Jenga {
     // Check out WhenEnemy.cs for tutorial on writing custom conditions
     [System.Serializable, ALay.HideHeader]
     public class MonoCondition : ALay.ILayoutMe {
+        
+        // Used to match together references
+        [HideInInspector] public string refName;
 
         // GO is object witch initiated the Check
         // Ignore it if you want global condition
@@ -17,6 +20,7 @@ namespace Jenga {
     // (Hides [SerializeReference] and some ui drawing)
     [System.Serializable]
     [ALay.TypeSelector(typeof(MonoCondition), path = "serializedValue")]
+    [ALay.MatchReferences]
     public struct MonoConditionReference : ALay.ILayoutMe {
 
         [SerializeReference]

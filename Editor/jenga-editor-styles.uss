@@ -53,3 +53,7 @@
 /* Type Selector */
 .jenga-type-selector
     { width: 120px }
+
+/* */
+.jenga-fix-text-margin .unity-text-element 
+    { margin-left: 0px }
