@@ -402,8 +402,19 @@ namespace Jenga {
             Color.green,
             Color.yellow,
             Color.magenta,
-            Color.cyan
+            Color.cyan,
+            ColorFromHex("#FF5733"),
+            ColorFromHex("#bfc9ca"),
+            ColorFromHex("#bb8fce"),
+            ColorFromHex("#dc7633"),
         };
+
+
+        public static Color ColorFromHex(string hex) {
+            if (ColorUtility.TryParseHtmlString(hex, out var color))
+                return color;
+            return Color.black;
+        }
 
         // public static Dictionary<(Object, long), HashSet<FieldContainer>>
         //     visibleContainers = new();
