@@ -37,9 +37,10 @@ namespace Jenga {
     [InlinePropertyEditor]
     public class NotCondition : MonoCondition {
 
-        public MonoConditionReference condition = new ConstCondition();
+        [FormerlySerializedAs("condition")]
+        public MonoConditionReference item = new ConstCondition();
 
-        public override bool Check(GameObject go) => !condition.Check(go);
+        public override bool Check(GameObject go) => !item.Check(go);
     }
 
 

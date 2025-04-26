@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Jenga {
     // Serializable generic condition
@@ -16,16 +17,17 @@ namespace Jenga {
     // Use this class to use MonoCondition as field 
     // (Hides [SerializeReference] and some ui drawing)
     [System.Serializable]
-    [ALay.TypeSelector(typeof(MonoCondition), path = "serializedValue")]
+    [ALay.TypeSelector(typeof(MonoCondition), path = "value")]
     public struct MonoConditionReference : ALay.ILayoutMe {
 
         [SerializeReference]
-        public MonoCondition serializedValue;
+        [FormerlySerializedAs("serializedValue")]
+        public MonoCondition value;
 
-        public bool Check(GameObject go) => serializedValue?.Check(go) ?? false;
+        public bool Check(GameObject go) => value?.Check(go) ?? false;
 
         public static implicit operator
         MonoConditionReference(MonoCondition condition) 
-            => new MonoConditionReference() { serializedValue = condition };
+            => new MonoConditionReference() { value = condition };
     }
 }
