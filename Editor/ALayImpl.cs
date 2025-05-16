@@ -107,13 +107,14 @@ namespace Jenga {
 
         static Dictionary<System.Type, System.Type> layouters = new();
         static ALayLayouter() {
-            var assemblies = System.AppDomain.CurrentDomain.GetAssemblies();
-            foreach (var assembly in assemblies)
-                foreach (var type in assembly.GetTypes())
-                    foreach (var attr in 
-                        type.GetCustomAttributes
-                            (typeof(CustomLayouterAttribute), false)) 
-                        layouters[((CustomLayouterAttribute)attr).type] = type;
+            var types = TypeCache
+                .GetTypesWithAttribute(typeof(CustomLayouterAttribute));
+            foreach (var type in types) {
+                var attr = type
+                    .GetCustomAttribute(typeof(CustomLayouterAttribute))
+                    as CustomLayouterAttribute;
+                layouters[attr.type] = type;
+            }
         }
 
         public static void LayoutSelf(
@@ -270,6 +271,8 @@ namespace Jenga {
             var attr = ctx.GetAttribute<ALay.ListViewAttribute>();
             ve.schedule.Execute(() => {
                 var view = ve.Q<ListView>();
+                if (view == null) return;
+
                 view.reorderable = attr.reorderable;
                 view.showFoldoutHeader = attr.showFoldoutHeader;
                 view.showAddRemoveFooter = attr.showAddRemoveFooter;
@@ -288,11 +291,13 @@ namespace Jenga {
                         for (var it = propItem.Copy(); 
                             !SerializedProperty.EqualContents(it, end); 
                             it.Next(true)
-                        ) 
+                        )  {
+                            Debug.Log(it.propertyPath);
                             if (it.propertyType 
                                 == SerializedPropertyType.ManagedReference) 
                                 it.managedReferenceId 
                                     = ManagedReferenceUtility.RefIdNull;
+                        }
                         
                         // if (attr.addItemCallback != null) {
                         //     var callback = field.FieldType.GetMethod(

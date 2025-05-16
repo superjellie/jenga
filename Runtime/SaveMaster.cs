@@ -57,8 +57,12 @@ namespace Jenga {
                     loadedProfiles[profile] = new();
 
                 var profileData 
-                    = JsonConvert.SerializeObject(data, Formatting.Indented);
-
+                    = JsonConvert.SerializeObject(
+                        data, 
+                        Formatting.Indented, 
+                        new JsonSerializerSettings()
+                            { TypeNameHandling = TypeNameHandling.Objects }
+                    );
                 tasks.Add(File.WriteAllTextAsync(path, profileData));
             }
 
@@ -85,9 +89,13 @@ namespace Jenga {
                     File.ReadAllTextAsync(path)
                         .ContinueWith((task) => {
                             var json = task.Result;
-                            loadedProfiles[profile] 
-                                = JsonConvert.DeserializeObject
-                                        <Dictionary<string, object>>(json);
+                            loadedProfiles[profile] = JsonConvert
+                                .DeserializeObject
+                                        <Dictionary<string, object>>(
+                                    json, 
+                                    new JsonSerializerSettings()
+                                        { TypeNameHandling = TypeNameHandling.Objects }
+                                );
                         })
                 );
             }
