@@ -167,6 +167,8 @@ namespace Jenga {
 						// Debug.Log(a.ErrorContext.Error.Message); 
 						a.ErrorContext.Handled = true; 
 					}, 
+					PreserveReferencesHandling 
+						= PreserveReferencesHandling.Objects,
 					TypeNameHandling = TypeNameHandling.Objects,
 					ContractResolver = new ClipboardResolver() 
 				}
@@ -182,6 +184,8 @@ namespace Jenga {
 						// Debug.Log(a.ErrorContext.Error.Message); 
 						a.ErrorContext.Handled = true; 
 					}, 
+					PreserveReferencesHandling 
+						= PreserveReferencesHandling.Objects,
 					TypeNameHandling = TypeNameHandling.Objects,
 					ContractResolver = new ClipboardResolver()
 				}
