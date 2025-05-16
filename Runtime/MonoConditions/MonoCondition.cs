@@ -1,11 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+// #if USE_VISUAL_SCRIPTING
+// using Unity.VisualScripting;
+// #endif
 
 namespace Jenga {
     // Serializable generic condition
     // Check out WhenEnemy.cs for tutorial on writing custom conditions
     [System.Serializable, ALay.HideHeader]
+#if USE_VISUAL_SCRIPTING
+    [Inspectable]
+#endif
     public class MonoCondition : ALay.ILayoutMe {
         
         // Used to match together references
