@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Jenga {
     public class NothingGenerator<T> : MonoGenerator<T> { }
@@ -44,19 +45,21 @@ namespace Jenga {
 
     public class RepeatGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
         public int times = 5;
-        public MonoGeneratorReference<T> generator;
+
+        [FormerlySerializedAs("generator")]
+        public MonoGeneratorReference<T> item;
 
         [HideInInspector] public int index = 0;
 
         public override bool MoveNext(GameObject go) {
-            for (; index < times && !generator.MoveNext(go); ++index) 
-                generator.Reset();
+            for (; index < times && !item.MoveNext(go); ++index) 
+                item.Reset();
 
             return index < times;
         }
 
-        public override T Current => generator.Current;
-        public override void Reset() { index = 0; generator.Reset(); }
+        public override T Current => item.Current;
+        public override void Reset() { index = 0; item.Reset(); }
     }
 
 
@@ -131,36 +134,39 @@ namespace Jenga {
     public class GenerateWhileGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
         public MonoConditionReference condition = new ConstCondition();
 
-        // [ALay.HideLabel]
-        public MonoGeneratorReference<T> generator;
+        [FormerlySerializedAs("generator")]
+        public MonoGeneratorReference<T> item;
 
         public override bool MoveNext(GameObject go) {
             if (!condition.Check(go)) return false; 
-            return generator.MoveNext(go);
+            return item.MoveNext(go);
         }
 
-        public override T Current => generator.Current;
-        public override void Reset() => generator.Reset();
+        public override T Current => item.Current;
+        public override void Reset() => item.Reset();
     }
 
     public class GenerateUntilGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
         public MonoConditionReference condition = new ConstCondition();
-        public MonoGeneratorReference<T> generator;
+
+        [FormerlySerializedAs("generator")]
+        public MonoGeneratorReference<T> item;
 
         public override bool MoveNext(GameObject go) {
             if (condition.Check(go)) return false; 
-            return generator.MoveNext(go);
+            return item.MoveNext(go);
         }
 
-        public override T Current => generator.Current;
-        public override void Reset() => generator.Reset();
+        public override T Current => item.Current;
+        public override void Reset() => item.Reset();
     }
 
     public class OptionalGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
         [Tooltip("Checks condition once per generation")]
         [SerializeReference] public MonoCondition condition;
-        public MonoGeneratorReference<T> ifTrue;
-        public MonoGeneratorReference<T> ifFalse;
+
+        [FormerlySerializedAs("ifTrue")]
+        public MonoGeneratorReference<T> item;
 
         [HideInInspector] public int wasTrue = -1;
 
@@ -168,17 +174,15 @@ namespace Jenga {
             if (wasTrue == -1)
                 wasTrue = condition.Check(go) ? 1 : 0;
 
-            return wasTrue == 1 ? ifTrue.MoveNext(go) : ifFalse.MoveNext(go);
+            return wasTrue == 1 ? item.MoveNext(go) : false;
         }
 
         public override T Current => 
-            wasTrue == 1 ? ifTrue.Current : ifFalse.Current;
+            wasTrue == 1 ? item.Current : default(T);
 
         public override void Reset() { 
             if (wasTrue == 1)
-                ifTrue.Reset();
-            else if (wasTrue == 0)
-                ifFalse.Reset();
+                item.Reset();
             wasTrue = -1;
         }
     }

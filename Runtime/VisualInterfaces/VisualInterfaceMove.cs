@@ -15,12 +15,13 @@ namespace Jenga {
         public VisualTransitionData<CurveWithDuration> curves 
             = new() { fallback = new CurveWithDuration() };
 
-        void Awake() {
+        void OnEnable() {
             vi.onStateChange += OnStateChange;
+            OnStateChange(0, vi.state, true);
         }
 
-        void Start() {
-            OnStateChange(0, vi.state, true);
+        void OnDisable() {
+            vi.onStateChange -= OnStateChange;
         }
 
         Coroutine crtn = null;
@@ -38,6 +39,7 @@ namespace Jenga {
                     (t) => TransformSnapshot
                         .Lerp(start, end, t).SetTransform(transform)
                 );
+
         }
 
     #if UNITY_EDITOR

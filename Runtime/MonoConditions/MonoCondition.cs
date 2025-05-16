@@ -4,14 +4,15 @@ using UnityEngine;
 // #if USE_VISUAL_SCRIPTING
 // using Unity.VisualScripting;
 // #endif
+using UnityEngine.Serialization;
 
 namespace Jenga {
     // Serializable generic condition
     // Check out WhenEnemy.cs for tutorial on writing custom conditions
     [System.Serializable, ALay.HideHeader]
-#if USE_VISUAL_SCRIPTING
-    [Inspectable]
-#endif
+// #if USE_VISUAL_SCRIPTING
+//     [Inspectable]
+// #endif
     public class MonoCondition : ALay.ILayoutMe {
         
         // Used to match together references
@@ -30,6 +31,7 @@ namespace Jenga {
     public struct MonoConditionReference : ALay.ILayoutMe {
 
         [SerializeReference]
+        [FormerlySerializedAs("value")]
         public MonoCondition serializedValue;
 
         public bool Check(GameObject go) => serializedValue?.Check(go) ?? false;

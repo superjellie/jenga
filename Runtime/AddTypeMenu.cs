@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.CompilerServices;
 using System.IO;
-
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [System.AttributeUsage(System.AttributeTargets.Class)]
 public class AddTypeMenuAttribute : System.Attribute {
@@ -40,33 +42,37 @@ public class AddTypeMenuAttribute : System.Attribute {
     public static Dictionary<System.Type, List<Registration>> registries 
         = new();
 
+#if UNITY_EDITOR
     static AddTypeMenuAttribute() {
-        foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
-            foreach (var type in assembly.GetTypes()) {
-                var attrs = type.GetCustomAttributes(
-                    typeof(AddTypeMenuAttribute), false
-                );
-                foreach (var attr in attrs) {
-                    var atm = attr as AddTypeMenuAttribute;
+        var types = TypeCache
+            .GetTypesWithAttribute(typeof(AddTypeMenuAttribute));
+        foreach (var type in types) {
+            var attrs = type.GetCustomAttributes(
+                typeof(AddTypeMenuAttribute), false
+            );
 
-                    var reg = new Registration() {
-                        type = type, path = atm.path, order = atm.order,
-                        pathToSource = atm.pathToSource,
-                        sourceLineNumber = atm.sourceLineNumber
-                    };
+            foreach (var attr in attrs) {
+                var atm = attr as AddTypeMenuAttribute;
 
-                    if (registries.ContainsKey(atm.typeFamily))
-                        registries[atm.typeFamily].Add(reg);
-                    else
-                        registries.Add(
-                            atm.typeFamily, new List<Registration>() { reg }
-                        );
-                }
+                var reg = new Registration() {
+                    type = type, path = atm.path, order = atm.order,
+                    pathToSource = atm.pathToSource,
+                    sourceLineNumber = atm.sourceLineNumber
+                };
+
+                if (registries.ContainsKey(atm.typeFamily))
+                    registries[atm.typeFamily].Add(reg);
+                else
+                    registries.Add(
+                        atm.typeFamily, new List<Registration>() { reg }
+                    );
             }
+        }
 
         foreach (var (type, registry) in registries)
             registry.Sort((x, y) => x.order.CompareTo(y.order));
     }
+#endif
 
 }
 
