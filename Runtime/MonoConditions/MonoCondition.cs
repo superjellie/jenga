@@ -12,26 +12,24 @@ namespace Jenga {
         // Used to match together references
         [HideInInspector] public string refName;
 
-        // GO is object witch initiated the Check
-        // Ignore it if you want global condition
-        public virtual bool Check(GameObject go) => true;
+        public virtual bool Check() => true;
     }
 
     // Use this class to use MonoCondition as field 
     // (Hides [SerializeReference] and some ui drawing)
     [System.Serializable]
-    [ALay.TypeSelector(typeof(MonoCondition), path = "serializedValue")]
+    [ALay.TypeSelector(typeof(MonoCondition), path = "value")]
     [ALay.MatchReferences]
     public struct MonoConditionReference : ALay.ILayoutMe {
 
         [SerializeReference]
-        [FormerlySerializedAs("value")]
-        public MonoCondition serializedValue;
+        [FormerlySerializedAs("serializedValue")]
+        public MonoCondition value;
 
-        public bool Check(GameObject go) => serializedValue?.Check(go) ?? false;
+        public bool Check() => value?.Check() ?? false;
 
         public static implicit operator
         MonoConditionReference(MonoCondition condition) 
-            => new MonoConditionReference() { serializedValue = condition };
+            => new MonoConditionReference() { value = condition };
     }
 }

@@ -72,6 +72,7 @@ namespace Jenga {
             EnableInClassList(ussClassName, true);
             Add(foldout);
             styleSheets.Add(SerializedPropertyUtility.jengaStyle);
+
             
             foldout.RegisterCallback<ChangeEvent<bool>>((evt) => {
                 if ((hideToggle || inline || hideHeader) && !evt.newValue)
@@ -101,6 +102,9 @@ namespace Jenga {
                     break;
                 }
             }
+            
+            if (content.childCount == 0)
+                hideToggle = true;
 
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
             // labelElement = header.Q<Label>(className: "unity-foldout__text");

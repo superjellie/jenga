@@ -45,7 +45,7 @@ namespace Jenga {
 
         void UpdateState() {
             foreach (var desc in stateDescriptions) {
-                if (desc.condition.Check(gameObject)) { 
+                if (desc.condition.Check()) { 
                     SetState(desc.id, false);
                     return;
                 }

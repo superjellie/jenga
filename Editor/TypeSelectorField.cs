@@ -23,6 +23,8 @@ namespace Jenga {
 		public OnSelectDelegate onSelect = (t) => { };
 		public SerializedProperty property;
 
+
+
 		public TypeSelectorField() {
 
 			EnableInClassList(ussClassName, true);
@@ -33,10 +35,15 @@ namespace Jenga {
 
 		}
 
+		PopupField<AddTypeMenuAttribute.Registration> field;
 		void OnAttachToPanel(AttachToPanelEvent evt) {
+
 			var registry = AddTypeMenuAttribute.registries[typeFamily];
 
-			var field = new PopupField<AddTypeMenuAttribute.Registration>() {
+			if (field != null)
+				field.RemoveFromHierarchy();
+				
+			field = new PopupField<AddTypeMenuAttribute.Registration>() {
 				choices = registry,
 				formatListItemCallback = (reg) => reg.path,
 				formatSelectedValueCallback 
@@ -116,6 +123,36 @@ namespace Jenga {
 		            );
 	            }
 
+	            foreach (var reg in registry) {
+	            	var itemsField = reg.type.GetField("items");
+	            	var itemsType = itemsField?.FieldType.GetElementType();
+	            	var valueField = itemsType?.GetField("value");
+	            	if (itemsField == null || valueField == null) continue;
+
+		            evt.menu.AppendAction(
+		            	$"Wrap With/{reg.path}", 
+		            	(x) => {
+		            		var newValue = System.Activator
+		            			.CreateInstance(reg.type);
+		            		var newValueRef = System.Activator
+		            			.CreateInstance(itemsType);
+		            		var newItemsArray = System.Array
+		            			.CreateInstance(itemsType, 1);
+		            			
+		            		var oldValue = property.managedReferenceValue;
+
+		            		valueField.SetValue(newValueRef, oldValue);
+		            		newItemsArray.SetValue(newValueRef, 0);
+		            		itemsField.SetValue(newValue, newItemsArray);
+
+			            	property.managedReferenceValue = newValue;
+			           		property.serializedObject.ApplyModifiedProperties();
+			           		property.serializedObject.Update();
+							onSelect(newValue.GetType());
+		            	}
+		            );
+	            }
+
 	            if (currentType != null) {
 	            	var myItemField = currentType.GetField("item");
 	            	var myValueField = myItemField?.FieldType.GetField("value");
@@ -135,6 +172,43 @@ namespace Jenga {
 			            	}
 			            );
 	            }
+
+	            if (currentType != null) {
+	            	var myItemsField = currentType.GetField("items");
+	            	var myItemsType = myItemsField?.FieldType.GetElementType();
+	            	var myValueField = myItemsType?.GetField("value");
+
+	            	if (myItemsField != null && myValueField != null) 
+			            evt.menu.AppendAction(
+			            	$"Replace With Element 0", 
+			            	(x) => {
+			            		var value = property.managedReferenceValue;
+			            		var valueRefs = myItemsField.GetValue(value);
+			            		var valueRef = (valueRefs as System.Array)
+			            			?.GetValue(0);
+
+			            		if (valueRef == null) return;
+
+			            		var child = myValueField.GetValue(valueRef);
+
+				            	property.managedReferenceValue = child;
+				           		property.serializedObject.ApplyModifiedProperties();
+				           		property.serializedObject.Update();
+								onSelect(child?.GetType());
+			            	}
+			            );
+	            }
+
+	            evt.menu.AppendAction(
+	            	$"Open in separate window", 
+	            	(x) => {
+	            		var win = PropertyWindow.GetWindowFor(property);
+	            		win.Focus();
+	            	},
+	            	(x) => PropertyWindow.HasWindowFor(property)
+	            		? DropdownMenuAction.Status.Checked
+	            		: DropdownMenuAction.Status.Normal
+	            );
 
 
 	        }));

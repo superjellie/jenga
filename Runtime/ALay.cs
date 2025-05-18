@@ -91,7 +91,7 @@ namespace Jenga {
         // Places reference field into header and links together
         // all objects with same non-empty refName
         public class MatchReferencesAttribute : ClassAttribute { 
-            public string pathToSerializedReference = "serializedValue";
+            public string pathToSerializedReference = "value";
 
             // uses string property to match references inside serialized ref
             public string pathToRefName = "refName";   
@@ -126,14 +126,21 @@ namespace Jenga {
 
         // Add flexGrow to item
         public class StyleAttribute : FieldAttribute { 
-            public float flexGrow   = float.NaN;
-            public float flexShrink = float.NaN;
-            public float minWidth   = float.NaN;
-            public float minHeight  = float.NaN;
-            public float maxWidth   = float.NaN;
-            public float maxHeight  = float.NaN;
-            public float width      = float.NaN;
-            public float height     = float.NaN;
+            public float flexGrow       = float.NaN;
+            public float flexShrink     = float.NaN;
+            public float minWidth       = float.NaN;
+            public float minHeight      = float.NaN;
+            public float maxWidth       = float.NaN;
+            public float maxHeight      = float.NaN;
+            public float width          = float.NaN;
+            public float height         = float.NaN;
+            public float marginLeft     = float.NaN;
+            public float marginRight    = float.NaN;
+            public float marginTop      = float.NaN;
+            public float marginBottom   = float.NaN;
+
+            public bool applyToContent  = false;
+            public bool hideCheckmark   = false;
         }
 
         // Makes dropdown with generic options
@@ -160,6 +167,12 @@ namespace Jenga {
             }
 
         }
+
+        // Adds toggable preview functionality for property
+        // You should add [ScenePreviewRoot] to root field
+        public class ScenePreviewAttribute : ClassAttribute { }
+
+        public class ScenePreviewRootAttribute : FieldAttribute { }
 
         // State Manipulators
     }

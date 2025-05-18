@@ -209,15 +209,28 @@ namespace Jenga {
 
         public override void Layout(VisualElement ve, ALayContext ctx) {
             var attr = ctx.GetAttribute<ALay.StyleAttribute>();
+            var v 
+                = attr.applyToContent && ve is FieldContainer fc 
+                    ? fc.content
+                    : ve;
+                    
+            if (attr.hideCheckmark && ve is FieldContainer fc1)
+                fc1.hideToggle = true;
 
-            if (!float.IsNaN(attr.flexGrow))   ve.style.flexGrow   = attr.flexGrow;
-            if (!float.IsNaN(attr.flexShrink)) ve.style.flexShrink = attr.flexShrink;
-            if (!float.IsNaN(attr.minWidth))   ve.style.minWidth   = attr.minWidth;
-            if (!float.IsNaN(attr.minHeight))  ve.style.minHeight  = attr.minHeight;
-            if (!float.IsNaN(attr.maxWidth))   ve.style.maxWidth   = attr.maxWidth;
-            if (!float.IsNaN(attr.maxHeight))  ve.style.maxHeight  = attr.maxHeight;
-            if (!float.IsNaN(attr.width))      ve.style.width      = attr.width;
-            if (!float.IsNaN(attr.height))     ve.style.height     = attr.height;
+            if (!float.IsNaN(attr.flexGrow))   v.style.flexGrow   = attr.flexGrow;
+            if (!float.IsNaN(attr.flexShrink)) v.style.flexShrink = attr.flexShrink;
+            if (!float.IsNaN(attr.minWidth))   v.style.minWidth   = attr.minWidth;
+            if (!float.IsNaN(attr.minHeight))  v.style.minHeight  = attr.minHeight;
+            if (!float.IsNaN(attr.maxWidth))   v.style.maxWidth   = attr.maxWidth;
+            if (!float.IsNaN(attr.maxHeight))  v.style.maxHeight  = attr.maxHeight;
+            if (!float.IsNaN(attr.width))      v.style.width      = attr.width;
+            if (!float.IsNaN(attr.height))     v.style.height     = attr.height;
+
+            if (!float.IsNaN(attr.marginLeft))      v.style.marginLeft     = attr.marginLeft;
+            if (!float.IsNaN(attr.marginRight))     v.style.marginRight    = attr.marginRight;
+            if (!float.IsNaN(attr.marginTop))       v.style.marginTop      = attr.marginTop;
+            if (!float.IsNaN(attr.marginBottom))    v.style.marginBottom   = attr.marginBottom;
+            // Debug.Log($"{ctx.path}, {v.style.marginLeft}");
         }
     }
 
@@ -238,27 +251,47 @@ namespace Jenga {
     [CustomLayouter(typeof(ALay.TypeSelectorAttribute))]
     public class ALayTypeSelectorLayouter : ALayLayouter {
 
+        public const string ussInWindowClass = "jenga-in-window";
+
         public override void Layout(VisualElement ve, ALayContext ctx) {
             var attr = ctx.GetAttribute<ALay.TypeSelectorAttribute>();
             var prop = attr.path != null 
                 ? ctx.property.FindPropertyRelative(attr.path)
                 : ctx.property;
             if (ve is FieldContainer container && prop != null) {
-                container.schedule.Execute(() => {
-                    if (container.header.Query<TypeSelectorField>()
-                        .Where(x => x.parent == container.header).First()
-                        != null) return;
+                // container.schedule.Execute(() => {
+                //     if (container.header.Query<TypeSelectorField>()
+                //         .Where(x => x.parent == container.header).First()
+                //         != null) return;
                     
-                    container.header.Add(new TypeSelectorField() {
-                        typeFamily = attr.typeFamily,
-                        currentType = SerializedPropertyUtility
-                            .GetManagedType(prop),
-                        property = prop,
-                        onSelect = (t) => {
-                            ctx.refreshCallback();
-                        }
-                    });
-                }).StartingIn(100);
+                //     container.header.Add(new TypeSelectorField() {
+                //         typeFamily = attr.typeFamily,
+                //         currentType = SerializedPropertyUtility
+                //             .GetManagedType(prop),
+                //         property = prop,
+                //         onSelect = (t) => {
+                //             ctx.refreshCallback();
+                //         }
+                //     });
+                // }).StartingIn(100);
+                container.header.Add(new TypeSelectorField() {
+                    typeFamily = attr.typeFamily,
+                    currentType = SerializedPropertyUtility
+                        .GetManagedType(prop),
+                    property = prop,
+                    onSelect = (t) => {
+                        ctx.refreshCallback();
+                    }
+                });
+
+
+                container.schedule.Execute(() => {
+                    if (PropertyWindow.HasWindowFor(prop)) {
+                        container.foldout.value = false;
+                        container.EnableInClassList(ussInWindowClass, true);
+                    } else 
+                        container.EnableInClassList(ussInWindowClass, false);
+                }).Every(300).StartingIn(100);
             }
         }
     }
@@ -270,6 +303,7 @@ namespace Jenga {
             var attr = ctx.GetAttribute<ALay.ListViewAttribute>();
             ve.schedule.Execute(() => {
                 var view = ve.Q<ListView>();
+                if (view == null) return;
                 view.reorderable = attr.reorderable;
                 view.showFoldoutHeader = attr.showFoldoutHeader;
                 view.showAddRemoveFooter = attr.showAddRemoveFooter;
@@ -394,27 +428,7 @@ namespace Jenga {
 
         public static string ussFixTextMarginClass = "jenga-fix-text-margin";
 
-        public static Color[] colors = {
-            Color.white,
-            Color.red,
-            Color.green,
-            Color.blue,
-            Color.green,
-            Color.yellow,
-            Color.magenta,
-            Color.cyan,
-            ColorFromHex("#FF5733"),
-            ColorFromHex("#bfc9ca"),
-            ColorFromHex("#bb8fce"),
-            ColorFromHex("#dc7633"),
-        };
 
-
-        public static Color ColorFromHex(string hex) {
-            if (ColorUtility.TryParseHtmlString(hex, out var color))
-                return color;
-            return Color.black;
-        }
 
         // public static Dictionary<(Object, long), HashSet<FieldContainer>>
         //     visibleContainers = new();
@@ -433,6 +447,13 @@ namespace Jenga {
             if (propName == null) return;
             var target = ctx.property.serializedObject.targetObject;
 
+            var fieldType = SerializedPropertyUtility
+                .GetFieldType(ctx.fieldInfo)
+                ?.GetField(attr.pathToSerializedReference)
+                ?.FieldType;
+
+            if (fieldType == null) return;
+
             if (ve is FieldContainer container) {
                 // container.schedule.Execute(() => {
                 var myRoot = new VisualElement() { 
@@ -447,9 +468,9 @@ namespace Jenga {
                 };
 
                 nameTextField.EnableInClassList(ussFixTextMarginClass, true);
-                nameTextField.RegisterCallback<ChangeEvent<string>>(evt => {
-                    SetColor(myRoot, ColorFromString(evt.newValue));
-                });
+                // nameTextField.RegisterCallback<ChangeEvent<string>>(evt => {
+                //     SetColor(myRoot, ColorFromString(evt.newValue));
+                // });
 
                 var nameMenuButton = new Button() {
                     style = { width = 20f }
@@ -461,19 +482,41 @@ namespace Jenga {
                     foreach (var id in GetNamedRefs(target)) {
                         var value = ManagedReferenceUtility
                             .GetManagedReference(target, id);
-                        var name = GetRefName(value);
+                        var name = $"{GetRefName(value)}#{id.ToString("X")}";
+
+                        if (!fieldType.IsAssignableFrom(value.GetType()))
+                            continue;
+
                         menu.AddItem(
-                            new GUIContent(name), false, 
+                            new GUIContent(name), 
+                            id == propValue.managedReferenceId, 
                             () => {
                                 propValue.managedReferenceId = id;
                                 propValue.serializedObject
                                     .ApplyModifiedProperties();
-                                SetColor(myRoot, ColorFromString(name));
+                
+                                SetColor(
+                                    myRoot, 
+                                    SerializedPropertyUtility
+                                        .ColorFromId(id)
+                                );
+
+                                ctx.refreshCallback(); 
                             }
                         );
                     }
 
                     menu.AddSeparator("");
+                    menu.AddItem(
+                        new GUIContent("Remove"), false, 
+                        () => {
+                            propValue.managedReferenceValue = null;
+                            propValue.serializedObject
+                                .ApplyModifiedProperties();
+                            ctx.refreshCallback();
+                        }
+                    );
+
                     menu.AddItem(
                         new GUIContent("Remove"), false, 
                         () => {
@@ -490,7 +533,11 @@ namespace Jenga {
                 myRoot.Add(nameTextField);
                 myRoot.Add(nameMenuButton);
                 
-                SetColor(myRoot, ColorFromString(propName.stringValue));
+                SetColor(
+                    myRoot, 
+                    SerializedPropertyUtility
+                        .ColorFromId(propValue.managedReferenceId)
+                );
 
 
                 container.header.Add(myRoot);
@@ -511,10 +558,10 @@ namespace Jenga {
             }
         }
 
-        public Color ColorFromString(string name) 
-            => string.IsNullOrEmpty(name) 
-                ? Color.clear
-                : colors[Mathx.Mod(name.GetHashCode(), colors.Length)];
+        // public Color ColorFromString(string name) 
+        //     => string.IsNullOrEmpty(name) 
+        //         ? Color.clear
+        //         : colors[Mathx.Mod(name.GetHashCode(), colors.Length)];
 
         public void SetColor(VisualElement myRoot, Color color) {
             myRoot.style.borderBottomColor  = color;
@@ -559,6 +606,61 @@ namespace Jenga {
 
             return (string)refName;
         }
+    }
+
+    [CustomLayouter(typeof(ALay.ScenePreviewAttribute))]
+    public class ALayScenePreviewLayouter : ALayLayouter {
+
+        public static string ussEyeToggleClass = "jenga-eye-toggle";
+        public static string ussScenePreviewClass = "jenga-scene-preview";
+
+        ALay.ScenePreviewAttribute attr;
+
+        public struct PropertyDescriptor {
+            public Object target;
+            public string path;
+
+            public PropertyDescriptor(SerializedProperty prop) {
+                target = prop.serializedObject.targetObject;
+                path = prop.propertyPath;
+            }
+        }
+
+        static HashSet<PropertyDescriptor> previews = new();
+
+        public static bool HasPreview(SerializedProperty self) 
+            => previews.Contains(new(self));
+
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            attr = ctx.GetAttribute<ALay.ScenePreviewAttribute>();
+
+            if (ve is FieldContainer fc) {
+                var previewToggle = new Toggle() { 
+                    name = $"PreviewToggle:{ctx.path}", 
+                    value = false 
+                };
+
+                previewToggle.EnableInClassList(ussEyeToggleClass, true);
+                previewToggle.EnableInClassList(ussScenePreviewClass, true);
+
+                previewToggle.RegisterCallback<ChangeEvent<bool>>((evt) => {
+                    if (evt.newValue)
+                        previews.Add(new(ctx.property));
+                    else
+                        previews.Remove(new(ctx.property));
+
+                    var toggles = fc.content
+                        .Query<Toggle>(className: ussScenePreviewClass)
+                        .ToList();
+                    // Debug.Log(toggles.Count);
+                    foreach (var toggle in toggles)
+                        toggle.value = evt.newValue;
+                });
+
+                fc.header.Add(previewToggle);
+            }
+        }
+
     }
 
 }
