@@ -46,12 +46,12 @@ namespace Jenga {
             => new ALay.TypeSelectorAttribute(typeof(MonoGenerator<T>))
                 { path = "value" };
 
-        public bool MoveNext(GameObject go) => generator.MoveNext(go);
-        public T Current => generator.Current;
-        public void Reset() => generator.Reset();
+        public bool MoveNext(GameObject go) => generator?.MoveNext(go) ?? false;
+        public T Current => generator != null ? generator.Current : default(T);
+        public void Reset() => generator?.Reset();
 
         public IEnumerable<T> GenerateWith(GameObject go) 
-            => generator.GenerateWith(go);
+            => generator?.GenerateWith(go) ?? new T[0];
 
         public static implicit operator 
         MonoGeneratorReference<T>(MonoGenerator<T> generator) 
