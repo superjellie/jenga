@@ -85,7 +85,8 @@ namespace Jenga {
                 foreach (var ptr in matchedPointers) {
                     if (ptr < 0) continue;
                     var valueIndex = pointers[ptr].indicesInSorted[id];
-                    result[i]      = myColumn[valueIndex].data;
+                    result[i] = valueIndex >= 0 && valueIndex < myColumn.Length
+                        ? myColumn[valueIndex].data : "";
 
                     if (!string.IsNullOrEmpty(result[i])) break;
                 }

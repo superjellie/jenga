@@ -41,6 +41,32 @@ namespace Jenga {
             holder.StartCoroutine(Play());
             return go;
         }
+
+        public GameObject PlayAttached(Transform transform) {
+            
+            var go = new GameObject(
+                "AnimEvaluator", 
+                typeof(SpriteRenderer),
+                typeof(CoroutineHolderBehaviour)
+            );
+
+            go.transform.SetParent(transform, false);
+
+            var renderer = go.GetComponent<SpriteRenderer>();
+            var holder = go.GetComponent<CoroutineHolderBehaviour>();
+
+            IEnumerator Play() {
+                foreach (var sprite in sprites) { 
+                    renderer.sprite = sprite; 
+                    yield return new WaitForSeconds(1f / fps);
+                }
+
+                GameObject.Destroy(go);
+            }
+
+            holder.StartCoroutine(Play());
+            return go;
+        }
     }
 
 }
