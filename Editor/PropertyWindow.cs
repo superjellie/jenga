@@ -34,7 +34,9 @@ namespace Jenga {
         } 
 
         public static bool HasWindowFor(SerializedProperty prop) {
+            if (prop == null) return false;
             var target = prop.serializedObject.targetObject;
+            if (target == null) return false;
             var path = prop.propertyPath;
             foreach (var win in windows)
                 if (win.target == target && win.path == path)

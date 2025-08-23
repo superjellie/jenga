@@ -30,6 +30,9 @@ namespace Jenga {
         }
 
         public int GetInt() => (int)GetUint();
+        
+        public int GetIntInRange(int minInclusive, int maxExclusive) 
+            => minInclusive + Mathx.Mod(GetInt(), maxExclusive - minInclusive);
     }
 
 

@@ -29,6 +29,7 @@ namespace Jenga {
             root.Clear();
 
             var main = new FieldContainer() { label = preferredLabel };
+            main.foldout.viewDataKey = $"{property.propertyPath}+FieldContainer";
 
             var flags 
                 = BindingFlags.Public | BindingFlags.NonPublic
@@ -43,6 +44,8 @@ namespace Jenga {
             foreach (var member in myType.GetMembers(flags)) {
 
                 if (member.GetCustomAttributes(typeof(HideInInspector), false)
+                        .Length > 0) continue;
+                if (member.GetCustomAttributes(typeof(ALay.SkipAttribute), false)
                         .Length > 0) continue;
                 var ve = ALayLayouter.LayoutMember(
                     member, property, () => Rebuild(root, property)
@@ -78,11 +81,12 @@ namespace Jenga {
         public System.Action refreshCallback;
 
         public SerializedProperty property;
+        public SerializedProperty parentProperty;
 
         public ALayContext(
             MemberInfo memberInfo, string path,
             object attribute, SerializedObject so,
-            System.Action refreshCallback
+            System.Action refreshCallback, string parentPath
         ) {
             this.memberInfo = memberInfo;
             this.path = path;
@@ -90,6 +94,7 @@ namespace Jenga {
             this.serializedObject = so;
             this.name = memberInfo.Name;
             this.refreshCallback = refreshCallback;
+            this.parentProperty = so.FindProperty(parentPath);
 
             if (memberInfo is FieldInfo fieldInfo) 
                 property = so.FindProperty(path);
@@ -128,6 +133,7 @@ namespace Jenga {
                     ? (SerializedPropertyUtility.GetManagedType(property)
                         ?? fieldInfo.FieldType)
                     : SerializedPropertyUtility.GetFieldType(fieldInfo); 
+            ve.viewDataKey = property.propertyPath;
 
             foreach (var attr in myType.GetCustomAttributes(true)) {
                 var layouter = ALayLayouter.Get(attr.GetType());
@@ -135,7 +141,8 @@ namespace Jenga {
 
                 var ctx = new ALayContext(
                     fieldInfo, property.propertyPath, attr,
-                    property.serializedObject, refreshCallback
+                    property.serializedObject, refreshCallback,
+                    property.propertyPath
                 );
 
                 layouter.Layout(ve, ctx);
@@ -165,13 +172,16 @@ namespace Jenga {
 
             // Debug.Log(attrs.Length);
 
+            ve.viewDataKey = memberPath;
+
             foreach (var attr in attrs) {
                 var layouter = ALayLayouter.Get(attr.GetType());
                 if (layouter == null) continue;
 
                 var ctx = new ALayContext(
                     member, memberPath, attr,
-                    property.serializedObject, refreshCallback
+                    property.serializedObject, refreshCallback,
+                    property.propertyPath
                 );
 
                 layouter.Layout(ve, ctx);
@@ -238,16 +248,17 @@ namespace Jenga {
     [CustomLayouter(typeof(ALay.HideHeaderAttribute))]
     public class ALayHideHeaderLayouter : ALayLayouter { 
         public override void Layout(VisualElement ve, ALayContext ctx) { 
-            ve.schedule.Execute(() => {
-                var container = ve.Q<FieldContainer>();
-                if (container == null) return;
+            ve.EnableInClassList(FieldContainer.ussNoHeaderClassName, true);
+            ve.EnableInClassList(FieldContainer.ussNoMarginClassName, true);
+            // ve.schedule.Execute(() => {
+            //     var container = ve.Q<FieldContainer>();
+            //     if (container == null) return;
 
-                container.hideHeader = true;
-                container.removeContentMargins = true;
-            }).StartingIn(100);
+            //     container.hideHeader = true;
+            //     container.removeContentMargins = true;
+            // }).StartingIn(100);
         }
     }
-
 
     [CustomLayouter(typeof(ALay.TypeSelectorAttribute))]
     public class ALayTypeSelectorLayouter : ALayLayouter {
@@ -302,16 +313,20 @@ namespace Jenga {
 
         public override void Layout(VisualElement ve, ALayContext ctx) {
             var attr = ctx.GetAttribute<ALay.ListViewAttribute>();
+
+
             ve.schedule.Execute(() => {
+
                 var view = ve.Q<ListView>();
                 if (view == null) return;
+                view.viewDataKey = $"{ctx.path}+ListView";
                 view.reorderable = attr.reorderable;
                 view.showFoldoutHeader = attr.showFoldoutHeader;
                 view.showAddRemoveFooter = attr.showAddRemoveFooter;
                 view.showBoundCollectionSize = attr.showBoundCollectionSize;
                 view.selectionType = SelectionType.Multiple;
-                view.itemIndexChanged += (i, j) => view.Rebuild();
-                view.itemsRemoved += (i) => view.Rebuild();
+                // view.itemIndexChanged += (i, j) => view.Rebuild();
+                // view.itemsRemoved += (i) => view.Rebuild();
 
                 view.itemsAdded += (indices) => {
 
@@ -345,7 +360,7 @@ namespace Jenga {
 
                     ctx.serializedObject.ApplyModifiedProperties();
                     
-                    view.Rebuild();
+                    // view.Rebuild();
                     view.Unbind();
                     view.Bind(ctx.serializedObject);
 
@@ -418,11 +433,58 @@ namespace Jenga {
 
                 var delayedCtx = new ALayContext(
                     ctx.memberInfo, ctx.path, delayedAttr,
-                    ctx.serializedObject, ctx.refreshCallback
+                    ctx.serializedObject, ctx.refreshCallback,
+                    ctx.parentProperty.propertyPath
                 );
 
                 layouter.Layout(ve, delayedCtx);
             }
+        }
+    }
+
+    [CustomLayouter(typeof(ALay.UsageToggleAttribute))]
+    public class ALayUsageToggleAttributeLayouter : ALayLayouter {
+
+        // public static string ussUsageToggle = "jenga-usage-toggle";
+
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            ve.schedule.Execute(() => AfterLayout(ve, ctx)).StartingIn(100);
+        }
+
+        public void AfterLayout(VisualElement ve, ALayContext ctx) {
+            var attr = ctx.GetAttribute<ALay.UsageToggleAttribute>();
+            if (ve.parent == null) return;
+
+            var parent = ve.parent;
+            var index = parent.IndexOf(ve);
+            parent.RemoveAt(index);
+
+            var usageToggleRoot = new VisualElement() {
+                style = { flexDirection = FlexDirection.Row }
+            };
+            // usageToggleRoot.EnableInClassList(ussUsageToggle, true);
+
+            var path = ctx.parentProperty != null 
+                ? $"{ctx.parentProperty.propertyPath}.{attr.path}"
+                : $"{attr.path}";
+
+            var usageToggle = new Toggle() { 
+                bindingPath = path, label = "",
+                style = { marginRight = 5f }
+            };
+
+            usageToggleRoot.Add(usageToggle);
+            usageToggleRoot.Add(ve);
+
+            usageToggle.RegisterCallback<ChangeEvent<bool>>
+                ((evt) => ve.SetEnabled(evt.newValue));
+
+            ve.SetEnabled(usageToggle.value); 
+            ve.style.flexGrow = 1f;
+
+            usageToggle.BindProperty(ctx.serializedObject);
+
+            parent.Insert(index, usageToggleRoot);
         }
     }
 
@@ -604,7 +666,8 @@ namespace Jenga {
 
             var type = value.GetType();
             var field = type.GetField(attr.pathToRefName);
-            // Debug.Log($"value: {value}, field: {type}");
+            // Debug.Log($"value: {value}, field: {field}");
+            if (field == null) return null;
             var refName = field.GetValue(value);
 
             return (string)refName;
@@ -624,12 +687,13 @@ namespace Jenga {
             public string path;
 
             public PropertyDescriptor(SerializedProperty prop) {
-                target = prop.serializedObject.targetObject;
-                path = prop.propertyPath;
+                target = prop?.serializedObject.targetObject;
+                path = prop?.propertyPath;
             }
         }
 
         static HashSet<PropertyDescriptor> previews = new();
+        public static event System.Action<SerializedProperty> onEnablePreview;
 
         public static bool HasPreview(SerializedProperty self) 
             => previews.Contains(new(self));
@@ -647,9 +711,10 @@ namespace Jenga {
                 previewToggle.EnableInClassList(ussScenePreviewClass, true);
 
                 previewToggle.RegisterCallback<ChangeEvent<bool>>((evt) => {
-                    if (evt.newValue)
+                    if (evt.newValue) {
                         previews.Add(new(ctx.property));
-                    else
+                        onEnablePreview?.Invoke(ctx.property);
+                    } else
                         previews.Remove(new(ctx.property));
 
                     var toggles = fc.content
@@ -662,6 +727,59 @@ namespace Jenga {
 
                 fc.header.Add(previewToggle);
             }
+        }
+
+    }
+
+    [CustomLayouter(typeof(ALay.CallDuringSceneGUIAttribute))]
+    public class ALayCallDuringSceneGUILayouter : ALayLayouter {
+
+        SerializedProperty property;
+        MethodInfo methodInfo;
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            
+            property = ctx.parentProperty;
+            methodInfo = ctx.memberInfo as MethodInfo;
+
+            ve.RegisterCallback<AttachToPanelEvent>(
+                (evt) => SceneView.duringSceneGui += OnSceneGUI
+            );
+            ve.RegisterCallback<DetachFromPanelEvent>(
+                (evt) => SceneView.duringSceneGui -= OnSceneGUI            
+            );
+        }
+
+        void OnSceneGUI(SceneView sv) {
+            methodInfo?.Invoke(null, new object[] { property });
+        }
+
+    }
+
+    [CustomLayouter(typeof(ALay.CallOnEnablePreviewAttribute))]
+    public class ALayCallOnEnablePreviewLayouter : ALayLayouter {
+
+        SerializedProperty property;
+        MethodInfo methodInfo;
+        public override void Layout(VisualElement ve, ALayContext ctx) {
+            
+            property = ctx.parentProperty;
+            methodInfo = ctx.memberInfo as MethodInfo;
+
+            ve.RegisterCallback<AttachToPanelEvent>(
+                (evt) => ALayScenePreviewLayouter.onEnablePreview 
+                    += OnPreviewEnable
+            );
+            ve.RegisterCallback<DetachFromPanelEvent>(
+                (evt) => ALayScenePreviewLayouter.onEnablePreview  
+                    -= OnPreviewEnable
+            );
+        }
+
+        void OnPreviewEnable(SerializedProperty enabledProperty) {
+            if (enabledProperty.propertyPath == property.propertyPath
+                && enabledProperty.serializedObject.targetObject
+                    == property.serializedObject.targetObject)
+                methodInfo?.Invoke(null, new object[] { property });
         }
 
     }

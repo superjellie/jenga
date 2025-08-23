@@ -24,6 +24,7 @@ namespace Jenga {
         public char   escape       = '\\';
         public char   separator    = ',';
         public char   quote        = '"';
+        [HideInInspector] public char newLine = '\n';
 
         [Tooltip("Should unqouted text without separators be skipped")]
         public bool   skipUnquoted = false;
@@ -46,18 +47,19 @@ namespace Jenga {
             ctx.AddObjectToAsset("asset", asset);
             ctx.SetMainObject(asset);
 
-            var lines = File.ReadAllLines(ctx.assetPath);
+            var data = File.ReadAllText(ctx.assetPath);
             var buildCtx = new WWDatabaseAsset.BuildContext() 
                 { columnPrefix = columnPrefix, columnEnd = columnEnd };
 
-            foreach (var line in lines) 
-                buildCtx.AddLine(ReadCSVLine(line));
+            var index = 0;
+            while (index < data.Length) 
+                buildCtx.AddLine(ReadCSVLine(data, ref index));
 
             asset.Build(buildCtx);
             EditorUtility.SetDirty(this);
         }
 
-        List<string> ReadCSVLine(string line) {
+        List<string> ReadCSVLine(string line, ref int i) {
 
             List<string> values = new();
             values.Add(""); // Add one word by default
@@ -68,7 +70,7 @@ namespace Jenga {
             
             int state = ST_UNQUOTED;
 
-            for (int i = 0; i < line.Length; ++i) {
+            for (; i < line.Length; ++i) {
 
                 // If we right after escape, just add character to last word
                 // And forget the escape
@@ -99,6 +101,13 @@ namespace Jenga {
                 else if (state == ST_UNQUOTED && line[i] == quote)
                     state = ST_QUOTED_REGULAR;
 
+                // If outside of quotation encounter new line
+                // then move and break out
+                else if (state == ST_UNQUOTED && line[i] == newLine) {
+                    i++;
+                    return values;
+                }
+
                 // If some unqouted text then either accept it or skip
                 else if (state == ST_UNQUOTED)
                     { if (skipUnquoted) values[^1] += line[i]; }
@@ -128,11 +137,14 @@ namespace Jenga {
 
             //
             var so = serializedObject;
-            var target = so.targetObject as WWCSVImporter;
+            var target = so?.targetObject as WWCSVImporter;
+            if (target == null) return;
             so.Update();
 
-            if (GUILayout.Button("Sync with Linked Tables")) 
+            if (GUILayout.Button("Sync with Linked Tables")) {
                 SyncLinkedTables(target);
+                return;
+            }
 
             // EditorGUI.BeginDisabledGroup(!propUpdating.boolValue);
 

@@ -25,7 +25,7 @@ namespace Jenga {
     // (Hides [SerializeReference] and some ui drawing)
     [System.Serializable]
     [ALay.TypeSelector(typeof(MonoCondition), path = "value")]
-    [ALay.MatchReferences]
+    // [ALay.MatchReferences]
     public struct MonoConditionReference : ALay.ILayoutMe {
 
         [SerializeReference]

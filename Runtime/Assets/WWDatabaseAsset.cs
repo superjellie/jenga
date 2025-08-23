@@ -95,6 +95,25 @@ namespace Jenga {
             return result;
         }
 
+        public string[] GetData(int pointer, string[] columns) {
+            var result = new string[columns.Length];
+
+            if (pointer < 0 || pointer >= pointers.Length) return result;
+
+            for (int i = 0; i < columns.Length; ++i) {
+                var id = System.Array.BinarySearch(keys, columns[i]);
+                if (id < 0) continue;
+
+                var myColumn = columnsValues[id].data;
+
+                var valueIndex = pointers[pointer].indicesInSorted[id];
+                result[i] = valueIndex >= 0 && valueIndex < myColumn.Length
+                    ? myColumn[valueIndex].data : "";
+            }
+
+            return result;
+        }
+
         // I hate when i cant throw lambda at it...
         public class DataComparer : IComparer<Data> {
             public int Compare(Data x, Data y) => x.data.CompareTo(y.data);

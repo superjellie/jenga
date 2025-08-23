@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de6f8b4a53e972544bf08dfbbe9696b1, type: 3}
+  m_Name: TestPlayer
+  m_EditorClassIdentifier: 
+  player:
+    value:
+      rid: 8650414731720654850
+  references:
+    version: 2
+    RefIds:
+    - rid: 8650414731720654850
+      type: {class: WithSettingsAudioPlayer, ns: Jenga, asm: Jenga.Runtime}
+      data:
+        useVolume: 0
+        usePitch: 0
+        useLoop: 0
+        useSpatialBlend: 0
+        useMixerGroup: 0
+        volume: 1
+        pitch: 1
+        loop: 0
+        spatialBlend: 1
+        outputAudioMixerGroup: {fileID: 0}
+        item:
+          value:
+            rid: 8650414731720654852
+    - rid: 8650414731720654852
+      type: {class: ClipAudioPlayer, ns: Jenga, asm: Jenga.Runtime}
+      data:
+        useVolume: 0
+        useMixerGroup: 0
+        volume: 1
+        outputAudioMixerGroup: {fileID: 0}
+        clip: {fileID: 0}

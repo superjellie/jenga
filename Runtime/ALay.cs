@@ -5,6 +5,12 @@ using UnityEngine.UIElements;
 
 namespace Jenga {
 
+    public class UsageToggleAttribute : UnityEngine.PropertyAttribute { 
+        public string path;
+
+        public UsageToggleAttribute(string path) => this.path = path;
+    }
+
     // Attribute Inspector UI Layouting system
     // Works only with UI Toolkit
     public static class ALay {
@@ -110,6 +116,8 @@ namespace Jenga {
         // Method should be of signature:
         // static FieldAttribute[] EmitItem() { ... }
         public class EmitFieldAttribute : MethodAttribute { }
+        
+        public class SkipAttribute : FieldAttribute { }
 
         public class DelayAttributeAttribute : FieldAttribute { 
             public string name;
@@ -172,7 +180,8 @@ namespace Jenga {
         // You should add [ScenePreviewRoot] to root field
         public class ScenePreviewAttribute : ClassAttribute { }
 
-        public class ScenePreviewRootAttribute : FieldAttribute { }
+        public class CallDuringSceneGUIAttribute : MethodAttribute { }
+        public class CallOnEnablePreviewAttribute : MethodAttribute { }
 
         // State Manipulators
     }

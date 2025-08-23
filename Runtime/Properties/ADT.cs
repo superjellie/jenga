@@ -10,12 +10,9 @@ namespace Jenga {
         public class Map<T, Q> 
             : ISerializationCallbackReceiver, ALay.ILayoutMe {
 
-            [System.Serializable, ALay.Inline]
+            [System.Serializable]
             public class Pair : ALay.ILayoutMe {
-                [ALay.Style(width = 100f)]
                 public T key;
-
-                [ALay.Style(flexGrow = 1f)]
                 public Q value;
             } 
 
