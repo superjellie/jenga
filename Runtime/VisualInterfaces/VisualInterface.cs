@@ -23,6 +23,8 @@ namespace Jenga {
         [HideInInspector]
         public int state;
 
+        public float delayBeforeStart = 0f;
+
         // You should subscribe to event in transition handler components
         public delegate void StateChangeDelegate(
             int oldState, int newState, bool immediate
@@ -35,8 +37,9 @@ namespace Jenga {
         public StateDescription[] stateDescriptions = { };
 
         // Private
+        float startTime = 0f;
         void Update() => UpdateState();
-
+        void Start() => startTime = Time.time;
         void SetState(int newState, bool immediate) {
             if (state != newState && onStateChange != null)
                 onStateChange(state, newState, immediate);
@@ -44,8 +47,10 @@ namespace Jenga {
         }
 
         void UpdateState() {
+            if (startTime + delayBeforeStart > Time.time) return;
+            
             foreach (var desc in stateDescriptions) {
-                if (desc.condition.Check()) { 
+                if (desc.condition.Check(gameObject)) { 
                     SetState(desc.id, false);
                     return;
                 }

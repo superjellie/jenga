@@ -15,19 +15,20 @@ public class WWDatabaseSelector {
     // public WWDatabaseAsset.Match[] defaultMatchers = { };
     public WWDatabaseAsset.Match[] userMatchers = { };
 
-    public WWDatabaseSelector(params WWDatabaseAsset.Match[] userMatchers) {
+    public WWDatabaseSelector(WWDatabaseAsset.Match[] userMatchers) {
         this.userMatchers = userMatchers;
     }
-
 
     public WWDatabaseSelector(string key) {
         this.userMatchers = new WWDatabaseAsset.Match[] { new(key, "") };
     }
 
-    // public WWDatabaseSelector(WWDatabaseAsset asset, string key, string value) {
-    //     this.userMatchers = new WWDatabaseAsset.Match[] { new(key, value) };
-    //     this.asset = asset;
-    // }
+    public WWDatabaseSelector() { }
+
+    public WWDatabaseSelector(WWDatabaseAsset asset, string key, string value) {
+        this.userMatchers = new WWDatabaseAsset.Match[] { new(key, value) };
+        this.asset = asset;
+    }
 
     public string[] GetData(
         WWDatabaseAsset.Match[] additionalMatchers, string[] columns
@@ -45,39 +46,12 @@ public class WWDatabaseSelector {
         return result;
     }
 
-    public int[] GetPointers(params WWDatabaseAsset.Match[] additionalMatchers) {
-        var matchers = ArrayPool<WWDatabaseAsset.Match>.Shared
-            .Rent(userMatchers.Length + additionalMatchers.Length);
-
-        userMatchers.CopyTo(matchers, 0);
-        additionalMatchers.CopyTo(matchers, userMatchers.Length);
-
-        var result 
-            = asset?.MatchPointers(matchers) ?? new int[0];
-
-        ArrayPool<WWDatabaseAsset.Match>.Shared.Return(matchers);            
-        return result;
-    }
-
-    public string[] GetPointedData(int pointer, params string[] columns) {
-        if (asset == null) return null;
-
-        return asset.GetData(pointer, columns);
-    }
-
     public string GetLocalizedValue(string lang, string column) {
         return GetData(
             new WWDatabaseAsset.Match[] { new("Lang", lang) }, 
             new string[] { column }
         )[0];
     }
-
-    public override string ToString() {
-        var result = $"[{asset}; ";
-        foreach (var match in userMatchers)
-            result += $"{match.key}:{match.value},";
-        return result + "]";
-    } 
 
 }
 

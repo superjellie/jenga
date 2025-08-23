@@ -63,7 +63,6 @@ namespace Jenga {
     }
 
 
-    [ALay.Style(marginLeft = -28f, applyToContent = true)]
     public class SequenceGenerator<T> : MonoGenerator<T> {
 
         [ALay.ListView(showFoldoutHeader = false)] 
@@ -139,7 +138,7 @@ namespace Jenga {
         public MonoGeneratorReference<T> item;
 
         public override bool MoveNext(GameObject go) {
-            if (!condition.Check()) return false; 
+            if (!condition.Check(go)) return false; 
             return item.MoveNext(go);
         }
 
@@ -154,7 +153,7 @@ namespace Jenga {
         public MonoGeneratorReference<T> item;
 
         public override bool MoveNext(GameObject go) {
-            if (condition.Check()) return false; 
+            if (condition.Check(go)) return false; 
             return item.MoveNext(go);
         }
 
@@ -173,7 +172,7 @@ namespace Jenga {
 
         public override bool MoveNext(GameObject go) {
             if (wasTrue == -1)
-                wasTrue = condition.Check() ? 1 : 0;
+                wasTrue = condition.Check(go) ? 1 : 0;
 
             return wasTrue == 1 ? item.MoveNext(go) : false;
         }

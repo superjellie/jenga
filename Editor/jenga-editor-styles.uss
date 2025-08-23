@@ -57,19 +57,3 @@
 /* */
 .jenga-fix-text-margin .unity-text-element 
     { margin-left: 0px }
-
-.jenga-in-window
-    { border-color: yellow; border-width: 2px; border-radius: 2px; }
-
-.jenga-eye-toggle > * > .unity-toggle__checkmark {
-    background-image: url("Icons/eye_toggle_off.png");
-/*    background-color: black;*/
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-}
-
-.jenga-eye-toggle:checked > * > .unity-toggle__checkmark {
-    background-image: url("Icons/eye_toggle_on.png");
-    background-color: yellow;
-}

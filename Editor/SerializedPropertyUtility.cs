@@ -10,30 +10,6 @@ using UnityEditor.UIElements;
 namespace Jenga {
     public static class SerializedPropertyUtility {
 
-        public static Color[] colors = {
-            Color.white,
-            Color.red,
-            Color.green,
-            Color.blue,
-            Color.green,
-            Color.yellow,
-            Color.magenta,
-            Color.cyan,
-            ColorFromHex("#FF5733"),
-            ColorFromHex("#bfc9ca"),
-            ColorFromHex("#bb8fce"),
-            ColorFromHex("#dc7633"),
-        };
-
-        public static Color ColorFromHex(string hex) {
-            if (ColorUtility.TryParseHtmlString(hex, out var color))
-                return color;
-            return Color.black;
-        }
-
-        public static Color ColorFromId(long managedID) 
-            => colors[Mathx.Abs((int)(managedID % colors.Length))];
-
         public static StyleSheet jengaStyle 
             = AssetDatabase.LoadAssetAtPath<StyleSheet>(
                 "Packages/com.github.superjellie.jenga/"
@@ -95,32 +71,6 @@ namespace Jenga {
             }
             
             property.managedReferenceValue = result;
-        }
-
-        public static System.Type GetValueType(SerializedProperty property) {
-            if (property.propertyType == SerializedPropertyType.ManagedReference)
-                return GetManagedType(property);
-            else
-                return property.boxedValue?.GetType(); 
-        }
-        public static object GetValue(SerializedProperty property) {
-            if (property.propertyType == SerializedPropertyType.ManagedReference)
-                return property.managedReferenceValue;
-            else
-                return property.boxedValue; 
-        }
-
-        public static System.Action<T> GetMethodByName<T>(
-            SerializedProperty property, string name
-        ) {
-            var type = GetValueType(property);
-            if (type == null) return null;
-
-            var methodInfo = type.GetMethod(name);
-            if (methodInfo == null) return null;
-
-            return (t) => methodInfo
-                .Invoke(GetValue(property), new object[] { t });
         }
     }
 }

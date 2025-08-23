@@ -5,12 +5,6 @@ using UnityEngine.UIElements;
 
 namespace Jenga {
 
-    public class UsageToggleAttribute : UnityEngine.PropertyAttribute { 
-        public string path;
-
-        public UsageToggleAttribute(string path) => this.path = path;
-    }
-
     // Attribute Inspector UI Layouting system
     // Works only with UI Toolkit
     public static class ALay {
@@ -97,7 +91,7 @@ namespace Jenga {
         // Places reference field into header and links together
         // all objects with same non-empty refName
         public class MatchReferencesAttribute : ClassAttribute { 
-            public string pathToSerializedReference = "value";
+            public string pathToSerializedReference = "serializedValue";
 
             // uses string property to match references inside serialized ref
             public string pathToRefName = "refName";   
@@ -116,8 +110,6 @@ namespace Jenga {
         // Method should be of signature:
         // static FieldAttribute[] EmitItem() { ... }
         public class EmitFieldAttribute : MethodAttribute { }
-        
-        public class SkipAttribute : FieldAttribute { }
 
         public class DelayAttributeAttribute : FieldAttribute { 
             public string name;
@@ -134,21 +126,14 @@ namespace Jenga {
 
         // Add flexGrow to item
         public class StyleAttribute : FieldAttribute { 
-            public float flexGrow       = float.NaN;
-            public float flexShrink     = float.NaN;
-            public float minWidth       = float.NaN;
-            public float minHeight      = float.NaN;
-            public float maxWidth       = float.NaN;
-            public float maxHeight      = float.NaN;
-            public float width          = float.NaN;
-            public float height         = float.NaN;
-            public float marginLeft     = float.NaN;
-            public float marginRight    = float.NaN;
-            public float marginTop      = float.NaN;
-            public float marginBottom   = float.NaN;
-
-            public bool applyToContent  = false;
-            public bool hideCheckmark   = false;
+            public float flexGrow   = float.NaN;
+            public float flexShrink = float.NaN;
+            public float minWidth   = float.NaN;
+            public float minHeight  = float.NaN;
+            public float maxWidth   = float.NaN;
+            public float maxHeight  = float.NaN;
+            public float width      = float.NaN;
+            public float height     = float.NaN;
         }
 
         // Makes dropdown with generic options
@@ -175,13 +160,6 @@ namespace Jenga {
             }
 
         }
-
-        // Adds toggable preview functionality for property
-        // You should add [ScenePreviewRoot] to root field
-        public class ScenePreviewAttribute : ClassAttribute { }
-
-        public class CallDuringSceneGUIAttribute : MethodAttribute { }
-        public class CallOnEnablePreviewAttribute : MethodAttribute { }
 
         // State Manipulators
     }

@@ -6,29 +6,27 @@ using UnityEngine.Serialization;
 namespace Jenga {
     [AddTypeMenu(typeof(MonoCondition), "General/AND", 2)]
     [System.Serializable]
-    [ALay.Style(marginLeft = -28f, applyToContent = true)]
     public class AndCondition : MonoCondition {
 
         [ALay.ListView(showFoldoutHeader = false)]
         public MonoConditionReference[] items = { };
  
-        public override bool Check() {
+        public override bool Check(GameObject go) {
             foreach (var condition in items) 
-                if (!condition.Check()) return false;
+                if (!condition.Check(go)) return false;
             return true;
         }
     }
 
     [AddTypeMenu(typeof(MonoCondition), "General/OR", 3)]
     [System.Serializable]
-    [ALay.Style(marginLeft = -28f, applyToContent = true)]
     public class OrCondition : MonoCondition {
         [ALay.ListView(showFoldoutHeader = false)]
         public MonoConditionReference[] items = { };
 
-        public override bool Check() {
+        public override bool Check(GameObject go) {
             foreach (var condition in items) 
-                if (condition.Check()) return true;
+                if (condition.Check(go)) return true;
             return false;
         }
     }
@@ -42,7 +40,7 @@ namespace Jenga {
         [FormerlySerializedAs("condition")]
         public MonoConditionReference item = new ConstCondition();
 
-        public override bool Check() => !item.Check();
+        public override bool Check(GameObject go) => !item.Check(go);
     }
 
 
@@ -55,7 +53,7 @@ namespace Jenga {
         [ALay.HideLabel]
         public BoolEnum value = BoolEnum.True;
 
-        public override bool Check() => value == BoolEnum.True;
+        public override bool Check(GameObject go) => value == BoolEnum.True;
     }
 
 }

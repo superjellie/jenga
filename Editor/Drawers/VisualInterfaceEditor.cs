@@ -65,6 +65,8 @@ namespace Jenga {
                 stateList.Rebuild();
             };
 
+            var propDelay = serializedObject.FindProperty("delayBeforeStart");
+            root.Add(new PropertyField(propDelay));
             root.Add(stateList);
             root.Add(new HelpBox() {
                 text = "Earlier state in list takes priority. \n"
