@@ -132,13 +132,15 @@ namespace Jenga {
     }
 
     public class GenerateWhileGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
-        public MonoConditionReference condition = new ConstCondition();
+
+        [SerializeReference, TypeMenu]
+        public MonoCondition condition = new ConstCondition();
 
         [FormerlySerializedAs("generator")]
         public MonoGeneratorReference<T> item;
 
         public override bool MoveNext(GameObject go) {
-            if (!condition.Check(go)) return false; 
+            if (!condition.Check()) return false; 
             return item.MoveNext(go);
         }
 
@@ -147,13 +149,15 @@ namespace Jenga {
     }
 
     public class GenerateUntilGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
-        public MonoConditionReference condition = new ConstCondition();
+        
+        [SerializeReference, TypeMenu]
+        public MonoCondition condition = new ConstCondition();
 
         [FormerlySerializedAs("generator")]
         public MonoGeneratorReference<T> item;
 
         public override bool MoveNext(GameObject go) {
-            if (condition.Check(go)) return false; 
+            if (condition.Check()) return false; 
             return item.MoveNext(go);
         }
 
@@ -162,8 +166,9 @@ namespace Jenga {
     }
 
     public class OptionalGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
-        [Tooltip("Checks condition once per generation")]
-        [SerializeReference] public MonoCondition condition;
+
+        [SerializeReference, TypeMenu]
+        public MonoCondition condition;
 
         [FormerlySerializedAs("ifTrue")]
         public MonoGeneratorReference<T> item;
@@ -172,7 +177,7 @@ namespace Jenga {
 
         public override bool MoveNext(GameObject go) {
             if (wasTrue == -1)
-                wasTrue = condition.Check(go) ? 1 : 0;
+                wasTrue = condition.Check() ? 1 : 0;
 
             return wasTrue == 1 ? item.MoveNext(go) : false;
         }

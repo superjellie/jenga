@@ -15,8 +15,8 @@ namespace Jenga {
     #if UNITY_EDITOR
             public string name;
     #endif
-            public MonoConditionReference condition
-                = new ConstCondition();
+            [SerializeReference, TypeMenu]
+            public MonoCondition condition = new ConstCondition();
         }
 
         // State is updated automaticaly, based on conditions
@@ -50,7 +50,7 @@ namespace Jenga {
             if (startTime + delayBeforeStart > Time.time) return;
             
             foreach (var desc in stateDescriptions) {
-                if (desc.condition.Check(gameObject)) { 
+                if (desc.condition.Check()) { 
                     SetState(desc.id, false);
                     return;
                 }

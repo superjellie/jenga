@@ -5,7 +5,7 @@ using UnityEngine.Audio;
 
 namespace Jenga {
     [System.Serializable]
-    [AddTypeMenu(typeof(AudioPlayer), "Composite/Playlist", 1)]
+    [AddTypeMenu("Jenga.AudioPlayer/Playlist")]
     public class PlaylistAudioPlayer : AudioPlayer {
 
         // Usage
@@ -15,19 +15,19 @@ namespace Jenga {
         public PlaybackMode playbackMode = PlaybackMode.PlayOne;
         public RNGAsset rng;
 
-        [ALay.ListView(showFoldoutHeader = false)]
-        public AudioPlayerReference[] items;
+        [SerializeReference, TypeMenu, Wrapper]
+        public AudioPlayer[] players;
 
         int currentIndex = 0;
         public override IEnumerator PlayUsing(AudioSource source) {
-            if (items.Length == 0) yield break;
+            if (players.Length == 0) yield break;
 
             if (playbackMode == PlaybackMode.PlayAll)
                 currentIndex = 0;
 
         REPEAT:
 
-            if (currentIndex >= items.Length) {
+            if (currentIndex >= players.Length) {
                 if (playbackMode == PlaybackMode.PlayOne)
                     currentIndex = 0;
                 else 
@@ -35,20 +35,20 @@ namespace Jenga {
             }
 
             if (sequenceMode == SequenceMode.Shuffle && currentIndex == 0)
-                AQRY.Shuffle<AudioPlayerReference>(rng.GetInt, items);
+                AQRY.Shuffle<AudioPlayer>(rng.GetInt, players);
 
             if (sequenceMode == SequenceMode.Randomize)
-                currentIndex = rng.GetIntInRange(0, items.Length);
+                currentIndex = rng.GetIntInRange(0, players.Length);
 
             var player 
                 = sequenceMode == SequenceMode.Reverse 
-                    ? items[items.Length - currentIndex - 1]
-                    : items[currentIndex];
+                    ? players[^currentIndex]
+                    : players[currentIndex];
             // Debug.Log(currentIndex);
             currentIndex++;
 
             if (player != null)
-                yield return player.PlayUsing(source);
+                yield return player.PlayUsingMaster(source);
             else
                 yield return null; 
 

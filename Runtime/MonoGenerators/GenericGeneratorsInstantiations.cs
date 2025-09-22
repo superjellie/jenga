@@ -8,7 +8,7 @@ namespace Jenga {
 	public class MonoGeneratorInt : MonoGenerator<int> { }
 	[AddTypeMenu(typeof(MonoGenerator<int>), "General/Nothing", 0)]
 	public class NothingGeneratorInt : NothingGenerator<int> { }
-	[AddTypeMenu(typeof(MonoGenerator<int>), "General/Int", 1), InlinePropertyEditor]
+	[AddTypeMenu(typeof(MonoGenerator<int>), "General/Int", 1)]
 	public class ItemGeneratorInt : ItemGenerator<int> { }
 	[AddTypeMenu(typeof(MonoGenerator<int>), "General/Repeat", 2)]
 	public class RepeatGeneratorInt : RepeatGenerator<int> { }

@@ -4,13 +4,10 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 namespace Jenga {
-    [System.Serializable, ALay.Inline]
-    public class AudioClipWithMixer : ALay.ILayoutMe {
+    [System.Serializable, System.Obsolete]
+    public class AudioClipWithMixer {
 
-        [ALay.Style(flexGrow = 1f)] 
         public AudioClip clip;
-
-        [ALay.Style(width = 80f)]
         public AudioMixerGroup group;
 
         public AudioSource Play(Vector3 pos, bool looped = false) {

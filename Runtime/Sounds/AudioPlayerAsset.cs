@@ -5,6 +5,6 @@ using UnityEngine;
 namespace Jenga {
     [CreateAssetMenu(fileName = "AudioPlayer", menuName = "Jenga/Audio Player")]
     public class AudioPlayerAsset : ScriptableObject {
-        public AudioPlayerReference player;
+        public AudioPlayer player;
     }
 }
