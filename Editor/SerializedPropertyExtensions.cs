@@ -25,6 +25,15 @@ namespace Jenga {
             return property.serializedObject.FindProperty(newPath);
         }
 
+        public static bool IsPropertyOf(
+            this SerializedProperty property, Object o
+        ) {
+            if (property == null || property.serializedObject == null
+                || property.serializedObject.targetObject == null)
+                return false;
+            return property.serializedObject.targetObject == o;
+        }
+
         public static bool TryGetParentProperty(
             this SerializedProperty property, out SerializedProperty parent
         ) {
@@ -42,8 +51,14 @@ namespace Jenga {
         }
 
         public static bool 
-        SameAs(this SerializedProperty self, SerializedProperty other) 
-            => SerializedProperty.EqualContents(self, other);
+        SameAs(this SerializedProperty self, SerializedProperty other) {
+            if (self == null || other == null) return false;
+            if (self.serializedObject == null || other.serializedObject == null)
+                return false;
+            if (self.serializedObject.targetObject == null) return false;
+            if (other.serializedObject.targetObject == null) return false;
+            return SerializedProperty.EqualContents(self, other);
+        }
 
         public static string GetEditorDataKey(
             this SerializedProperty property, bool includeGUID = true
