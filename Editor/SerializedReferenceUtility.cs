@@ -11,10 +11,21 @@ namespace Jenga {
 
         public int instanceID;
         public long referenceID;
+        public string subPath;
+        public string refPath;
+
+        public string path => string.IsNullOrEmpty(refPath)
+            ? subPath
+            : $"{refPath}.{subPath}";
+
+        public override bool Equals(object other)
+            => other is SerializedReferenceLink link 
+            && Equals(link);
 
         public bool Equals(SerializedReferenceLink other)
             => instanceID == other.instanceID 
-            && referenceID == other.referenceID;
+            && referenceID == other.referenceID
+            && subPath == other.subPath;
 
         public static bool operator==(
             SerializedReferenceLink a, SerializedReferenceLink b
@@ -24,7 +35,26 @@ namespace Jenga {
         ) => !a.Equals(b);
 
         public override int GetHashCode() 
-            => (instanceID, referenceID).GetHashCode();
+            => (instanceID, referenceID, subPath).GetHashCode();
+
+        public bool IsNull() => instanceID == 0 || referenceID < 0;
+
+
+        static Dictionary<int, SerializedObject> soCache = new();
+
+        public SerializedProperty GetProperty() {
+
+            if (soCache.TryGetValue(instanceID, out var so)) {
+                so.Update();
+                return so.FindProperty(path);
+            }
+
+            if (IsNull()) return null;
+            var o = EditorUtility.InstanceIDToObject(instanceID);
+            so = new SerializedObject(o);
+            soCache[instanceID] = so;
+            return so.FindProperty(path);
+        }
     }
 
     public static class SerializedReferenceUtility {
