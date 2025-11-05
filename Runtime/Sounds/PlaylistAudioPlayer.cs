@@ -14,23 +14,28 @@ namespace Jenga {
         public SequenceMode sequenceMode = SequenceMode.InOrder;
         public PlaybackMode playbackMode = PlaybackMode.PlayOne;
         public RNGAsset rng;
+        public bool loop = false;
 
         [ALay.ListView(showFoldoutHeader = false)]
         public AudioPlayerReference[] items;
 
         int currentIndex = 0;
         public override IEnumerator PlayUsing(AudioSource source) {
+        LOOP:
             if (items.Length == 0) yield break;
 
             if (playbackMode == PlaybackMode.PlayAll)
                 currentIndex = 0;
+
 
         REPEAT:
 
             if (currentIndex >= items.Length) {
                 if (playbackMode == PlaybackMode.PlayOne)
                     currentIndex = 0;
-                else 
+                else if (playbackMode == PlaybackMode.PlayAll && loop)
+                    currentIndex = 0;
+                else
                     yield break;
             }
 
@@ -55,6 +60,7 @@ namespace Jenga {
 
             if (playbackMode == PlaybackMode.PlayAll)
                 goto REPEAT;
+
 
             yield break;
         }

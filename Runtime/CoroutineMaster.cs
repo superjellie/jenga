@@ -5,10 +5,10 @@ using UnityEngine;
 namespace Jenga {
     public class CoroutineMaster : MonoBehaviour {
 
-        static CoroutineMaster main_; 
-        public static CoroutineMaster main => main_ != null 
-            ? main_
-            : main_ = SpawnMaster();
+        public static CoroutineMaster mainDoNotInstantiate; 
+        public static CoroutineMaster main => mainDoNotInstantiate != null 
+            ? mainDoNotInstantiate
+            : mainDoNotInstantiate = SpawnMaster();
 
         public static CoroutineMaster SpawnMaster() {
             var go = new GameObject(
