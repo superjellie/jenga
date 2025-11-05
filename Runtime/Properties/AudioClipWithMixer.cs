@@ -4,16 +4,13 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 namespace Jenga {
-    [System.Serializable, ALay.Inline]
-    public class AudioClipWithMixer : ALay.ILayoutMe {
+    [System.Serializable, System.Obsolete]
+    public class AudioClipWithMixer {
 
-        [ALay.Style(flexGrow = 1f)] 
         public AudioClip clip;
-
-        [ALay.Style(width = 80f)]
         public AudioMixerGroup group;
 
-        public AudioSource Play(Vector3 pos) {
+        public AudioSource Play(Vector3 pos, bool looped = false) {
             if (clip == null) return null;
             var go = new GameObject("AudioClipPlayer", typeof(AudioSource));
 
@@ -21,18 +18,15 @@ namespace Jenga {
 
             source.clip = clip;
             source.outputAudioMixerGroup = group;
+            source.loop = looped;
 
             source.Play();
 
-            GameObject.Destroy(go, clip.length);
+            if (!looped)
+                GameObject.Destroy(go, clip.length);
             return source;
         }
 
-        public AudioSource PlayLooped(Vector3 pos) {
-            if (clip == null) return null;
-            var source = Play(pos);
-            source.loop = true;
-            return source;
-        }
+        public AudioSource PlayLooped(Vector3 pos) => Play(pos, true);
     }
 }

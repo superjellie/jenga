@@ -5,7 +5,7 @@ using UnityEngine.Audio;
 
 namespace Jenga {
     [System.Serializable]
-    [AddTypeMenu(typeof(AudioPlayer), "Play/Silence", 1)]
+    [AddTypeMenu("Jenga.AudioPlayer/Silence")]
     public class SilenceAudioPlayer : AudioPlayer {
 
         // Usage

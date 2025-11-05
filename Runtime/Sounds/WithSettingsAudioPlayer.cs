@@ -5,31 +5,30 @@ using UnityEngine.Audio;
 
 namespace Jenga {
     [System.Serializable]
-    [AddTypeMenu(typeof(AudioPlayer), "With/Source Settings", 1)]
+    [AddTypeMenu("Jenga.AudioPlayer/WithSettings")]
     public class WithSettingsAudioPlayer : AudioPlayer { 
 
-
         // Usage
-        [ALay.Skip] public bool useVolume;
-        [ALay.Skip] public bool usePitch;
-        [ALay.Skip] public bool useLoop;
-        [ALay.Skip] public bool useSpatialBlend;
-        [ALay.Skip] public bool useMixerGroup;
+        [HideInInspector] public bool useVolume;
+        [HideInInspector] public bool usePitch;
+        [HideInInspector] public bool useLoop;
+        [HideInInspector] public bool useSpatialBlend;
+        [HideInInspector] public bool useMixerGroup;
 
-        [ALay.UsageToggle("useVolume"), Range(0f, 1f)] 
+        [UsageToggle("useVolume"), Range(0f, 1f)] 
         public float volume = 1f;
-        [ALay.UsageToggle("usePitch"), Range(-3f, 3f)] 
+        [UsageToggle("usePitch"), Range(-3f, 3f)] 
         public float pitch = 1f;
-        [ALay.UsageToggle("useLoop")] 
+        [UsageToggle("useLoop")] 
         public bool  loop;
-        [ALay.UsageToggle("useSpatialBlend"), Range(0f, 1f)] 
+        [UsageToggle("useSpatialBlend"), Range(0f, 1f)] 
         public float spatialBlend = 1f;
-        [ALay.UsageToggle("useMixerGroup")]   
+        [UsageToggle("useMixerGroup")]   
         public AudioMixerGroup outputAudioMixerGroup;
         public bool keepOnListener;
 
-
-        public AudioPlayerReference item;
+        [SerializeReference, TypeMenu, Wrapper]
+        public AudioPlayer player;
 
         AudioListener listener_;
         public AudioListener listener => listener_ != null 
@@ -57,7 +56,7 @@ namespace Jenga {
             if (keepOnListener)
                 crtn = master.StartCoroutine(KeepOnListener(source));
 
-            yield return item.PlayUsing(source);
+            yield return player.PlayUsingMaster(source);
 
             if (keepOnListener)
                 master.StopCoroutine(crtn);

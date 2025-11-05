@@ -10,14 +10,15 @@ namespace Jenga {
         public AnimationCurve rolloffCurve 
             = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
 
-        public AudioPlayerReference player;
+        [SerializeReference, TypeMenu]
+        public AudioPlayer player;
 
         AudioListener listener_;
         public AudioListener listener => listener_ != null 
             ? listener_ 
             : listener_ = FindAnyObjectByType<AudioListener>();
 
-        public Collider collider => GetComponent<Collider>();
+        public Collider myCollider => GetComponent<Collider>();
 
 
         AudioSource source;
@@ -42,10 +43,10 @@ namespace Jenga {
 
         void Update() {
             if (listener == null) return;
-            if (collider == null) return;
+            if (myCollider == null) return;
 
             source.transform.position 
-                = collider.ClosestPoint(listener.transform.position);
+                = myCollider.ClosestPoint(listener.transform.position);
 
             var distance = Vector3.Distance(
                 source.transform.position,

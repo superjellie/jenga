@@ -16,12 +16,6 @@
     "defineConstraints": [
         "UNITY_EDITOR"
     ],
-    "versionDefines": [
-        {
-            "name": "com.unity.visualscripting",
-            "expression": "1.9.6",
-            "define": "USE_VISUAL_SCRIPTING"
-        }
-    ],
+    "versionDefines": [],
     "noEngineReferences": false
 }

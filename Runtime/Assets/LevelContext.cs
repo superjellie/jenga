@@ -48,6 +48,7 @@ namespace Jenga {
 
             for (int i = 0; i < SceneManager.sceneCount; ++i) {
                 var scene = SceneManager.GetSceneAt(i);
+                // Debug.Log($"{scene.path}.isLoaded = {scene.isLoaded}");
                 if (!scene.isLoaded) continue;
 
                 if (scenesToLoad.Contains(scene.path))
@@ -55,6 +56,9 @@ namespace Jenga {
                 else if (unloadOtherScenes)
                     scenesToUnload.Add(scene.path);
             }
+
+            // foreach (var scene in scenesToLoad)
+            //     Debug.Log($"Load {scene}");
 
             var go = new GameObject("SceneLoader");
             var holder = go.AddComponent<CoroutineHolderBehaviour>();

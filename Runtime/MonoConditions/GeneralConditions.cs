@@ -4,55 +4,52 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Jenga {
-    [AddTypeMenu(typeof(MonoCondition), "General/AND", 2)]
+    [AddTypeMenu("Jenga.MonoCondition/AND")]
     [System.Serializable]
-    [ALay.Style(marginLeft = -28f, applyToContent = true)]
     public class AndCondition : MonoCondition {
 
-        [ALay.ListView(showFoldoutHeader = false)]
-        public MonoConditionReference[] items = { };
+        [SerializeReference, TypeMenu, Wrapper]
+        public MonoCondition[] conditions = { };
  
         public override bool Check() {
-            foreach (var condition in items) 
+            foreach (var condition in conditions) 
                 if (!condition.Check()) return false;
             return true;
         }
     }
 
-    [AddTypeMenu(typeof(MonoCondition), "General/OR", 3)]
+    [AddTypeMenu("Jenga.MonoCondition/OR")]
     [System.Serializable]
-    [ALay.Style(marginLeft = -28f, applyToContent = true)]
     public class OrCondition : MonoCondition {
-        [ALay.ListView(showFoldoutHeader = false)]
-        public MonoConditionReference[] items = { };
+
+        [SerializeReference, TypeMenu, Wrapper]
+        public MonoCondition[] conditions = { };
 
         public override bool Check() {
-            foreach (var condition in items) 
+            foreach (var condition in conditions) 
                 if (condition.Check()) return true;
             return false;
         }
     }
 
 
-    [AddTypeMenu(typeof(MonoCondition), "General/NOT", 1)]
+    [AddTypeMenu("Jenga.MonoCondition/NOT")]
     [System.Serializable]
-    [InlinePropertyEditor]
     public class NotCondition : MonoCondition {
 
-        [FormerlySerializedAs("condition")]
-        public MonoConditionReference item = new ConstCondition();
+        [SerializeReference, TypeMenu, Wrapper]
+        public MonoCondition condition = new ConstCondition();
 
-        public override bool Check() => !item.Check();
+        public override bool Check() => !condition.Check();
     }
 
 
-    [AddTypeMenu(typeof(MonoCondition), "General/Const", 0)]
-    [InlinePropertyEditor]
+    [AddTypeMenu("MonoCondition/Const")]
     [System.Serializable]
     public class ConstCondition : MonoCondition {
         public enum BoolEnum { True = 1, False = 0 } 
 
-        [ALay.HideLabel]
+        [HideLabel]
         public BoolEnum value = BoolEnum.True;
 
         public override bool Check() => value == BoolEnum.True;

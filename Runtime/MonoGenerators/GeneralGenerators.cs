@@ -63,7 +63,6 @@ namespace Jenga {
     }
 
 
-    [ALay.Style(marginLeft = -28f, applyToContent = true)]
     public class SequenceGenerator<T> : MonoGenerator<T> {
 
         [ALay.ListView(showFoldoutHeader = false)] 
@@ -133,7 +132,9 @@ namespace Jenga {
     }
 
     public class GenerateWhileGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
-        public MonoConditionReference condition = new ConstCondition();
+
+        [SerializeReference, TypeMenu]
+        public MonoCondition condition = new ConstCondition();
 
         [FormerlySerializedAs("generator")]
         public MonoGeneratorReference<T> item;
@@ -148,7 +149,9 @@ namespace Jenga {
     }
 
     public class GenerateUntilGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
-        public MonoConditionReference condition = new ConstCondition();
+        
+        [SerializeReference, TypeMenu]
+        public MonoCondition condition = new ConstCondition();
 
         [FormerlySerializedAs("generator")]
         public MonoGeneratorReference<T> item;
@@ -163,8 +166,9 @@ namespace Jenga {
     }
 
     public class OptionalGenerator<T> : MonoGenerator<T>, ALay.ILayoutMe {
-        [Tooltip("Checks condition once per generation")]
-        [SerializeReference] public MonoCondition condition;
+
+        [SerializeReference, TypeMenu]
+        public MonoCondition condition;
 
         [FormerlySerializedAs("ifTrue")]
         public MonoGeneratorReference<T> item;

@@ -5,7 +5,7 @@ using UnityEngine.Audio;
 
 namespace Jenga {
     [System.Serializable]
-    [AddTypeMenu(typeof(AudioPlayer), "Play/Clip", 1)]
+    [AddTypeMenu("Jenga.AudioPlayer/Clip")]
     public class ClipAudioPlayer : AudioPlayer {
 
         // Usage
@@ -35,7 +35,7 @@ namespace Jenga {
             }
 
             if (asset != null) {
-                yield return asset.player.PlayUsing(source);
+                yield return asset.player.PlayUsingMaster(source);
             } else {
                 source.clip = clip;
                 source.Play();

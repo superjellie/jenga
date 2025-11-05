@@ -6,13 +6,12 @@ using UnityEngine.Audio;
 namespace Jenga {
 
     [System.Serializable]
-    [AddTypeMenu(typeof(AudioPlayer), "Play/Asset", 1)]
+    [AddTypeMenu("Jenga.AudioPlayer/Asset")]
     public class AssetAudioPlayer : AudioPlayer {
 
-
-        // Usage
-        [ALay.Skip] public bool useVolume;
-        [ALay.UsageToggle("useVolume"), Range(0f, 1f)] public float volume = 1f;
+        [HideInInspector] public bool useVolume;
+        [UsageToggle("useVolume"), Range(0f, 1f)] public float volume = 1f;
+        
         public AudioPlayerAsset asset;
 
         AudioPlayerAsset instance;
@@ -24,7 +23,7 @@ namespace Jenga {
 
             if (instance == null)
                 instance = Object.Instantiate(asset);
-            yield return instance.player.PlayUsing(source);
+            yield return instance.player.PlayUsingMaster(source);
 
             if (useVolume) source.volume = oldVolume;
         }

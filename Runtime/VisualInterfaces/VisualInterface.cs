@@ -15,13 +15,15 @@ namespace Jenga {
     #if UNITY_EDITOR
             public string name;
     #endif
-            public MonoConditionReference condition
-                = new ConstCondition();
+            [SerializeReference, TypeMenu]
+            public MonoCondition condition = new ConstCondition();
         }
 
         // State is updated automaticaly, based on conditions
         [HideInInspector]
         public int state;
+
+        public float delayBeforeStart = 0f;
 
         // You should subscribe to event in transition handler components
         public delegate void StateChangeDelegate(
@@ -35,8 +37,9 @@ namespace Jenga {
         public StateDescription[] stateDescriptions = { };
 
         // Private
+        float startTime = 0f;
         void Update() => UpdateState();
-
+        void Start() => startTime = Time.time;
         void SetState(int newState, bool immediate) {
             if (state != newState && onStateChange != null)
                 onStateChange(state, newState, immediate);
@@ -44,6 +47,8 @@ namespace Jenga {
         }
 
         void UpdateState() {
+            if (startTime + delayBeforeStart > Time.time) return;
+            
             foreach (var desc in stateDescriptions) {
                 if (desc.condition.Check()) { 
                     SetState(desc.id, false);
