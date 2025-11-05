@@ -13,4 +13,18 @@ namespace Jenga {
     public class MonoCondition {
         public virtual bool Check() => true;
     }
+
+    [System.Serializable, System.Obsolete]
+    public struct MonoConditionReference : ALay.ILayoutMe {
+
+        [SerializeReference]
+        [FormerlySerializedAs("serializedValue")]
+        public MonoCondition value;
+
+        public bool Check() => value?.Check() ?? false;
+
+        public static implicit operator
+        MonoConditionReference(MonoCondition condition) 
+            => new MonoConditionReference() { value = condition };
+    }
 }

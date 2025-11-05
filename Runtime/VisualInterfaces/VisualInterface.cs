@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Jenga {
     // VI is condition-based state machine for different user interfaces
@@ -10,13 +11,20 @@ namespace Jenga {
     public class VisualInterface : MonoBehaviour {
 
         [System.Serializable, ALay.HideHeader]
-        public class StateDescription {
+        public class StateDescription : ISerializationCallbackReceiver {
             public int id = 1;
     #if UNITY_EDITOR
             public string name;
     #endif
+            [FormerlySerializedAs("condition")]
+            public MonoConditionReference conditionOLD;
             [SerializeReference, TypeMenu]
             public MonoCondition condition = new ConstCondition();
+
+            public void OnBeforeSerialize() { }
+            public void OnAfterDeserialize() { 
+                condition = conditionOLD.value;
+            }
         }
 
         // State is updated automaticaly, based on conditions

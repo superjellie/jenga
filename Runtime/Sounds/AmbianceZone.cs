@@ -1,17 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Jenga {
-    public class AmbianceZone : MonoBehaviour {
+    public class AmbianceZone : MonoBehaviour, ISerializationCallbackReceiver {
 
         [Range(0f, 100f)] public float rolloffDistance = 5f;
         [Range(0f, 100f)] public float maxDistance = 10f;
         public AnimationCurve rolloffCurve 
             = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
 
+        [FormerlySerializedAs("player")]
+        public AudioPlayerReference playerOLD;
+
         [SerializeReference, TypeMenu]
         public AudioPlayer player;
+
+        public void OnBeforeSerialize() { }
+        public void OnAfterDeserialize() { 
+            player = playerOLD.value;
+        }
+
 
         AudioListener listener_;
         public AudioListener listener => listener_ != null 

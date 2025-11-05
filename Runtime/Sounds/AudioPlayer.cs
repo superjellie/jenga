@@ -12,4 +12,16 @@ namespace Jenga {
             => CoroutineMaster.GetOnObject(source.gameObject)
                 .StartCoroutine(PlayUsing(source));
     }
+
+    [System.Serializable, System.Obsolete]
+    public class AudioPlayerReference : ALay.ILayoutMe {
+        [SerializeReference] public AudioPlayer value = new();
+
+        public virtual Coroutine PlayUsing(AudioSource source) 
+            => CoroutineMaster.GetOnObject(source.gameObject)
+                .StartCoroutine(value?.PlayUsing(source));
+        
+        public static implicit operator AudioPlayerReference(AudioPlayer player)
+            => new() { value = player };
+    }
 }

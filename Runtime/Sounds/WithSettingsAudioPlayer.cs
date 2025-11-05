@@ -6,7 +6,7 @@ using UnityEngine.Audio;
 namespace Jenga {
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/WithSettings")]
-    public class WithSettingsAudioPlayer : AudioPlayer { 
+    public class WithSettingsAudioPlayer : AudioPlayer, ISerializationCallbackReceiver { 
 
         // Usage
         [HideInInspector] public bool useVolume;
@@ -29,6 +29,12 @@ namespace Jenga {
 
         [SerializeReference, TypeMenu, Wrapper]
         public AudioPlayer player;
+
+        public AudioPlayerReference item;
+        public void OnBeforeSerialize() { }
+        public void OnAfterDeserialize() { 
+            player = item.value;
+        }
 
         AudioListener listener_;
         public AudioListener listener => listener_ != null 
