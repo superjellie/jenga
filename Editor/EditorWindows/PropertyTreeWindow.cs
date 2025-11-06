@@ -12,7 +12,7 @@ namespace Jenga {
         public SerializedProperty serializedProperty;
 
         [MenuItem("Window/Jenga/Property Tree")]
-        public static void ShowExample() {
+        public static void ShowNewTree() {
             var wnd = GetWindow<PropertyTreeWindow>();
             wnd.titleContent = new GUIContent("Property Tree");
         }
@@ -28,10 +28,11 @@ namespace Jenga {
         void OnEnable() => UpdateProperty();
 
         void UpdateProperty() {
-            try {
-                serializedObject = new(objectReferences);
-                serializedProperty = serializedObject.FindProperty(propertyPath);
-            } finally { }
+            if (objectReferences == null || objectReferences.Length == 0)
+                return; 
+
+            serializedObject = new(objectReferences);
+            serializedProperty = serializedObject?.FindProperty(propertyPath);
         }
 
         void OnGUI() {
