@@ -15,7 +15,7 @@ namespace Jenga {
 
             position = EditorGUI.PrefixLabel(position, label);
             
-            foreach (var child in property.Copy()) {
+            foreach (var child in property.DirectChildren()) {
                 var propChild = child as SerializedProperty;
                 var childField = fieldInfo.FieldType.GetField(propChild.name); 
 

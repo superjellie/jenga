@@ -12,8 +12,10 @@ namespace Jenga {
         ) {
             var name = currentType != null ? "[UNKNOWN]" : "[NULL]";
 
-            if (currentType.TryGetAttribute<AddTypeMenuAttribute>(out var atm)) 
+            if (currentType.TryGetAttribute<AddTypeMenuAttribute>(out var atm)) {
+                if (atm.path == null) return;
                 name = atm.path.Remove(0, atm.path.LastIndexOf('/') + 1);
+            }
 
             var content = new GUIContent(name);
             

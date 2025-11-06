@@ -50,6 +50,20 @@ namespace Jenga {
             return false;
         }
 
+        public static bool IsChildOf(
+            this SerializedProperty property, SerializedProperty parent
+        ) {
+            var index = property.propertyPath.LastIndexOf('.');
+
+            if (index >= 0) {
+                var newPath 
+                    = $"{property.propertyPath.Substring(0, index)}";
+                return parent?.propertyPath == newPath;
+            }
+
+            return false;
+        }
+
         public static bool 
         SameAs(this SerializedProperty self, SerializedProperty other) {
             if (self == null || other == null) return false;
@@ -308,6 +322,21 @@ namespace Jenga {
                 || SerializedProperty.EqualContents(it, last)) yield break;
             do {
                 yield return it.Copy();
+            } while (it.NextVisible(false) 
+                && !SerializedProperty.EqualContents(it, last));
+        } 
+
+        public static IEnumerable<SerializedProperty> 
+        DirectChildren(this SerializedProperty property) {
+            var it = property.Copy(); 
+            var last = property.GetEndProperty(); 
+
+            if (SerializedProperty.EqualContents(it, last)) yield break;
+            if (!it.NextVisible(true) 
+                || SerializedProperty.EqualContents(it, last)) yield break;
+            do {
+                if (it.IsChildOf(property))
+                    yield return it.Copy();
             } while (it.NextVisible(false) 
                 && !SerializedProperty.EqualContents(it, last));
         }

@@ -34,7 +34,7 @@ namespace Jenga {
             [CallerFilePath] string pathToSource = null,
             [CallerLineNumber] int sourceLineNumber = 1
         ) {
-            
+            Debug.LogError($"Obsolete AddTypeMenu in {pathToSource}");
         }
 
         public AddTypeMenuAttribute(
