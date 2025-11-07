@@ -28,14 +28,14 @@ namespace Jenga {
         void OnEnable() => UpdateProperty();
 
         void UpdateProperty() {
-            if (objectReferences == null || objectReferences.Length == 0)
-                return; 
-
-            if (objectReferences[0] == null)
+            if (objectReferences == null || objectReferences.Length == 0) 
                 return;
 
-            serializedObject = new(objectReferences[0]);
-            serializedProperty = serializedObject?.FindProperty(propertyPath);
+            foreach (var o in objectReferences)
+                if (o == null)
+                    return;
+            serializedObject = new(objectReferences);
+            serializedProperty = serializedObject.FindProperty(propertyPath);
         }
 
         void OnGUI() {

@@ -8,6 +8,16 @@ namespace Jenga {
     [AddTypeMenu("Jenga.AudioPlayer/Playlist")]
     public class PlaylistAudioPlayer : AudioPlayer, ISerializationCallbackReceiver {
 
+    // MIGRATION
+        [HideInInspector] public AudioPlayerReference[] items;
+        public void OnBeforeSerialize() { }
+        public void OnAfterDeserialize() {
+            players = new AudioPlayer[items.Length];
+            for (int i = 0; i < items.Length; ++i)
+                players[i] = items[i].value;
+        }
+    //
+
         // Usage
         public enum SequenceMode { InOrder, Reverse, Shuffle, Randomize }
         public enum PlaybackMode { PlayOne, PlayAll }
@@ -19,14 +29,6 @@ namespace Jenga {
 
         [SerializeReference, TypeMenu, Wrapper]
         public AudioPlayer[] players;
-
-        public AudioPlayerReference[] items;
-        public void OnBeforeSerialize() { }
-        public void OnAfterDeserialize() {
-            players = new AudioPlayer[items.Length];
-            for (int i = 0; i < items.Length; ++i)
-                players[i] = items[i].value;
-        }
 
         int currentIndex = 0;
         public override IEnumerator PlayUsing(AudioSource source) {

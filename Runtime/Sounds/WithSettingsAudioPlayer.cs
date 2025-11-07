@@ -8,6 +8,14 @@ namespace Jenga {
     [AddTypeMenu("Jenga.AudioPlayer/WithSettings")]
     public class WithSettingsAudioPlayer : AudioPlayer, ISerializationCallbackReceiver { 
 
+    // MIGRATION
+        [HideInInspector] public AudioPlayerReference item;
+        public void OnBeforeSerialize() { }
+        public void OnAfterDeserialize() { 
+            player = item.value;
+        }
+    //
+
         // Usage
         [HideInInspector] public bool useVolume;
         [HideInInspector] public bool usePitch;
@@ -29,12 +37,6 @@ namespace Jenga {
 
         [SerializeReference, TypeMenu, Wrapper]
         public AudioPlayer player;
-
-        public AudioPlayerReference item;
-        public void OnBeforeSerialize() { }
-        public void OnAfterDeserialize() { 
-            player = item.value;
-        }
 
         AudioListener listener_;
         public AudioListener listener => listener_ != null 

@@ -8,16 +8,8 @@ namespace Jenga {
     [System.Serializable]
     public class AndCondition : MonoCondition, ISerializationCallbackReceiver {
 
-        [SerializeReference, TypeMenu, Wrapper]
-        public MonoCondition[] conditions = { };
-
-        public MonoConditionReference[] items = { };
- 
-        public override bool Check() {
-            foreach (var condition in conditions) 
-                if (!condition.Check()) return false;
-            return true;
-        }
+    // MIGRATION
+        [HideInInspector] public MonoConditionReference[] items = { };
 
         public void OnBeforeSerialize() { }
         public void OnAfterDeserialize() {
@@ -25,22 +17,25 @@ namespace Jenga {
             for (int i = 0; i < items.Length; ++i)
                 conditions[i] = items[i].value;
         }
+    //
+        [SerializeReference, TypeMenu, Wrapper]
+        public MonoCondition[] conditions = { };
+
+ 
+        public override bool Check() {
+            foreach (var condition in conditions) 
+                if (!condition.Check()) return false;
+            return true;
+        }
+
     }
 
     [AddTypeMenu("Jenga.MonoCondition/OR")]
     [System.Serializable]
     public class OrCondition : MonoCondition, ISerializationCallbackReceiver {
 
-        [SerializeReference, TypeMenu, Wrapper]
-        public MonoCondition[] conditions = { };
-
-        public MonoConditionReference[] items = { };
-
-        public override bool Check() {
-            foreach (var condition in conditions) 
-                if (condition.Check()) return true;
-            return false;
-        }
+    // MIGRATION
+        [HideInInspector] public MonoConditionReference[] items = { };
 
         public void OnBeforeSerialize() { }
         public void OnAfterDeserialize() { 
@@ -48,6 +43,17 @@ namespace Jenga {
             for (int i = 0; i < items.Length; ++i)
                 conditions[i] = items[i].value;
         }
+    //
+        [SerializeReference, TypeMenu, Wrapper]
+        public MonoCondition[] conditions = { };
+
+
+        public override bool Check() {
+            foreach (var condition in conditions) 
+                if (condition.Check()) return true;
+            return false;
+        }
+
     }
 
 
@@ -55,18 +61,22 @@ namespace Jenga {
     [System.Serializable]
     public class NotCondition : MonoCondition, ISerializationCallbackReceiver {
 
-        [SerializeReference, TypeMenu, Wrapper]
-        public MonoCondition condition = new ConstCondition();
-
+    // MIGRATION
         [FormerlySerializedAs("condition")]
-        public MonoConditionReference item = new ConstCondition();
-
-        public override bool Check() => !condition.Check();
+        [HideInInspector] public MonoConditionReference item 
+            = new ConstCondition();
 
         public void OnBeforeSerialize() { }
         public void OnAfterDeserialize() { 
             condition = item.value;
         }
+    //
+
+        [SerializeReference, TypeMenu, Wrapper]
+        public MonoCondition condition = new ConstCondition();
+
+        public override bool Check() => !condition.Check();
+
     }
 
 

@@ -28,7 +28,7 @@ namespace Jenga {
         public string path;
 #endif
 
-        [System.Obsolete]
+        // [System.Obsolete]
         public AddTypeMenuAttribute(
             System.Type typeFamily, string path, int order = 1000,
             [CallerFilePath] string pathToSource = null,
