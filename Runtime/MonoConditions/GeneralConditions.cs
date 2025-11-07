@@ -6,18 +6,8 @@ using UnityEngine.Serialization;
 namespace Jenga {
     [AddTypeMenu("Jenga.MonoCondition/AND")]
     [System.Serializable]
-    public class AndCondition : MonoCondition, ISerializationCallbackReceiver {
+    public class AndCondition : MonoCondition {
 
-    // MIGRATION
-        [HideInInspector] public MonoConditionReference[] items = { };
-
-        public void OnBeforeSerialize() { }
-        public void OnAfterDeserialize() {
-            conditions = new MonoCondition[items.Length];
-            for (int i = 0; i < items.Length; ++i)
-                conditions[i] = items[i].value;
-        }
-    //
         [SerializeReference, TypeMenu, Wrapper]
         public MonoCondition[] conditions = { };
 
@@ -32,18 +22,8 @@ namespace Jenga {
 
     [AddTypeMenu("Jenga.MonoCondition/OR")]
     [System.Serializable]
-    public class OrCondition : MonoCondition, ISerializationCallbackReceiver {
+    public class OrCondition : MonoCondition {
 
-    // MIGRATION
-        [HideInInspector] public MonoConditionReference[] items = { };
-
-        public void OnBeforeSerialize() { }
-        public void OnAfterDeserialize() { 
-            conditions = new MonoCondition[items.Length];
-            for (int i = 0; i < items.Length; ++i)
-                conditions[i] = items[i].value;
-        }
-    //
         [SerializeReference, TypeMenu, Wrapper]
         public MonoCondition[] conditions = { };
 
@@ -59,18 +39,7 @@ namespace Jenga {
 
     [AddTypeMenu("Jenga.MonoCondition/NOT")]
     [System.Serializable]
-    public class NotCondition : MonoCondition, ISerializationCallbackReceiver {
-
-    // MIGRATION
-        [FormerlySerializedAs("condition")]
-        [HideInInspector] public MonoConditionReference item 
-            = new ConstCondition();
-
-        public void OnBeforeSerialize() { }
-        public void OnAfterDeserialize() { 
-            condition = item.value;
-        }
-    //
+    public class NotCondition : MonoCondition {
 
         [SerializeReference, TypeMenu, Wrapper]
         public MonoCondition condition = new ConstCondition();

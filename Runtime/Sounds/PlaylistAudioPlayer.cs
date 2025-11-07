@@ -6,17 +6,8 @@ using UnityEngine.Audio;
 namespace Jenga {
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/Playlist")]
-    public class PlaylistAudioPlayer : AudioPlayer, ISerializationCallbackReceiver {
+    public class PlaylistAudioPlayer : AudioPlayer {
 
-    // MIGRATION
-        [HideInInspector] public AudioPlayerReference[] items;
-        public void OnBeforeSerialize() { }
-        public void OnAfterDeserialize() {
-            players = new AudioPlayer[items.Length];
-            for (int i = 0; i < items.Length; ++i)
-                players[i] = items[i].value;
-        }
-    //
 
         // Usage
         public enum SequenceMode { InOrder, Reverse, Shuffle, Randomize }

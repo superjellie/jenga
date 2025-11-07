@@ -4,16 +4,8 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Jenga {
-    public class AmbianceZone : MonoBehaviour, ISerializationCallbackReceiver {
+    public class AmbianceZone : MonoBehaviour {
 
-    // MIGRATION
-        [FormerlySerializedAs("player")]
-        [HideInInspector] public AudioPlayerReference playerOLD;
-        public void OnBeforeSerialize() { }
-        public void OnAfterDeserialize() { 
-            player = playerOLD.value;
-        }
-    //
 
         [Range(0f, 100f)] public float rolloffDistance = 5f;
         [Range(0f, 100f)] public float maxDistance = 10f;
