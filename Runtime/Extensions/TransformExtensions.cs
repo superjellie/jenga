@@ -11,5 +11,12 @@ namespace Jenga {
         FromSnapshot(this Transform t, TransformSnapshot snapshot)
             => snapshot.SetTransform(t);
 
+
+        public static Vector3 GetRootPosition(this Transform t)
+            => t.root.InverseTransformPoint(t.position);
+
+        public static Vector3 SetRootPosition(this Transform t, Vector3 pos)
+            => t.position = t.root.TransformPoint(pos);
+
     }
 }

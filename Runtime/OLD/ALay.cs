@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace Jenga {
     // Attribute Inspector UI Layouting system
     // Works only with UI Toolkit
-    [System.Obsolete]
+    // [System.Obsolete]
     public static class ALay {
 
         // Couple classes to reduce code duplication

@@ -377,12 +377,26 @@ namespace Jenga {
 
         public static SerializedReferenceLink
         GetLink(this SerializedProperty property) {
-            if (!property.IsManagedReference()) 
-                return SerializedReferenceLink.Null;
+
+
+            var parent = property;
+            while (!parent.IsManagedReference() 
+                && parent.TryGetParentProperty(out var p))
+                parent = p;
+
+            var len = parent.propertyPath.Length;
+            var subPath = len + 1 < property.propertyPath.Length
+                ? property.propertyPath.Substring(len + 1)
+                : "";
+
             return new() {
                 instanceID = property.serializedObject.targetObject
                     .GetInstanceID(),
-                referenceID = property.managedReferenceId
+                referenceID = parent.IsManagedReference() 
+                    ? parent.managedReferenceId
+                    : -2,
+                subPath = subPath,
+                refPath = parent.propertyPath
             };
         }
 
