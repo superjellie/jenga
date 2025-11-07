@@ -31,7 +31,10 @@ namespace Jenga {
             if (objectReferences == null || objectReferences.Length == 0)
                 return; 
 
-            serializedObject = new(objectReferences);
+            if (objectReferences[0] == null)
+                return;
+
+            serializedObject = new(objectReferences[0]);
             serializedProperty = serializedObject?.FindProperty(propertyPath);
         }
 
