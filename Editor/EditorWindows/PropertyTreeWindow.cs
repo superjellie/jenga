@@ -30,6 +30,11 @@ namespace Jenga {
         void UpdateProperty() {
             if (objectReferences == null || objectReferences.Length == 0) 
                 return;
+
+            foreach (var o in objectReferences)
+                if (o == null)
+                    return;
+
             serializedObject = new(objectReferences);
             serializedProperty = serializedObject.FindProperty(propertyPath);
         }

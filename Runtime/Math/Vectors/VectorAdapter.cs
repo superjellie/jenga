@@ -2,14 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using BeardPhantom.RuntimeTypeCache;
+using UnityEngine.Scripting;
 
 namespace Jenga {
-
-    public abstract class VectorAdapterf<T> {
+    
+    [RequireDerived]
+    public abstract class VectorAdapterF<T> {
 
         // Default Adapter implementation for T
         // Searches automaticly for non-generic child class
-        public static VectorAdapterf<T> main = null;
+        public static VectorAdapterF<T> main = null;
 
         // Overload to implement operations
         public abstract T     Zero();
@@ -18,13 +20,13 @@ namespace Jenga {
         public abstract void  Set(ref T x, int index, float value);
 
         // Private
-        static VectorAdapterf() {
-            var cch = GlobalTypeCache.GetTypesDerivedFrom<VectorAdapterf<T>>();
+        static VectorAdapterF() {
+            var cch = GlobalTypeCache.GetTypesDerivedFrom<VectorAdapterF<T>>();
             
             foreach (var type in cch) {
                 if (!type.IsAbstract) {
                     main = System.Activator.CreateInstance(type)    
-                        as VectorAdapterf<T>;
+                        as VectorAdapterF<T>;
                     return;
                 }
             }

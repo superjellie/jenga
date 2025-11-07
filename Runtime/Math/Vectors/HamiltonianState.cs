@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 namespace Jenga {
     
@@ -15,15 +16,19 @@ namespace Jenga {
     }
 
     public class HamiltonianStateAdapter<T> 
-    : VectorAdapterf<HamiltonianState<T>> {
+    : VectorAdapterF<HamiltonianState<T>> {
+        [RequiredMember] 
         public override HamiltonianState<T> Zero() 
             => (LinAlgf.Zero<T>(), LinAlgf.Zero<T>());
+        [RequiredMember] 
         public override int Dim(HamiltonianState<T> x) 
             => LinAlgf.Dim(x.q) + LinAlgf.Dim(x.p);
+        [RequiredMember] 
         public override float Get(HamiltonianState<T> x, int index) 
             => index < LinAlgf.Dim(x.q) 
                 ? LinAlgf.Get(x.q, index) 
                 : LinAlgf.Get(x.p, index - LinAlgf.Dim(x.q));
+        [RequiredMember] 
         public override void 
         Set(ref HamiltonianState<T> x, int index, float value) { 
             if (index < LinAlgf.Dim(x.q))
@@ -35,6 +40,7 @@ namespace Jenga {
 
     public class HamiltonianState2DAdapter : HamiltonianStateAdapter<Vector2> 
         { }
+
     public class HamiltonianState3DAdapter : HamiltonianStateAdapter<Vector3> 
         { }
 

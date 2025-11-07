@@ -8,13 +8,13 @@ namespace Jenga {
 
         // Lifting from adapter
         public static T Zero<T>() 
-            => VectorAdapterf<T>.main.Zero();
+            => VectorAdapterF<T>.main.Zero();
         public static int Dim<T>(T x) 
-            => VectorAdapterf<T>.main.Dim(x);
+            => VectorAdapterF<T>.main.Dim(x);
         public static float Get<T>(T x, int i) 
-            => VectorAdapterf<T>.main.Get(x, i);
+            => VectorAdapterF<T>.main.Get(x, i);
         public static void Set<T>(ref T x, int i, float value) 
-            => VectorAdapterf<T>.main.Set(ref x, i, value);
+            => VectorAdapterF<T>.main.Set(ref x, i, value);
 
         // w = a * x + b * y
         // Functions with W prefix are in-place
