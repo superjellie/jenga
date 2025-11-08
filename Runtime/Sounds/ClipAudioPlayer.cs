@@ -17,7 +17,7 @@ namespace Jenga {
         public AudioClip clip;
         public bool ignoreMetadata;
 
-        public override IEnumerator PlayUsing(AudioSource source) {
+        protected override IEnumerator PlayUsing(AudioSource source) {
         // Debug.Log("HJet");
 
             // var oldVolume = source.volume; 
@@ -39,7 +39,7 @@ namespace Jenga {
             } else {
                 source.clip = clip;
                 source.Play();
-                // Debug.Log(clip);
+                Debug.Log(clip);
                 yield return null;
                 yield return new WaitWhile(() => source != null && source.isPlaying);
             }

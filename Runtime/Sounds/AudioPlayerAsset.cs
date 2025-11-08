@@ -5,16 +5,9 @@ using UnityEngine.Serialization;
 
 namespace Jenga {
     [CreateAssetMenu(fileName = "AudioPlayer", menuName = "Jenga/Audio Player")]
-    public class AudioPlayerAsset : ScriptableObject, ISerializationCallbackReceiver {
+    public class AudioPlayerAsset : ScriptableObject {
 
-        [FormerlySerializedAs("player")]
-        public AudioPlayerReference playerOLD;
-    
-        public void OnBeforeSerialize() { }
-        public void OnAfterDeserialize() { 
-            player = playerOLD.value;
-        }
-
+        [SerializeReference, TypeMenu]
         public AudioPlayer player;
     }
 }

@@ -5,8 +5,6 @@ using UnityEngine.Serialization;
 
 namespace Jenga {
     public class AmbianceZone : MonoBehaviour {
-
-
         [Range(0f, 100f)] public float rolloffDistance = 5f;
         [Range(0f, 100f)] public float maxDistance = 10f;
         public AnimationCurve rolloffCurve 
@@ -41,7 +39,7 @@ namespace Jenga {
             source.maxDistance = maxDistance;
 
             while (true)
-                yield return player.PlayUsing(source);
+                yield return player.PlayUsingMaster(source);
         }
 
         void Update() {

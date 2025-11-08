@@ -13,6 +13,10 @@ namespace Jenga {
     // Pair with style attributes on children properties
     public interface IInlineMe { }
 
+    // Use custom layouting for property
+    // Enables usage of MethodAttributes & StyleAttribute inside property
+    public interface ILayoutMe { }
+
     public class StyleAttribute : PropertyAttribute { 
         public float flexGrow       = float.NaN;    // NOT IMPLEMENTED
         public float flexShrink     = float.NaN;    // NOT IMPLEMENTED
@@ -34,4 +38,16 @@ namespace Jenga {
 
     [System.AttributeUsage(System.AttributeTargets.Field)]
     public class WrapperAttribute : System.Attribute { }
+
+    // Method Attributes
+    // All methods should have following signature:
+    //
+    //      [MethodAttribute]
+    //      static void MethodName(SerializedProperty self) 
+    //
+    [System.AttributeUsage(System.AttributeTargets.Method)]
+    public class MethodAttribute : System.Attribute { }
+
+    // public class ValidatePropertyAttribute : MethodAttribute { } 
+    public class EmitGUIAttribute : MethodAttribute { } // NOT IMPLEMENTED 
 }

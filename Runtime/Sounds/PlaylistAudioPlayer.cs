@@ -8,7 +8,6 @@ namespace Jenga {
     [AddTypeMenu("Jenga.AudioPlayer/Playlist")]
     public class PlaylistAudioPlayer : AudioPlayer {
 
-
         // Usage
         public enum SequenceMode { InOrder, Reverse, Shuffle, Randomize }
         public enum PlaybackMode { PlayOne, PlayAll }
@@ -22,8 +21,7 @@ namespace Jenga {
         public AudioPlayer[] players;
 
         int currentIndex = 0;
-        public override IEnumerator PlayUsing(AudioSource source) {
-        LOOP:
+        protected override IEnumerator PlayUsing(AudioSource source) {
             if (players.Length == 0) yield break;
 
             if (playbackMode == PlaybackMode.PlayAll)

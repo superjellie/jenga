@@ -35,7 +35,7 @@ namespace Jenga {
             ? listener_ 
             : listener_ = Object.FindAnyObjectByType<AudioListener>();
 
-        public override IEnumerator PlayUsing(AudioSource source) {
+        protected override IEnumerator PlayUsing(AudioSource source) {
 
             var oldVolume           = source.volume; 
             var oldPitch            = source.pitch;

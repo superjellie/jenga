@@ -10,8 +10,6 @@ namespace Jenga {
 
         [SerializeReference, TypeMenu, Wrapper]
         public MonoCondition[] conditions = { };
-
- 
         public override bool Check() {
             foreach (var condition in conditions) 
                 if (!condition.Check()) return false;
@@ -23,7 +21,6 @@ namespace Jenga {
     [AddTypeMenu("Jenga.MonoCondition/OR")]
     [System.Serializable]
     public class OrCondition : MonoCondition {
-
         [SerializeReference, TypeMenu, Wrapper]
         public MonoCondition[] conditions = { };
 

@@ -16,7 +16,7 @@ namespace Jenga {
         // public AudioMixerGroup outputAudioMixerGroup;
         public float seconds = 1f;
 
-        public override IEnumerator PlayUsing(AudioSource source) {
+        protected override IEnumerator PlayUsing(AudioSource source) {
             yield return new WaitForSeconds(seconds);
         }
     }
