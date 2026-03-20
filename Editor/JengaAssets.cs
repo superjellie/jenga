@@ -12,7 +12,7 @@ namespace Jenga {
         public static Texture2D texThread = null;
         public static Texture2D texPinFull = null;
         public static Texture2D texPinEmpty = null;
-
+        public static Texture2D texBckgGrid = null;
 
         static JengaAssets() {
             texThread = (Texture2D)AssetDatabase.LoadAssetAtPath(
@@ -21,6 +21,8 @@ namespace Jenga {
                 $"{packagePath}/Textures/pin_full.png", typeof(Texture2D));
             texPinEmpty = (Texture2D)AssetDatabase.LoadAssetAtPath(
                 $"{packagePath}/Textures/pin_empty.png", typeof(Texture2D));
+            texBckgGrid = (Texture2D)AssetDatabase.LoadAssetAtPath(
+                $"{packagePath}/Textures/bckg_grid.jpg", typeof(Texture2D));
         }
 
     }

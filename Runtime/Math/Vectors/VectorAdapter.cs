@@ -20,22 +20,23 @@ namespace Jenga {
         public abstract void  Set(ref T x, int index, float value);
 
         // Private
-        static VectorAdapterF() {
-            var cch = GlobalTypeCache.GetTypesDerivedFrom<VectorAdapterF<T>>();
+        // static VectorAdapterF() {
+        //     var cch = GlobalTypeCache.GetTypesDerivedFrom<VectorAdapterF<T>>();
             
-            foreach (var type in cch) {
-                if (!type.IsAbstract) {
-                    main = System.Activator.CreateInstance(type)    
-                        as VectorAdapterF<T>;
-                    return;
-                }
-            }
+        //     foreach (var type in cch) {
+        //         if (!type.IsAbstract) {
+        //             main = System.Activator.CreateInstance(type)    
+        //                 as VectorAdapterF<T>;
+        //             return;
+        //         }
+        //     }
 
-            throw new System.NotSupportedException(
-                $"Type {typeof(T).FullName} has no VectorAdapter.",
-                null
-            );
-        }
+
+        //     throw new System.NotSupportedException(
+        //         $"Type {typeof(T).FullName} has no VectorAdapter.",
+        //         null
+        //     );
+        // }
     }
 
 }

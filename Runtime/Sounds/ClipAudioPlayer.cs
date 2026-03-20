@@ -39,7 +39,7 @@ namespace Jenga {
             } else {
                 source.clip = clip;
                 source.Play();
-                Debug.Log(clip);
+                // Debug.Log(clip);
                 yield return null;
                 yield return new WaitWhile(() => source != null && source.isPlaying);
             }

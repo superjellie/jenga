@@ -8,20 +8,21 @@ namespace Jenga {
     [CustomPropertyDrawer(typeof(ILayoutMe))]
     public class ILayoutMePropertyDrawer : PropertyDrawer {
 
-        public static IEnumerable<MemberInfo> VisibleMembers(System.Type type) {
-            return type.FindMembers(
-                MemberTypes.Field | MemberTypes.Method,
-                BindingFlags.Static | BindingFlags.Instance
-                | BindingFlags.Public | BindingFlags.NonPublic,
-                (memb, o) => 
-                    memb is FieldInfo fi && !fi.IsStatic
-                        && fi.FieldType.IsSerializable
-                        && !fi.HasCustomAttribute<HideInInspectorAttribute>()
-                    || memb is MethodInfo mi && mi.IsStatic
-                        && !mi.HasCustomAttribute<HideInInspectorAttribute>()
-                        && mi.HasCustomAttribute<MethodAttribute>()
-            );
-        }
+        // public static IEnumerable<MemberInfo> VisibleMembers(System.Type type) {
+        //     return type.FindMembers(
+        //         MemberTypes.Field | MemberTypes.Method,
+        //         BindingFlags.Static | BindingFlags.Instance
+        //         | BindingFlags.Public | BindingFlags.NonPublic,
+        //         (memb, o) => 
+        //             memb is FieldInfo fi && !fi.IsStatic
+        //                 && fi.FieldType.IsSerializable
+        //                 && !fi.HasAttribute<HideInInspector>()
+        //             || memb is MethodInfo mi && mi.IsStatic
+        //                 && !mi.HasAttribute<HideInInspector>()
+        //                 && mi.HasAttribute<MethodAttribute>(),
+        //         null
+        //     );
+        // }
     
         public override void 
         OnGUI(Rect pos, SerializedProperty prop, GUIContent label) {
@@ -39,7 +40,7 @@ namespace Jenga {
 
             if (prop.isExpanded) {
                 EditorGUI.indentLevel++;
-                foreach (var child in prop.DirectChildren()) {
+                foreach (var child in prop.Children()) {
                     var h = EditorGUI.GetPropertyHeight(child);
                     var rect = pos.TopCut(h, out pos);
                     EditorGUI.PropertyField(rect, child);
@@ -56,7 +57,7 @@ namespace Jenga {
             var h = EditorGUIUtility.singleLineHeight;
 
             if (prop.isExpanded)
-                foreach (var child in prop.DirectChildren()) {
+                foreach (var child in prop.Children()) {
                     h += EditorGUI.GetPropertyHeight(child);
                 }
 

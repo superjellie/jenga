@@ -326,20 +326,20 @@ namespace Jenga {
                 && !SerializedProperty.EqualContents(it, last));
         } 
 
-        public static IEnumerable<SerializedProperty> 
-        DirectChildren(this SerializedProperty property) {
-            var it = property.Copy(); 
-            var last = property.GetEndProperty(); 
+        // public static IEnumerable<SerializedProperty> 
+        // DirectChildren(this SerializedProperty property) {
+        //     var it = property.Copy(); 
+        //     var last = property.GetEndProperty(); 
 
-            if (SerializedProperty.EqualContents(it, last)) yield break;
-            if (!it.NextVisible(true) 
-                || SerializedProperty.EqualContents(it, last)) yield break;
-            do {
-                if (it.IsChildOf(property))
-                    yield return it.Copy();
-            } while (it.NextVisible(false) 
-                && !SerializedProperty.EqualContents(it, last));
-        }
+        //     if (SerializedProperty.EqualContents(it, last)) yield break;
+        //     if (!it.NextVisible(true) 
+        //         || SerializedProperty.EqualContents(it, last)) yield break;
+        //     do {
+        //         if (it.IsChildOf(property))
+        //             yield return it.Copy();
+        //     } while (it.NextVisible(false) 
+        //         && !SerializedProperty.EqualContents(it, last));
+        // }
 
         public static IEnumerable<SerializedProperty> 
         Subproperties(this SerializedProperty property) {
@@ -413,19 +413,24 @@ namespace Jenga {
                 && parent.TryGetParentProperty(out var p))
                 parent = p;
 
+            var parentIsRef = parent.IsManagedReference();
             var len = parent.propertyPath.Length;
-            var subPath = len + 1 < property.propertyPath.Length
-                ? property.propertyPath.Substring(len + 1)
-                : "";
+            var subPath = parentIsRef
+                ? len + 1 < property.propertyPath.Length
+                    ? property.propertyPath.Substring(len + 1)
+                    : ""
+                : property.propertyPath;
 
             return new() {
                 instanceID = property.serializedObject.targetObject
                     .GetInstanceID(),
-                referenceID = parent.IsManagedReference() 
+                referenceID = parentIsRef
                     ? parent.managedReferenceId
-                    : -2,
+                    : 0,
                 subPath = subPath,
-                refPath = parent.propertyPath
+                refPath = parentIsRef 
+                    ? parent.propertyPath
+                    : ""
             };
         }
 

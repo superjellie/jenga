@@ -23,6 +23,20 @@ namespace Jenga {
             tex.Apply();
         }
 
+        public static Texture2D MultiplyColor(this Texture2D tex, Color col) {
+            
+            Color[] pix = new Color[tex.width * tex.height];
+
+            for (int y = 0; y < tex.height; ++y)
+            for (int x = 0; x < tex.width; ++x) 
+                pix[x + y * tex.width] = tex.GetPixel(x, y) * col;
+
+            var result = new Texture2D(tex.width, tex.height);
+            result.SetPixels(pix);
+            result.Apply();
+            return result;
+        } 
+
     }
 
     

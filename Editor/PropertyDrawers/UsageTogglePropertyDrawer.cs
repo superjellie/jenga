@@ -27,10 +27,10 @@ namespace Jenga {
                 = EditorGUI.Toggle(toggleRect, usageProperty.boolValue);
 
             EditorGUI.BeginDisabledGroup(!usageProperty.boolValue);
-            fieldRect = EditorGUI.PrefixLabel(
-                fieldRect, GUIUtility.GetControlID(FocusType.Passive), label
-            );
-            EditorGUI.PropertyField(fieldRect, property, GUIContent.none, true);
+            // fieldRect = EditorGUI.PrefixLabel(
+            //     fieldRect, GUIUtility.GetControlID(FocusType.Passive), label
+            // );
+            EditorGUI.PropertyField(fieldRect, property, label, true);
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.indentLevel = indent;

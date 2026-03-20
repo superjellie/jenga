@@ -19,9 +19,28 @@ public class WWDatabaseSelector {
         this.userMatchers = userMatchers;
     }
 
+    public WWDatabaseSelector(
+        WWDatabaseAsset asset, WWDatabaseAsset.Match[] userMatchers
+    ) {
+        this.asset = asset;
+        this.userMatchers = userMatchers;
+    }
+
 
     public WWDatabaseSelector(string key) {
         this.userMatchers = new WWDatabaseAsset.Match[] { new(key, "") };
+    }
+
+    public WWDatabaseSelector(string key, string value) {
+        this.userMatchers = new WWDatabaseAsset.Match[] { new(key, value) };
+    }
+
+    public WWDatabaseSelector(WWDatabaseSelector other) {
+        asset = other.asset;
+        userMatchers = new WWDatabaseAsset.Match[other.userMatchers.Length];
+
+        for (int i = 0; i < userMatchers.Length; ++i)
+            userMatchers[i] = other.userMatchers[i];
     }
 
     // public WWDatabaseSelector(WWDatabaseAsset asset, string key, string value) {
@@ -79,6 +98,31 @@ public class WWDatabaseSelector {
         return result + "]";
     } 
 
+    // public override bool Equals(object other) {
+    //     if (!(other is WWDatabaseSelector selectorOther)) return false;
+
+    //     if (selectorOther.asset != asset) return false;
+
+    //     var otherLen = selectorOther.userMatchers.Length;
+    //     var len = userMatchers.Length;
+    //     if (len != otherLen) return false;
+
+    //     for (int i = 0; i < len; ++i) {
+    //         if (userMatchers[i].key != selectorOther.userMatchers[i].key)
+    //             return false;
+    //         if (userMatchers[i].value != selectorOther.userMatchers[i].value)
+    //             return false;
+    //     }
+
+    //     return true;
+    // }
+
+    // public override int GetHashCode() => 0;
+
+    // public static bool operator==(WWDatabaseSelector x, WWDatabaseSelector y)
+    //     => x.Equals(y);
+    // public static bool operator!=(WWDatabaseSelector x, WWDatabaseSelector y)
+    //     => !x.Equals(y);
 }
 
 
@@ -144,6 +188,49 @@ public class WWDatabaseSelectorDrawer : PropertyDrawer {
 
 
         return root;
+    }
+
+    public override void 
+    OnGUI(Rect pos, SerializedProperty prop, GUIContent label) {
+        var propAsset = prop.FindPropertyRelative("asset");
+        var propUserMatchers = prop.FindPropertyRelative("userMatchers");
+
+        EditorGUI.BeginProperty(pos, label, prop);
+
+        var line = pos.LineCut(out pos);
+        var rectHeader = EditorGUI.PrefixLabel(line, label);
+        EditorGUI.indentLevel++;
+
+        var rectAsset = pos.LineCut(out pos);
+        EditorGUI.PropertyField(rectAsset, propAsset);
+
+        for (int i = 0; i < propUserMatchers.arraySize; ++i) {
+            var propMatcher = propUserMatchers.GetArrayElementAtIndex(i);
+            var propKey = propMatcher.FindPropertyRelative("key");
+            var propValue = propMatcher.FindPropertyRelative("value");
+
+            var cnt = new GUIContent(propKey.stringValue);
+            var rect = pos.LineCut(out pos);
+            EditorGUI.PropertyField(rect, propValue, cnt);
+        }
+
+        EditorGUI.indentLevel--;
+        EditorGUI.EndProperty();
+    }
+
+    public override float 
+    GetPropertyHeight(SerializedProperty prop, GUIContent label) {
+        var propUserMatchers = prop.FindPropertyRelative("userMatchers");
+
+        var pos = new Rect();
+        var line = pos.LineCut(out pos);
+        var rectAsset = pos.LineCut(out pos);
+
+        for (int i = 0; i < propUserMatchers.arraySize; ++i) {
+            var rect = pos.LineCut(out pos);
+        }
+
+        return -pos.height;
     }
 }
 

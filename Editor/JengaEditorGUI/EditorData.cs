@@ -37,19 +37,20 @@ namespace Jenga {
     }
  
     public static partial class JengaEditorGUI {
+        static Stack<string> dataPathStack = new();
         static string currentDataRoot = "";
 
         public static void ResetDataGroup() 
-            => currentDataRoot = "";
+            => dataPathStack.Clear();
+
         public static void BeginDataGroup(string key) {
-            currentDataRoot += $"/{key}";
-            // Debug.Log($"Begin: {currentDataRoot}");
+            dataPathStack.Push(key);
+            currentDataRoot = string.Join("/", dataPathStack);
         }
+
         public static void EndDataGroup() {
-            // Debug.Log($"End: {currentDataRoot}");
-            currentDataRoot = currentDataRoot.Substring(
-                0, currentDataRoot.LastIndexOf('/')
-            );
+            dataPathStack.Pop();
+            currentDataRoot = string.Join("/", dataPathStack);
         }
 
         [System.Serializable]

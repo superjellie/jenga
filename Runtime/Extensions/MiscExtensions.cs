@@ -12,6 +12,13 @@ namespace Jenga {
         where T : Component 
             => (t = go.GetComponentInParent<T>()) != null;
 
+        public static bool TryGetComponentInChildren<T>(this Component c, out T t) 
+        where T : Component 
+            => (t = c.GetComponentInChildren<T>()) != null;
+        public static bool TryGetComponentInChildren<T>(this GameObject go, out T t) 
+        where T : Component 
+            => (t = go.GetComponentInChildren<T>()) != null;
+
 
         public static float SlopeAt(this AnimationCurve curve, float t) {
             var dt = .0001f;
@@ -43,6 +50,9 @@ namespace Jenga {
             while (stack.TryPop(out var item))
                 yield return item;
         }
+
+        public static HashSet<T> Copy<T>(this HashSet<T> set)
+            => new(set);
 
     }
 }

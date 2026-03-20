@@ -19,17 +19,22 @@ namespace Jenga {
 
             EditorGUI.indentLevel++;
             foreach (var child in property.Children()) {
-
-                if (child.isArray) {
+                if (child.isArray && child.propertyType 
+                        != SerializedPropertyType.String) {
                     JengaEditorGUI.BeginForceCollapsedGroup();
                     rect = JengaEditorGUI.ListField(rect, child, 250f);
                     JengaEditorGUI.EndForceCollapsedGroup();
                 } else if (child.propertyType
                         == SerializedPropertyType.ManagedReference) {
-                    var childRect = rect.LineCut(out rect);
-                    var name = child.GetDisplayName();
-                    var type = child.GetCurrentType()?.Name;
-                    EditorGUI.LabelField(childRect, name, type);
+                    JengaEditorGUI.BeginForceCollapsedGroup();
+                    // var childRect = rect.LineCut(out rect);
+                    // var name = child.GetDisplayName();
+                    // var type = child.GetCurrentType()?.Name;
+                    // EditorGUI.LabelField(childRect, name, type);
+                    var height = EditorGUI.GetPropertyHeight(child, true);
+                    var childRect = rect.TopCut(height, out rect);
+                    EditorGUI.PropertyField(childRect, child, true);
+                    JengaEditorGUI.EndForceCollapsedGroup();
                 } else {
                     var height = EditorGUI.GetPropertyHeight(child, true);
                     var childRect = rect.TopCut(height, out rect);

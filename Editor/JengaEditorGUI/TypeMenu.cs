@@ -76,6 +76,7 @@ namespace Jenga {
                 var cntPaste = new GUIContent("Paste");
                 var cntEdit = new GUIContent("Edit Script");
                 var cntTree = new GUIContent("Tree View");
+                var cntGraph = new GUIContent("Graph View");
 
                 var pasteValue = SerializedPropertyExtensions
                     .ParseFromClipboard(property.GetFieldType());
@@ -106,6 +107,11 @@ namespace Jenga {
                 menu.AddItem(
                     cntTree, false,
                     () => PropertyTreeWindow.Edit(property)
+                );
+
+                menu.AddItem(
+                    cntGraph, false,
+                    () => PropertyGraphWindow.Edit(property)
                 );
 
                 menu.AddItem(

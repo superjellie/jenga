@@ -84,6 +84,18 @@ namespace Jenga {
             return r.Expand(-marginX, -marginY);
         }
 
+        public static Rect RightExtend(this Rect r, float extend) 
+            => new(r.x, r.y, r.width + extend, r.height);
+
+        public static Rect BottomExtend(this Rect r, float extend) 
+            => new(r.x, r.y, r.width, r.height + extend);
+
+        public static Rect LeftExtend(this Rect r, float extend) 
+            => new(r.x - extend, r.y, r.width + extend, r.height);
+
+        public static Rect TopExtend(this Rect r, float extend) 
+            => new(r.x, r.y - extend, r.width, r.height + extend);
+
         public static Rect Copy(this Rect r) => r;
     }
 }

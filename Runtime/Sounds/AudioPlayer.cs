@@ -11,9 +11,24 @@ namespace Jenga {
 
         protected virtual IEnumerator PlayUsing(AudioSource source) => null;
 
-        public virtual Coroutine PlayUsingMaster(AudioSource source) 
+        public Coroutine PlayUsingMaster(AudioSource source) 
             => CoroutineMaster.GetOnObject(source.gameObject)
                 .StartCoroutine(PlayUsing(source));
+
+
+        IEnumerator PlayOnNewSourceCrtn(Vector3 pos) {
+            var go = new GameObject();
+            var src = go.AddComponent<AudioSource>();
+            go.transform.position = pos;
+
+            yield return PlayUsingMaster(src);
+
+            if (go != null)
+                GameObject.Destroy(go);
+        }
+
+        public Coroutine PlayUsingNewSource(Vector3 pos) 
+            => CoroutineMaster.main.StartCoroutine(PlayOnNewSourceCrtn(pos));
     }
 
     [System.Serializable, System.Obsolete]

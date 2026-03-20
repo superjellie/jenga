@@ -37,6 +37,9 @@ namespace Jenga {
         public override int GetHashCode() 
             => (instanceID, referenceID, subPath).GetHashCode();
 
+        public override string ToString() 
+            => $"Link(instance={instanceID},refId={referenceID},subPath={subPath})";
+
         public bool IsNull() => instanceID == 0 || referenceID < 0;
 
 
@@ -44,7 +47,9 @@ namespace Jenga {
 
         public SerializedProperty GetProperty() {
 
-            if (soCache.TryGetValue(instanceID, out var so)) {
+            if (soCache.TryGetValue(instanceID, out var so)
+                && so != null && so.targetObject != null
+            ) {
                 so.Update();
                 return so.FindProperty(path);
             }
