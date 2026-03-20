@@ -11,14 +11,14 @@ namespace Jenga {
             drawnLinkPlugs = new();
 
         static bool drawFlags = false;
-        static int cablePlugsCount = 0;
+        // static int cablePlugsCount = 0;
         static SerializedReferenceLink draggedLink
             = SerializedReferenceLink.Null;
 
         public static void BeginCablePlugsGroup() {
             drawFlags = true;
             drawnLinkPlugs.Clear();
-            cablePlugsCount = 0;
+            // cablePlugsCount = 0;
             draggedLink = SerializedReferenceLink.Null;
         }
         

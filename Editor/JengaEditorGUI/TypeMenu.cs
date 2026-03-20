@@ -27,7 +27,7 @@ namespace Jenga {
 
                 foreach (var (path, reg) in tree.Walk()) {
                     var entryContent = new GUIContent(path);
-
+                    if (reg.type == null) continue;
                     menu.AddItem(
                         entryContent, reg.type == currentType,
                         action, reg.type

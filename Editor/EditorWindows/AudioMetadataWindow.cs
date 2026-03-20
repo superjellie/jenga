@@ -41,8 +41,8 @@ namespace Jenga {
                 var clip = (AudioClip)AssetDatabase
                     .LoadAssetAtPath(path, typeof(AudioClip));
                 data.player = new WithSettingsAudioPlayer() {
-                    player = new ClipAudioPlayer() 
-                        { clip = clip, ignoreMetadata = true }
+                    player = new ClipIgnoreMetadataAudioPlayer() 
+                        { clip = clip }
                 };
             };
             root.Add(buttonAdd);

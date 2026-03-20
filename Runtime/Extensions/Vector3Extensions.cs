@@ -10,5 +10,8 @@ namespace Jenga {
         public static Vector3 SwizzleX0Y(this Vector2 v) => new(v.x, 0f, v.y);
         public static Vector3 SwizzleXY0(this Vector2 v) => new(v.x, v.y, 0f);
 
+        public static float[] ConvertToArray(this Vector3 v)
+            => new float[3] { v.x, v.y, v.z };
+
     }
 }

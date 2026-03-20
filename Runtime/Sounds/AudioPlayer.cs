@@ -11,6 +11,32 @@ namespace Jenga {
         public virtual Coroutine PlayUsingMaster(AudioSource source) 
             => CoroutineMaster.GetOnObject(source.gameObject)
                 .StartCoroutine(PlayUsing(source));
+
+        public void PlayAt(Vector3 position, Transform parent = null) {
+            var go = new GameObject("AudioPlayer");
+            var src = go.AddComponent<AudioSource>();
+
+            go.transform.parent = parent;
+            go.transform.localPosition = position;
+
+            var master = CoroutineMaster.GetOnObject(go);
+            master.PlayCoroutineAndDestroy(PlayUsing(src));
+        }
+
+        public static void PlayClipAt(
+            AudioClip clip, Vector3 position, Transform parent = null
+        ) {
+            var player = new ClipAudioPlayer() { clip = clip };
+
+            var go = new GameObject("AudioPlayer");
+            var src = go.AddComponent<AudioSource>();
+
+            go.transform.parent = parent;
+            go.transform.localPosition = position;
+
+            var master = CoroutineMaster.GetOnObject(go);
+            master.PlayCoroutineAndDestroy(player.PlayUsing(src));
+        }
     }
 
     [System.Serializable, System.Obsolete]

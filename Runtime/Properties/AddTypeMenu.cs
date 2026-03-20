@@ -54,11 +54,15 @@ namespace Jenga {
 #if UNITY_EDITOR
         static AddTypeMenuAttribute() {
             var types = TypeCache.GetTypesWithAttribute<AddTypeMenuAttribute>();
-            foreach (var type in types) 
-                if (type.TryGetAttribute<AddTypeMenuAttribute>(out var atm)) {
+            foreach (var type in types) {
+                var attrs = type
+                    .GetCustomAttributes(typeof(AddTypeMenuAttribute), false);
+                foreach (var attr in attrs) {
+                    var atm = attr as AddTypeMenuAttribute;
                     atm.reg.type = type;
                     registry.Add(atm.path, atm.reg);
                 }
+            }
         }
 #endif
 
@@ -68,10 +72,12 @@ namespace Jenga {
     public static class TypeMenuEntryExtensions {
         public static IEnumerable<(string, TypeMenuEntry)> 
         GetWrappers(this PathTree<TypeMenuEntry> tree) {
-            foreach (var (path, entry) in tree.Walk()) 
+            foreach (var (path, entry) in tree.Walk()) {
+                if (entry.type == null) continue;
                 if (entry.type
                         .TryGetFieldWithAttribute<WrapperAttribute>(out var _))
                     yield return (path, entry);
+            }
         }
 
         public static void EditScript(this TypeMenuEntry entry) {

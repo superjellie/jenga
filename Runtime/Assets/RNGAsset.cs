@@ -14,10 +14,10 @@ namespace Jenga {
         public enum RNGType { Xorshift32 }
         public RNGType type;
 
-        // [ALay.LayoutMe, ALay.UsageToggle("useSeed")] 
+        // [ALay.LayoutMe, ALay.UsageToggle("useSeed")]
         public uint seed = 0xAABB;
-        
-        // [HideInInspector] 
+
+        // [HideInInspector]
         public bool useSeed = true;
 
         public uint GetUint() {
@@ -25,13 +25,26 @@ namespace Jenga {
                 seed = (uint)Random.Range(int.MinValue, int.MaxValue);
                 useSeed = true;
             }
-            
+
             return RND.Xorshift32(ref seed);
         }
 
         public int GetInt() => (int)GetUint();
-        
-        public int GetIntInRange(int minInclusive, int maxExclusive) 
+
+        public T TakeRandom<T>(ArrayView<T> array) {
+            return AQRY.TakeRandom(GetInt, array);
+        }
+
+        public T TakeRandom<T>(List<T> list) {
+            return AQRY.TakeRandom<T>(GetInt, list.ConvertToArray());
+        }
+
+        public ArrayView<T> Shuffle<T>(ArrayView<T> array) {
+            AQRY.Shuffle(GetInt, array);
+            return array;
+        }
+
+        public int GetIntInRange(int minInclusive, int maxExclusive)
             => minInclusive + Mathx.Mod(GetInt(), maxExclusive - minInclusive);
     }
 

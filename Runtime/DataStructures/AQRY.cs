@@ -8,13 +8,13 @@ namespace Jenga {
     // AQRY functions DO NOT make copies if they can help it
     //      that means that they usually change array they work on
     // Intended to replace LINQ cause it is inconvinient and baggy sometimes
-    // In future AQRY will also be optimised better i hope 
+    // In future AQRY will also be optimised better i hope
     public static class AQRY {
 
-        public delegate bool  Filter<T>         (T x, int i); 
-        public delegate float Measure<T>        (T x, int i); 
-        public delegate Q     Transformer<T, Q> (T x, int i); 
-        public delegate T     Generator<T>      (int i); 
+        public delegate bool  Filter<T>         (T x, int i);
+        public delegate float Measure<T>        (T x, int i);
+        public delegate Q     Transformer<T, Q> (T x, int i);
+        public delegate T     Generator<T>      (int i);
 
         // Min, Max, Sum
         public static T MinBy<T>(ArrayView<T> array, Measure<T> by) {
@@ -42,38 +42,38 @@ namespace Jenga {
         }
 
 
-        public static float Min(ArrayView<float> array) 
+        public static float Min(ArrayView<float> array)
             => MinBy(array, (x, i) => x);
 
-        public static float Max(ArrayView<float> array) 
+        public static float Max(ArrayView<float> array)
             => MaxBy(array, (x, i) => x);
 
         public static float Sum(ArrayView<float> fs) {
             var sum = 0f;
-            for (int i = 0; i < fs.length; ++i) 
+            for (int i = 0; i < fs.length; ++i)
                 sum += fs[i];
             return sum;
         }
 
         public static bool Contains<T>(ArrayView<T> array, Filter<T> filter) {
-            for (int i = 0; i < array.length; ++i) 
+            for (int i = 0; i < array.length; ++i)
                 if (filter(array[i], i)) return true;
-            return false;  
+            return false;
         }
 
         public static (T item, int index) Search<T>(
             ArrayView<T> array, Filter<T> filter
         ) {
-            for (int i = 0; i < array.length; ++i) 
+            for (int i = 0; i < array.length; ++i)
                 if (filter(array[i], i)) return (array[i], i);
-            return (default(T), -1);  
+            return (default(T), -1);
         }
 
         public static ArrayView<T> Where<T>(
             ArrayView<T> array, Filter<T> filter
         ) {
             var firstBad = 0;
-            for (int i = 0; i < array.length; ++i) 
+            for (int i = 0; i < array.length; ++i)
                 if (filter(array[i], i)) {
                     (array[firstBad], array[i]) = (array[i], array[firstBad]);
                     firstBad++;
@@ -82,14 +82,14 @@ namespace Jenga {
         }
 
         public static ArrayView<Q> Transform<T, Q>(
-            ArrayView<T> array, ArrayView<Q> destination, 
+            ArrayView<T> array, ArrayView<Q> destination,
             Transformer<T, Q> transformer
         ) {
             // var qArray = new Q[array.length];
             var len = Mathx.Min(destination.length, array.length);
-            for (int i = 0; i < len; ++i) 
+            for (int i = 0; i < len; ++i)
                 destination[i] = transformer(array[i], i);
-            
+
             return ArrayView.Slice(destination, 0, len);
         }
 
@@ -119,7 +119,7 @@ namespace Jenga {
                 (array[i], array[j]) = (array[j], array[i]);
             }
             return array;
-        } 
+        }
 
         public static ArrayView<T> SortBy<T>(
             ArrayView<T> array, Measure<T> by

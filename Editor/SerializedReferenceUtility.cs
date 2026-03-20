@@ -70,6 +70,20 @@ namespace Jenga {
                 foreach (var path in cache.paths) 
                     yield return so.FindProperty(path);
 
+        }  
+
+        public static SerializedProperty
+        GetLinkedProperty(SerializedObject so, long id) {
+            var link = new SerializedReferenceLink() { 
+                instanceID = so.targetObject.GetInstanceID(), 
+                referenceID = id 
+            };
+
+            if (linkToPaths.TryGetValue(link, out var cache))
+                if (cache.paths.Count > 0) 
+                    return so.FindProperty(cache.paths[0]);
+
+            return null;
         }
 
         public static int 
