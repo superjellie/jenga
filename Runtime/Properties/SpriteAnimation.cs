@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jenga {
+
+    // TODO: Editor
     [System.Serializable]
-    public class SpriteAnimation /*: ALay.ILayoutMe */{
-        [ALay.Style(flexGrow = 1f)]
+    public class SpriteAnimation {
         public Texture2D texture;
 
-        [ALay.Style(width = 50f)]
         public float fps = 20f;
         
-        [HideInInspector]
         public Sprite[] sprites = { };
 
         public GameObject Play(Vector3 pos, Quaternion rot, Vector3 scale) {

@@ -10,7 +10,7 @@ namespace Jenga {
     // State ID should be less then 32
     public class VisualInterface : MonoBehaviour {
 
-        [System.Serializable, ALay.HideHeader]
+        [System.Serializable]
         public class StateDescription {
             public int id = 1;
     #if UNITY_EDITOR
@@ -34,7 +34,6 @@ namespace Jenga {
 
         // 0 is ALWAYS Disabled state
         // Other states are specified in editor
-        [ALay.ListView(showFoldoutHeader = false)]
         public StateDescription[] stateDescriptions = { };
 
         // Private

@@ -10,8 +10,9 @@ namespace Jenga {
         where T : Component { }
 
     [System.Serializable]
+    // TODO: Editor
     public class PrefabUsageStrategy<T> 
-        : INamedReferenceUsageStrategy<T>, ALay.ILayoutMe
+        : INamedReferenceUsageStrategy<T>
         where T : Component {
 
         public enum Strategy { Activate, Instantiate, InstantiateAndActivate };

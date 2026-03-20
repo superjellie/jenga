@@ -6,7 +6,7 @@ namespace Jenga {
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer")]
     [AddTypeMenu("Jenga.AudioPlayer/Nothing")]
-    public class AudioPlayer : ALay.ILayoutMe {
+    public class AudioPlayer {
 
 
         protected virtual IEnumerator PlayUsing(AudioSource source) => null;
@@ -55,17 +55,5 @@ namespace Jenga {
             master.PlayCoroutineAndDestroy(player.PlayUsing(src));
         }
 
-    }
-
-    [System.Serializable, System.Obsolete]
-    public class AudioPlayerReference : ALay.ILayoutMe {
-        // [SerializeReference] public AudioPlayer value = new();
-
-        // public virtual Coroutine PlayUsing(AudioSource source) 
-        //     => CoroutineMaster.GetOnObject(source.gameObject)
-        //         .StartCoroutine(value?.PlayUsing(source));
-        
-        // public static implicit operator AudioPlayerReference(AudioPlayer player)
-        //     => new() { value = player };
     }
 }
