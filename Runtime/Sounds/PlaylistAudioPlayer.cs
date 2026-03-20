@@ -47,7 +47,7 @@ namespace Jenga {
 
             var player 
                 = sequenceMode == SequenceMode.Reverse 
-                    ? players[^currentIndex]
+                    ? players[^(currentIndex + 1)]
                     : players[currentIndex];
             // Debug.Log(currentIndex);
             currentIndex++;

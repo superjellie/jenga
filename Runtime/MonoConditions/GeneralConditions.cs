@@ -46,7 +46,7 @@ namespace Jenga {
     }
 
 
-    [AddTypeMenu("MonoCondition/Const")]
+    [AddTypeMenu("Jenga.MonoCondition/Const")]
     [System.Serializable]
     public class ConstCondition : MonoCondition {
         public enum BoolEnum { True = 1, False = 0 } 

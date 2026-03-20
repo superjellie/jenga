@@ -8,25 +8,10 @@ namespace Jenga {
     [AddTypeMenu("Jenga.AudioPlayer/Clip")]
     public class ClipAudioPlayer : AudioPlayer {
 
-        // Usage
-        // [ALay.Skip] public bool useVolume;
-        // [ALay.Skip] public bool useMixerGroup;
-        // [ALay.UsageToggle("useVolume"), Range(0f, 1f)] public float volume = 1f;
-        // [ALay.UsageToggle("useMixerGroup")]   
-        // public AudioMixerGroup outputAudioMixerGroup;
         public AudioClip clip;
-        public bool ignoreMetadata;
+        protected virtual bool ignoreMetadata => false;
 
         protected override IEnumerator PlayUsing(AudioSource source) {
-        // Debug.Log("HJet");
-
-            // var oldVolume = source.volume; 
-            // var oldMixerGroup = source.outputAudioMixerGroup; 
-
-            // if (useVolume) 
-            //     source.volume = volume;
-            // if (useMixerGroup) 
-            //     source.outputAudioMixerGroup = outputAudioMixerGroup;
 
             AudioPlayerAsset asset = null;
             if (!ignoreMetadata && MetadataMasterAsset.main != null) {
@@ -37,17 +22,23 @@ namespace Jenga {
             if (asset != null) {
                 yield return asset.player.PlayUsingMaster(source);
             } else {
-                source.clip = clip;
-                source.Play();
-                // Debug.Log(clip);
+                var volumeFactor = 1f;
+                if (CommonAudioModifiers.TryGet(source, out var cam))
+                    volumeFactor = cam.volumeFactor;
+
+                source.PlayOneShot(clip, source.volume * volumeFactor);
                 yield return null;
                 yield return new WaitWhile(() => source != null && source.isPlaying);
             }
-
-            // if (useVolume) 
-            //     source.volume = oldVolume;
-            // if (useMixerGroup) 
-            //     source.outputAudioMixerGroup = oldMixerGroup;
         }
+
+    }
+
+    // Just wanted to separate them to reduce bugs
+    // Still need to do smth about preventing recoursion
+    [System.Serializable]
+    [AddTypeMenu("Jenga.AudioPlayer/ClipIgnoreMetadata")]
+    public class ClipIgnoreMetadataAudioPlayer : ClipAudioPlayer {
+        protected override bool ignoreMetadata => true;
     }
 }

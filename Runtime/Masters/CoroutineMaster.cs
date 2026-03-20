@@ -28,5 +28,17 @@ namespace Jenga {
                 
             return go.AddComponent<CoroutineMaster>();
         }
+
+        public void PlayCoroutineAndDestroy(IEnumerator crtn) {
+            
+            IEnumerator Play() {
+                yield return crtn;
+
+                if (this != null)
+                    Destroy(gameObject);
+            }
+
+            StartCoroutine(Play());
+        }
     }
 }

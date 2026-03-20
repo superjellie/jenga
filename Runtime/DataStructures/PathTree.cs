@@ -93,7 +93,7 @@ namespace Jenga {
             var pathRest = i >= 0 ? path.Substring(i + 1) : "";
 
             if (!children.TryGetValue(pathKey, out var child)) 
-                children.Add(pathKey, child = new(value));
+                children.Add(pathKey, child = new());
             
             child.Add(pathRest, value);
         }
