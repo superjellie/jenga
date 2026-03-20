@@ -11,16 +11,21 @@ namespace Jenga {
         public AudioClip clip;
         protected virtual bool ignoreMetadata => false;
 
+        static HashSet<(AudioSource, AudioClip)> takenMetadataOn = new();
+
         protected override IEnumerator PlayUsing(AudioSource source) {
 
             AudioPlayerAsset asset = null;
-            if (!ignoreMetadata && MetadataMasterAsset.main != null) {
+            if (!ignoreMetadata && MetadataMasterAsset.main != null
+                && !takenMetadataOn.Contains((source, clip))) {
                 asset = MetadataMasterAsset.main
                     .GetMetadata<AudioPlayerAsset>(clip);
             }
 
             if (asset != null) {
+                takenMetadataOn.Add((source, clip));
                 yield return asset.player.PlayUsingMaster(source);
+                takenMetadataOn.Remove((source, clip));
             } else {
                 var volumeFactor = 1f;
                 if (CommonAudioModifiers.TryGet(source, out var cam))
