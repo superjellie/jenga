@@ -6,14 +6,26 @@ using UnityEditor;
 namespace Jenga {
     public static partial class JengaEditorGUI {
 
-        public static bool SelectionRect<T>(Rect rect, string group, T id) {
+        public static bool SelectionRect<T>(
+            Rect rect, string group, T id, bool multi = false
+        ) {
             var style = EditorStyles.toolbarButton;
-            var selected = GetDataValueOrDefault<T>(group, default(T));
+            var selected = GetDataValueOrDefault<List<T>>(
+                group, default(List<T>)
+            );
 
-            var eq = object.Equals(id, selected);
-            
+            if (selected == null)
+                selected = new();
+
+            var eq = selected.Contains(id);
             var doToggle = GUI.Toggle(rect, eq, "", style);
-            if (doToggle && !eq) SetDataValue(group, id);
+            
+            if (!multi)
+                selected.Clear();
+            if (doToggle && !eq)
+                { selected.Add(id); SetDataValue(group, selected); } 
+            else if (!doToggle && eq)
+                { selected.Remove(id); SetDataValue(group, selected); }
 
             return doToggle;
         }
