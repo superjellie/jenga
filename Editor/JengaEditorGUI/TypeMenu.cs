@@ -38,11 +38,16 @@ namespace Jenga {
             } 
         }
 
-        public static void TypeMenu(Rect rect, SerializedProperty property) {
+        public static void TypeMenu(
+            Rect rect, SerializedProperty property, string path = null
+        ) {
             var family = property.GetFieldType();
-            var foundFamily = AddTypeMenuAttribute.registry.TryFindSubtree(
-                reg => reg.type == family, out var familyTree
-            );
+            var foundFamily 
+                = path == null ? AddTypeMenuAttribute.registry.TryFindSubtree(
+                    reg => reg.type == family, out var familyTree
+                ) : AddTypeMenuAttribute.registry.TryGetSubtree(
+                    path, out familyTree
+                );
 
             if (!foundFamily) {
                 GUI.Label(rect, "No Family");
@@ -54,11 +59,11 @@ namespace Jenga {
                 (type) => property.TrySetType(type)
             );
 
-            TypeMenuContext(rect, property);
+            TypeMenuContext(rect, property, path);
         }
 
         public static void TypeMenuContext(
-            Rect rect, SerializedProperty property
+            Rect rect, SerializedProperty property, string path = null
         ) {
 
 
@@ -67,9 +72,13 @@ namespace Jenga {
                 && rect.Contains(evt.mousePosition)
             ) {
                 var family = property.GetFieldType();
-                var foundFamily = AddTypeMenuAttribute.registry.TryFindSubtree(
-                    reg => reg.type == family, out var familyTree
-                );
+                var foundFamily 
+                    = path == null ? AddTypeMenuAttribute.registry.TryFindSubtree(
+                        reg => reg.type == family, out var familyTree
+                    ) : AddTypeMenuAttribute.registry.TryGetSubtree(
+                        path, out familyTree
+                    );
+
                 var menu = new GenericMenu();
 
                 var cntCopy = new GUIContent("Copy");
@@ -88,8 +97,8 @@ namespace Jenga {
                         () => property.FillFromValue(pasteValue));
 
 
-                foreach (var (path, reg) in familyTree.GetWrappers()) {
-                    var cntWrap = new GUIContent($"Wrap With/{path}");
+                foreach (var (pth, reg) in familyTree.GetWrappers()) {
+                    var cntWrap = new GUIContent($"Wrap With/{pth}");
                     menu.AddItem(
                         cntWrap, false, 
                         () => property.WrapWith(reg.type)

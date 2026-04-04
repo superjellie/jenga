@@ -10,83 +10,81 @@ using UnityEditor.UIElements;
 namespace Jenga {
     public class NamedReferencePropertyDrawer<T, UsageStrategy> : PropertyDrawer
         where UsageStrategy : INamedReferenceUsageStrategy<T> {
-
-        public override VisualElement CreatePropertyGUI(
-            SerializedProperty prop
+        public override void OnGUI(
+            Rect position, SerializedProperty property, GUIContent label
         ) {
-            var propID = prop.FindPropertyRelative("id");
-            var propRegistry = prop.FindPropertyRelative("registry");
+            var propID = property.FindPropertyRelative("id");
+            var propRegistry = property.FindPropertyRelative("registry");
 
             var registry = (NamedReferenceRegistry<T, UsageStrategy>)
                 propRegistry.objectReferenceValue;
 
-            var root = new VisualElement();
-            var header = new VisualElement() { 
-                style = { 
-                    flexDirection = FlexDirection.Row
-                }
-            };
+            bool hasRegistry = registry != null;
+            bool hasCorrectId = hasRegistry && registry.HasID(propID.intValue);
 
-            // var label = new Label() { text = preferredLabel };
-            var box = new HelpBox() { style = { display = DisplayStyle.None } };
+            // var lw = EditorGUIUtility.labelWidth;
+            var rectLine = position.LineCut(out position);
+            var rectDropdown = rectLine.RightCut(150f, out rectLine)
+                .LeftExtend(25f); 
+            var rectRegistry = rectLine;
+            var rectHelp     = position.LineCut(out position);
 
-            var registryField = new PropertyField() { 
-                bindingPath = propRegistry.propertyPath,
-                label = preferredLabel,
-                style = { flexGrow = 1f }
-            };
+            // EditorGUI.LabelField(rectName, label);
+            propRegistry.objectReferenceValue = EditorGUI.ObjectField(
+                rectRegistry, label, registry, 
+                typeof(NamedReferenceRegistry<T, UsageStrategy>), 
+                false
+            );
 
-            var dropdown = new PopupField<int>() {
-                choices = registry?.references.pairs
-                    .Select(x => x.key).ToList() ?? new List<int>(),
-                index = registry?.references.pairs
-                    .FindIndex(x => x.key == propID.intValue) ?? -1,
-                formatListItemCallback 
-                    = (id) => registry?.GetName(id) ?? "[No Registry]",
-                formatSelectedValueCallback 
-                    = (id) => registry?.GetName(id) ?? "[No Registry]",
-                style = { minWidth = 150f }
-            };
-
-            dropdown.RegisterValueChangedCallback((evt) => {
-                propID.intValue = evt.newValue;
-                propID.serializedObject.ApplyModifiedProperties();
-            });
-
-            box.schedule.Execute(() => {
-                var newRegistry = (NamedReferenceRegistry<T, UsageStrategy>)
-                    propRegistry.objectReferenceValue;
-
-                if (registry != newRegistry) {
-                    registry = newRegistry;
-                    dropdown.choices = registry?.references.pairs
-                        .Select(x => x.key).ToList() ?? new List<int>();
-                    dropdown.index = registry?.references.pairs
-                        .FindIndex(x => x.key == propID.intValue) ?? -1;
+            if (hasRegistry) {
+                int i = hasCorrectId ? 0 : 1;
+                var options = new string[registry.CountItems() + i]; 
+                var ids = new int[registry.CountItems() + i];
+                
+                if (!hasCorrectId) {
+                    ids[0] = propID.intValue;
+                    options[0] = registry.GetName(ids[0]);
                 }
 
-                var id = propID.intValue;
-                var rf = registry != null ? registry.Get(id) : default(T);
+                foreach (var (key, value) in registry.references) {
+                    ids[i] = key;
+                    options[i++] = value.name;
+                }
 
-                box.style.display 
-                    = rf == null ? DisplayStyle.Flex : DisplayStyle.None;
-                box.text = 
-                    registry == null ? "Select registry"
-                    : id <= 0 ? "Select reference" 
-                    : "Reference is missing in Reference Master";
-                box.messageType = HelpBoxMessageType.Error; 
+                var index = System.Array.IndexOf(ids, propID.intValue);
+                index = EditorGUI.Popup(rectDropdown, index, options);
 
-            }).Every(1000).StartingIn(0);
+                propID.intValue = ids[index];
+            }
 
+            if (!hasRegistry || !hasCorrectId)
+                EditorGUI.HelpBox(
+                    rectHelp, 
+                    !hasRegistry ? "Select registry"
+                    : propID.intValue <= 0 ? "Select reference" 
+                    : "Reference is missing in Reference Master",
+                    MessageType.Error
+                );            
+        } 
 
-            header.Add(registryField);
-            header.Add(dropdown);
+        public override float 
+        GetPropertyHeight(SerializedProperty property, GUIContent label) {
+            var propID = property.FindPropertyRelative("id");
+            var propRegistry = property.FindPropertyRelative("registry");
+            var registry = (NamedReferenceRegistry<T, UsageStrategy>)
+                propRegistry.objectReferenceValue;
+            bool hasRegistry = registry != null;
+            bool hasCorrectId = hasRegistry && registry.HasID(propID.intValue);
 
-            root.Add(header);
-            root.Add(box);
+            var position = new Rect(0f, 0f, 0f, 0f);
+            var startY = position.yMin;
+            var rectLine = position.LineCut(out position);
+            var rectHelp = position.LineCut(out position);
+            var endY = hasRegistry && hasCorrectId 
+                ? rectLine.yMax : rectHelp.yMax;
+            return endY - startY;
+        } 
 
-            return root;
-        }
     }
 
     [CustomPropertyDrawer(typeof(NamedReference<RNGAsset>))]
