@@ -34,7 +34,9 @@ namespace Jenga {
 
     public class HideLabelAttribute : PropertyAttribute { }
 
-    public class TypeMenuAttribute : PropertyAttribute { }
+    public class TypeMenuAttribute : PropertyAttribute { 
+        public string path = null;
+    }
 
     [System.AttributeUsage(System.AttributeTargets.Field)]
     public class WrapperAttribute : System.Attribute { }
