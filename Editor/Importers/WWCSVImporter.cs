@@ -97,6 +97,13 @@ namespace Jenga {
                     values.Add("");
 
                 // If outside of quotation encounter quote
+                // And we had quote a moment ago
+                // then return quotation and add a quote to text
+                else if (state == ST_UNQUOTED && line[i] == quote
+                    && i > 0 && line[i - 1] == quote) 
+                    { values[^1] += quote; state = ST_QUOTED_REGULAR; }
+
+                // If outside of quotation encounter quote
                 // then skip and add start quotation
                 else if (state == ST_UNQUOTED && line[i] == quote)
                     state = ST_QUOTED_REGULAR;
