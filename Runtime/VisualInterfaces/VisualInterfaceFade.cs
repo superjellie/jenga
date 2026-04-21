@@ -21,12 +21,14 @@ namespace Jenga {
             fallback = new CurveWithDuration(.2f)
         };
 
-        void Awake() {
+
+        void OnEnable() {
             vi.onStateChange += OnStateChange;
+            OnStateChange(0, vi.state, true);
         }
 
-        void Start() {
-            OnStateChange(0, vi.state, true);
+        void OnDisable() {
+            vi.onStateChange -= OnStateChange;
         }
 
         Coroutine crtn = null;
