@@ -41,6 +41,8 @@ namespace Jenga {
 
             var start = canvasGroup.alpha;
             var end = stateAlpha.Get(newState);
+            canvasGroup.blocksRaycasts = newState > 0;
+            canvasGroup.interactable = newState > 0;
 
             if (immediate)
                 canvasGroup.alpha = end;
