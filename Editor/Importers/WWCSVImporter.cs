@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEditor;
 using UnityEditor.AssetImporters;
+using UnityEngine.Serialization;
 using System.IO;
 using System.Text ;
 
@@ -16,7 +17,7 @@ namespace Jenga {
     // google sheets or smth like this and createes UI button in interface.
     [ScriptedImporter(version: 1, ext: "wwcsv")]
     [Icon("Packages/com.github.superjellie.jenga/Editor/Icons/database.png")]
-    public class WWCSVImporter : ScriptedImporter {
+    public class WWCSVImporter : ScriptedImporter, ISerializationCallbackReceiver {
         
         // [Header("Parser")]
         public string columnPrefix = "Column:";
@@ -30,8 +31,28 @@ namespace Jenga {
         public bool   skipUnquoted = false;
 
         // [Header("Linking")]
-        [TextArea]
-        public string[] links = { };
+        [System.Serializable]
+        public struct NamedLink {
+            public string name;
+
+            [TextArea]
+            public string link;
+        }
+
+        
+        public List<NamedLink> namedLinks = new();
+        
+    // MIGRATION
+        [FormerlySerializedAs("links")]
+        public List<string> linksOLD = new();
+
+        public void OnBeforeSerialize() { }
+        public void OnAfterDeserialize() { 
+            foreach (var link in linksOLD)
+                namedLinks.Add(new() { name = "", link = link });
+            linksOLD.Clear();
+        }
+    //
 
         // Preview
         public WWDatabaseAsset.Match[] previewMatches = { };
@@ -126,6 +147,39 @@ namespace Jenga {
         }
     }
 
+    [CustomPropertyDrawer(typeof(WWCSVImporter.NamedLink))]
+    public class WWCSVImporterNamedLinkPropertyDrawer : PropertyDrawer {
+
+        public override void OnGUI(
+            Rect pos, SerializedProperty prop, GUIContent label
+        ) {
+            var propName = prop.FindPropertyRelative("name");
+            var propLink = prop.FindPropertyRelative("link");
+            var height = GetPropertyHeight(prop, label);
+            pos.height = height;
+
+            label = EditorGUI.BeginProperty(pos, label, prop);
+            var line = pos.LineCut(out var pos1);
+            EditorGUI.PropertyField(line, propName, GUIContent.none);
+            EditorGUI.indentLevel++;
+            EditorGUI.PropertyField(pos, propLink, GUIContent.none);
+            EditorGUI.indentLevel--;
+            EditorGUI.EndProperty();
+        }
+
+        public override float GetPropertyHeight(
+            SerializedProperty prop, GUIContent label
+        ) {
+            var propName = prop.FindPropertyRelative("name");
+            var propLink = prop.FindPropertyRelative("link");
+
+            var propNameHeight = EditorGUIUtility.singleLineHeight;
+            EditorGUI.indentLevel++;
+            var propLinkHeight = EditorGUI.GetPropertyHeight(propLink);
+            EditorGUI.indentLevel--;
+            return propLinkHeight + propNameHeight;
+        }
+    }
 
     [CustomEditor(typeof(WWCSVImporter))]
     public class WWCSVImporterEditor : ScriptedImporterEditor {
@@ -194,7 +248,7 @@ namespace Jenga {
             EditorGUILayout.EndFoldoutHeaderGroup();
 
             // Linking
-            var propLinks = so.FindProperty("links");
+            var propLinks = so.FindProperty("namedLinks");
             EditorGUILayout.PropertyField(propLinks);
 
             EditorGUI.BeginChangeCheck();
@@ -314,7 +368,7 @@ namespace Jenga {
         // This is blocking function, by design
         void SyncLinkedTables(WWCSVImporter importer) {
 
-            if (importer.links.Length == 0) return;
+            if (importer.namedLinks.Count == 0) return;
 
             EditorUtility.DisplayProgressBar(
                 "Updating Wrong Way CSV",
@@ -322,9 +376,10 @@ namespace Jenga {
                 0f
             );
 
-            var requests = new UnityWebRequest[importer.links.Length];
-            for (int i = 0; i < importer.links.Length; ++i) {
-                requests[i] = UnityWebRequest.Get(importer.links[i].Trim());
+            var requests = new UnityWebRequest[importer.namedLinks.Count];
+            for (int i = 0; i < importer.namedLinks.Count; ++i) {
+                requests[i] 
+                    = UnityWebRequest.Get(importer.namedLinks[i].link.Trim());
                 requests[i].SendWebRequest();
             }
 
