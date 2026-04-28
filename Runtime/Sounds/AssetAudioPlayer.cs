@@ -15,7 +15,7 @@ namespace Jenga {
         public AudioPlayerAsset asset;
 
         AudioPlayerAsset instance;
-        protected override IEnumerator PlayUsing(AudioSource source) {
+        public override IEnumerator PlayUsing(AudioSource source) {
 
             var oldVolume = source.volume; 
 
@@ -23,7 +23,7 @@ namespace Jenga {
 
             if (instance == null)
                 instance = Object.Instantiate(asset);
-            yield return instance.player.PlayUsingMaster(source);
+            yield return instance.player.PlayUsing(source);
 
             if (useVolume) source.volume = oldVolume;
         }

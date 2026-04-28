@@ -13,7 +13,7 @@ namespace Jenga {
 
         static HashSet<(AudioSource, AudioClip)> takenMetadataOn = new();
 
-        protected override IEnumerator PlayUsing(AudioSource source) {
+        public override IEnumerator PlayUsing(AudioSource source) {
 
             AudioPlayerAsset asset = null;
             if (!ignoreMetadata && MetadataMasterAsset.main != null
@@ -24,7 +24,7 @@ namespace Jenga {
 
             if (asset != null) {
                 takenMetadataOn.Add((source, clip));
-                yield return asset.player.PlayUsingMaster(source);
+                yield return asset.player.PlayUsing(source);
                 takenMetadataOn.Remove((source, clip));
             } else {
                 var volumeFactor = 1f;

@@ -39,7 +39,7 @@ namespace Jenga {
             source.maxDistance = maxDistance;
 
             while (true)
-                yield return player.PlayUsingMaster(source);
+                yield return player.PlayUsing(source);
         }
 
         void Update() {
