@@ -9,9 +9,9 @@ namespace Jenga {
 
         public static CoroutineMaster main => 
             main_ != null ? main_ : main_ = SpawnMaster();
-        public static bool hasMaster => main_ != null;
+        public static bool hasMain => main_ != null;
 
-        [System.Obsolete("Use hasMaster")]
+        [System.Obsolete("Use hasMain")]
         public static CoroutineMaster mainDoNotInstantiate; 
 
         public static CoroutineMaster SpawnMaster() {
@@ -94,7 +94,7 @@ namespace Jenga {
 
         // Only use with coroutines started on main/using Start(crtn)
         public static void StopAndFinalize(IEnumerator crtn) {
-            if (hasMaster)
+            if (hasMain)
                 main.StopCoroutine(crtn);
             Finalize(crtn);
         }
