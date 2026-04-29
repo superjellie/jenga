@@ -65,7 +65,7 @@ namespace Jenga {
         // by keys
         //
         // This function should be O(log N) where N is size of database
-        public string[] GetData(Match[] matchKeys, string[] columns) { 
+        public string[] GetData(System.Span<Match> matchKeys, string[] columns) { 
 
             // Find pointers (read lines) that matched our keys
             var matchedPointers = MatchPointers(matchKeys);
@@ -120,7 +120,7 @@ namespace Jenga {
         }
 
         // Matches pointers (read table lines) to key query
-        public int[] MatchPointers(Match[] matchKeys) {
+        public int[] MatchPointers(System.Span<Match> matchKeys) {
             var cmpData = new DataComparer();
 
             HashSet<int> matchedPointers = null;
@@ -148,7 +148,10 @@ namespace Jenga {
                     );
 
                 // 
+                // Debug.Log($"key={matchKeys[i].key}, searchFor={searchFor}, id={id}");
+                // Debug.Log($"valueIndex={valueIndex}, myColumn.Length={myColumn.Length}");
                 if (valueIndex < 0) return new int[0];
+                // Debug.Log($"myColumn[valueIndex].data == searchFor: {myColumn[valueIndex].data == searchFor}");
 
                 // Go though range and gather matched pointers
                 var myMatch = new HashSet<int>();
@@ -167,8 +170,11 @@ namespace Jenga {
                 else 
                     matchedPointers.IntersectWith(myMatch);
             }
-
-            if (matchedPointers == null) return new int[0];
+            
+            if (matchedPointers == null) {
+                // Debug.Log($"matchedPointers is null");
+                return new int[0];
+            }
 
             var result = new int[matchedPointers.Count];
             matchedPointers.CopyTo(result);

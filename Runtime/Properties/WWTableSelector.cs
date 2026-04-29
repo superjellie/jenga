@@ -51,28 +51,27 @@ public class WWDatabaseSelector {
     public string[] GetData(
         WWDatabaseAsset.Match[] additionalMatchers, string[] columns
     ) {
-        var matchers = ArrayPool<WWDatabaseAsset.Match>.Shared
-            .Rent(userMatchers.Length + additionalMatchers.Length);
-
+        var len = userMatchers.Length + additionalMatchers.Length;
+        var matchers = ArrayPool<WWDatabaseAsset.Match>.Shared.Rent(len);
         userMatchers.CopyTo(matchers, 0);
         additionalMatchers.CopyTo(matchers, userMatchers.Length);
-
+        var span = new System.Span<WWDatabaseAsset.Match>(matchers, 0, len);
         var result 
-            = asset?.GetData(matchers, columns) ?? new string[columns.Length];
+            = asset?.GetData(span, columns) ?? new string[columns.Length];
 
         ArrayPool<WWDatabaseAsset.Match>.Shared.Return(matchers);            
         return result;
     }
 
     public int[] GetPointers(params WWDatabaseAsset.Match[] additionalMatchers) {
-        var matchers = ArrayPool<WWDatabaseAsset.Match>.Shared
-            .Rent(userMatchers.Length + additionalMatchers.Length);
-
+        var len = userMatchers.Length + additionalMatchers.Length;
+        var matchers = ArrayPool<WWDatabaseAsset.Match>.Shared.Rent(len);
         userMatchers.CopyTo(matchers, 0);
         additionalMatchers.CopyTo(matchers, userMatchers.Length);
+        var span = new System.Span<WWDatabaseAsset.Match>(matchers, 0, len);
 
         var result 
-            = asset?.MatchPointers(matchers) ?? new int[0];
+            = asset?.MatchPointers(span) ?? new int[0];
 
         ArrayPool<WWDatabaseAsset.Match>.Shared.Return(matchers);            
         return result;
