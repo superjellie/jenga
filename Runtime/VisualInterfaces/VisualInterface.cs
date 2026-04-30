@@ -25,6 +25,7 @@ namespace Jenga {
         public int state;
 
         public float delayBeforeStart = 0f;
+        public bool immediatelyDisableOnEnable = true;
 
         // You should subscribe to event in transition handler components
         public delegate void StateChangeDelegate(
@@ -44,6 +45,11 @@ namespace Jenga {
             if (state != newState && onStateChange != null)
                 onStateChange(state, newState, immediate);
             state = newState;
+        }
+
+        void OnEnable() {
+            if (immediatelyDisableOnEnable)
+                SetState(0, true);
         }
 
         void UpdateState() {
