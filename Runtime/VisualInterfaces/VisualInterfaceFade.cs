@@ -21,12 +21,14 @@ namespace Jenga {
             fallback = new CurveWithDuration(.2f)
         };
 
-        void Awake() {
+
+        void OnEnable() {
             vi.onStateChange += OnStateChange;
+            OnStateChange(0, vi.state, true);
         }
 
-        void Start() {
-            OnStateChange(0, vi.state, true);
+        void OnDisable() {
+            vi.onStateChange -= OnStateChange;
         }
 
         Coroutine crtn = null;
@@ -46,6 +48,8 @@ namespace Jenga {
 
             var start = canvasGroup.alpha;
             var end = stateAlpha.Get(newState);
+            canvasGroup.blocksRaycasts = newState > 0;
+            canvasGroup.interactable = newState > 0;
 
             if (immediate)
                 canvasGroup.alpha = end;

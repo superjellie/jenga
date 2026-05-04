@@ -29,12 +29,12 @@ namespace Jenga {
         [SerializeReference, TypeMenu, Wrapper]
         public AudioPlayer player;
 
-        protected override IEnumerator PlayUsing(AudioSource source) {
+        public override IEnumerator PlayUsing(AudioSource source) {
             var master = CoroutineMaster.GetOnObject(source.gameObject);
             var cam = CommonAudioModifiers.Get(source);
             var oldFactor = cam.volumeFactor;
             cam.volumeFactor *= volumeFactor;
-            yield return player.PlayUsingMaster(source);
+            yield return player.PlayUsing(source);
             cam.volumeFactor = oldFactor;
         }
 
