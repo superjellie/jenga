@@ -36,27 +36,60 @@ namespace Jenga {
         // Other states are specified in editor
         public StateDescription[] stateDescriptions = { };
 
+        // Fade, Move, etc can write to this variable to indicate that
+        // interface can be safely disabled
+        [System.NonSerialized]
+        public bool canBeDisabled = false;
+        public bool neverDisable = true;
+
+
         // Private
-        float startTime = 0f;
-        void Update() => UpdateState();
-        void Start() => startTime = Time.time;
         void SetState(int newState, bool immediate) {
+            canBeDisabled = newState == 0;
+
             if (state != newState && onStateChange != null)
                 onStateChange(state, newState, immediate);
+            
             state = newState;
         }
 
-        void UpdateState() {
-            if (startTime + delayBeforeStart > Time.time) return;
+        Coroutine crtn;
+        void Awake() { 
+            crtn = CoroutineMaster.main.StartCoroutine(UpdateState());
+        }
+        
+        void OnDestroy() {
+            if (crtn != null && CoroutineMaster.hasMain)
+                CoroutineMaster.main.StopCoroutine(crtn);
+        }
+
+        IEnumerator UpdateState() {
+            yield return new WaitForSeconds(delayBeforeStart);
+        REPEAT:
+            yield return null;
+            
+            // Skip checks if disabled by parent
+            if (!gameObject.activeInHierarchy && gameObject.activeSelf)
+                goto REPEAT;
+
+            if (!neverDisable) {
+                if (state == 0 && canBeDisabled)
+                    gameObject.SetActive(false);
+
+                // Enable if should not be disabled
+                if (state != 0 && !gameObject.activeSelf)
+                    gameObject.SetActive(true);
+            }
             
             foreach (var desc in stateDescriptions) {
                 if (desc.condition.Check()) { 
                     SetState(desc.id, false);
-                    return;
+                    goto REPEAT;
                 }
             }
 
             SetState(0, false);
+            goto REPEAT;
         }
     }
 
