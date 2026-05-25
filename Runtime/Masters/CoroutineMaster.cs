@@ -87,6 +87,26 @@ namespace Jenga {
             }
         }
 
+        public static IEnumerator 
+        RunWhile(IEnumerator main, System.Func<bool> condition) {
+            bool mainDone = false;
+            IEnumerator crtn = null;
+
+            IEnumerator PlayMain() {
+                yield return main;
+                mainDone = true;
+            }
+
+            try {
+                crtn = Start(PlayMain());
+                while (condition() && !mainDone) yield return null;
+                
+            } finally {
+                if (!mainDone)
+                    StopAndFinalize(crtn);
+            }
+        }
+
         public static IEnumerator Start(IEnumerator crtn) {
             main.StartCoroutine(crtn);
             return crtn;
