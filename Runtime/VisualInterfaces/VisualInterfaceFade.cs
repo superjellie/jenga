@@ -57,7 +57,10 @@ namespace Jenga {
                 var crv = curves.Get(oldState, newState);
                 crtn = crv.Tween(
                     CoroutineMaster.main, 
-                    (t) => canvasGroup.alpha = Mathx.Lerp(start, end, t)
+                    (t) => {
+                        if (this != null && canvasGroup != null)
+                            canvasGroup.alpha = Mathx.Lerp(start, end, t);
+                    }
                 );
 
                 vi.canBeDisabled = false;
