@@ -9,6 +9,15 @@ namespace Jenga {
         public UsageToggleAttribute(string path) => this.path = path;
     }
 
+    public class ShowWhenEnumAttribute : PropertyAttribute { 
+        public string path;
+        public int[] values;
+        public ShowWhenEnumAttribute(string path, params int[] values) {
+            this.path = path;
+            this.values = values;
+        }
+    }
+
     // Inlines all properties inside given property
     // Pair with style attributes on children properties
     public interface IInlineMe { }
@@ -34,7 +43,9 @@ namespace Jenga {
 
     public class HideLabelAttribute : PropertyAttribute { }
 
-    public class TypeMenuAttribute : PropertyAttribute { }
+    public class TypeMenuAttribute : PropertyAttribute { 
+        public string path = null;
+    }
 
     [System.AttributeUsage(System.AttributeTargets.Field)]
     public class WrapperAttribute : System.Attribute { }

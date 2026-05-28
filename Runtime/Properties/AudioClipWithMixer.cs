@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 namespace Jenga {
-    [System.Serializable, System.Obsolete]
+    [System.Serializable]
     public class AudioClipWithMixer {
 
         public AudioClip clip;

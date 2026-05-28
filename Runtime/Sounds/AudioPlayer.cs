@@ -9,34 +9,43 @@ namespace Jenga {
     public class AudioPlayer {
 
 
-        protected virtual IEnumerator PlayUsing(AudioSource source) => null;
+        public virtual IEnumerator PlayUsing(AudioSource source) => null;
 
-        public Coroutine PlayUsingMaster(AudioSource source) 
-            => CoroutineMaster.GetOnObject(source.gameObject)
-                .StartCoroutine(PlayUsing(source));
+        [System.Obsolete("Use CoroutineMaster explicitly")]
+        public IEnumerator PlayUsingMaster(AudioSource source) 
+            => CoroutineMaster
+                .StartOnObject(source.gameObject, PlayUsing(source));
+        
+        [System.Obsolete("Use CoroutineMaster explicitly")]
+        public Coroutine PlayUsingNewSource(Vector3 pos) 
+            => CoroutineMaster.main.StartCoroutine(PlayOnNewSourceCrtn(pos));
 
         IEnumerator PlayOnNewSourceCrtn(Vector3 pos) {
             var go = new GameObject();
             var src = go.AddComponent<AudioSource>();
             go.transform.position = pos;
 
-            yield return PlayUsingMaster(src);
+            yield return PlayUsing(src);
 
             if (go != null)
                 GameObject.Destroy(go);
         }
 
-        public Coroutine PlayUsingNewSource(Vector3 pos) 
-            => CoroutineMaster.main.StartCoroutine(PlayOnNewSourceCrtn(pos));
-
-        public void PlayAt(Vector3 position, Transform parent = null) {
+        public static AudioSource 
+        GetNewSource(Vector3 position, Transform parent = null) {
             var go = new GameObject("AudioPlayer");
             var src = go.AddComponent<AudioSource>();
 
             go.transform.parent = parent;
             go.transform.localPosition = position;
 
-            var master = CoroutineMaster.GetOnObject(go);
+            return src;
+        }
+
+
+        public void PlayAt(Vector3 position, Transform parent = null) {
+            var src = GetNewSource(position, parent);
+            var master = CoroutineMaster.GetOnObject(src.gameObject);
             master.PlayCoroutineAndDestroy(PlayUsing(src));
         }
 
@@ -44,15 +53,7 @@ namespace Jenga {
             AudioClip clip, Vector3 position, Transform parent = null
         ) {
             var player = new ClipAudioPlayer() { clip = clip };
-
-            var go = new GameObject("AudioPlayer");
-            var src = go.AddComponent<AudioSource>();
-
-            go.transform.parent = parent;
-            go.transform.localPosition = position;
-
-            var master = CoroutineMaster.GetOnObject(go);
-            master.PlayCoroutineAndDestroy(player.PlayUsing(src));
+            player.PlayAt(position, parent);
         }
 
     }

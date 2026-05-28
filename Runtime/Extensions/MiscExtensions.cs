@@ -70,6 +70,10 @@ namespace Jenga {
             => list.Sort((x, y) => by(x).CompareTo(by(y)));
 
 
+        public static bool Contains<T>(this T[] list, T x)
+            => System.Array.IndexOf(list, x) != -1;
+
+
         public static IEnumerable<T> Reverse<T>(this IEnumerable<T> col) {
             var stack = new Stack<T>();
 

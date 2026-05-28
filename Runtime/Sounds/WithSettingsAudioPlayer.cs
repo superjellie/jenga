@@ -103,7 +103,7 @@ namespace Jenga {
             ? listener_ 
             : listener_ = Object.FindAnyObjectByType<AudioListener>();
 
-        protected override IEnumerator PlayUsing(AudioSource source) {
+        public override IEnumerator PlayUsing(AudioSource source) {
 
             var master = CoroutineMaster.GetOnObject(source.gameObject);
 
@@ -170,15 +170,16 @@ namespace Jenga {
             // Update Main
             if (useMixerGroup) 
                 source.outputAudioMixerGroup = outputAudioMixerGroup;
-            Coroutine crtn = null;
-            if (keepOnListener)
-                crtn = master.StartCoroutine(KeepOnListener(source));
 
             // Play subplayer
-            yield return player.PlayUsingMaster(source);
-
             if (keepOnListener)
-                master.StopCoroutine(crtn);
+                yield return CoroutineMaster.RunWithMain(
+                    player.PlayUsing(source),
+                    KeepOnListener(source)
+                );
+            else
+                yield return player.PlayUsing(source);
+
 
             // Restore Main
             if (keepOnListener) source.transform.position = oldPosition;
@@ -216,6 +217,7 @@ namespace Jenga {
             if (useLoop) source.loop = oldLoop;
             if (useMute) source.mute = oldMute;
         }
+
         IEnumerator KeepOnListener(AudioSource source) {
 
             while (true) {

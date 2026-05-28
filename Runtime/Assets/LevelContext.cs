@@ -36,39 +36,66 @@ namespace Jenga {
             bool unloadOtherScenes = true, 
             bool completeAutomatically = true
         ) {
-            isLoading = true;
-            allowActivation = completeAutomatically;
-
-            var scenesToLoad = new HashSet<string>();
-            var scenesToUnload = new HashSet<string>();
-            scenesToLoad.Add(mainScene.path);
-            
-            foreach (var scene in additionalScenes)
-                scenesToLoad.Add(scene.path);
-
-            for (int i = 0; i < SceneManager.sceneCount; ++i) {
-                var scene = SceneManager.GetSceneAt(i);
-                // Debug.Log($"{scene.path}.isLoaded = {scene.isLoaded}");
-                if (!scene.isLoaded) continue;
-
-                if (scenesToLoad.Contains(scene.path))
-                    scenesToLoad.Remove(scene.path);
-                else if (unloadOtherScenes)
-                    scenesToUnload.Add(scene.path);
-            }
-
-            // foreach (var scene in scenesToLoad)
-            //     Debug.Log($"Load {scene}");
 
             var go = new GameObject("SceneLoader");
             var holder = go.AddComponent<CoroutineHolderBehaviour>();
             DontDestroyOnLoad(go);
 
             IEnumerator Routine() {
+
+                if (isLoading) // first frame fix up
+                    yield return new WaitWhile(() => isLoading);
+                
+                Debug.Log("Begin Loading");
+                isLoading = true;
+                allowActivation = completeAutomatically;
+
+                var scenesToLoad = new HashSet<string>();
+                var scenesToUnload = new HashSet<string>();
+                scenesToLoad.Add(mainScene.path);
+                
+                foreach (var scene in additionalScenes)
+                    scenesToLoad.Add(scene.path);
+
+                for (int i = 0; i < SceneManager.sceneCount; ++i) {
+                    var scene = SceneManager.GetSceneAt(i);
+                    Debug.Log($"{scene.path}.isLoaded = {scene.isLoaded}");
+                    if (!scene.isLoaded) continue;
+
+                    if (scenesToLoad.Contains(scene.path))
+                        scenesToLoad.Remove(scene.path);
+                    else if (unloadOtherScenes)
+                        scenesToUnload.Add(scene.path);
+                }
+
+                // foreach (var scene in scenesToLoad)
+                //     Debug.Log($"Load {scene}");
+
+
                 var ops = new HashSet<AsyncOperation>();
                 var mode = LoadSceneMode.Additive;
 
-                foreach (var toLoad in scenesToLoad)
+                foreach (var toUnload in scenesToUnload) {
+                    Debug.Log($"Unload: {toUnload}");
+                    ops.Add(SceneManager.UnloadSceneAsync(toUnload));
+                    // SceneManager.UnloadSceneAsync(toUnload);
+                }
+
+                var allDone = false;
+                while (!allDone) {
+                    allDone = true;
+
+                    foreach (var op in ops) {
+                        if (op == null) continue;
+                        if (!op.isDone) allDone = false;
+                    }
+
+                    yield return null;
+                }
+
+                ops.Clear();
+                foreach (var toLoad in scenesToLoad) {
+                    Debug.Log($"Load: {toLoad}");
     #if UNITY_EDITOR
                     if (Application.isEditor)
                         ops.Add(
@@ -79,9 +106,9 @@ namespace Jenga {
                     else
     #endif 
                         ops.Add(SceneManager.LoadSceneAsync(toLoad, mode));
+                }
 
-
-                var allDone = false;
+                allDone = false;
                 while (!allDone) {
                     allDone = true;
                     waitingForActivation = true;
@@ -99,14 +126,6 @@ namespace Jenga {
 
                 SceneManager.SetActiveScene(mainScene.Get());
 
-                foreach (var toUnload in scenesToUnload) {
-                    // Debug.Log(toUnload);
-                    // ops.Add(SceneManager.UnloadSceneAsync(toUnload));
-                    SceneManager.UnloadSceneAsync(toUnload);
-                }
-
-                Resources.UnloadUnusedAssets();
-
                 for (int i = 0; i < SceneManager.sceneCount; ++i) {
                     var scene = SceneManager.GetSceneAt(i);
                     if (!scene.isLoaded) continue;
@@ -118,11 +137,14 @@ namespace Jenga {
                         );
                 }
                 
+                Debug.Log("End Loading");
                 isLoading = false;
                 Destroy(go);
+                Resources.UnloadUnusedAssets();
             }
 
             holder.StartCoroutine(Routine());
+
         }
 
     #if UNITY_EDITOR

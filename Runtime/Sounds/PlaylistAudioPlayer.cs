@@ -21,7 +21,7 @@ namespace Jenga {
         public AudioPlayer[] players;
 
         int currentIndex = 0;
-        protected override IEnumerator PlayUsing(AudioSource source) {
+        public override IEnumerator PlayUsing(AudioSource source) {
             if (players.Length == 0) yield break;
 
             if (playbackMode == PlaybackMode.PlayAll)
@@ -53,7 +53,7 @@ namespace Jenga {
             currentIndex++;
 
             if (player != null)
-                yield return player.PlayUsingMaster(source);
+                yield return player.PlayUsing(source);
             else
                 yield return null; 
 
