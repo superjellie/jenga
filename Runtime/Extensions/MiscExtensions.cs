@@ -90,14 +90,6 @@ namespace Jenga {
             return list.ToArray();
         }
 
-        public static Vector3 ClosestPoint(this Ray ray, Vector3 other) {
-            var y = Vector3.Project(other - ray.origin, ray.direction);
-            return ray.origin + y;
-        }
-
-        public static float DistanceTo(this Ray ray, Vector3 other) {
-            return (ray.ClosestPoint(other) - other).magnitude;
-        }
 
     }
 }
