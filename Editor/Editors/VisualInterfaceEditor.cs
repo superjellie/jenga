@@ -13,6 +13,7 @@ namespace Jenga {
         public override VisualElement CreateInspectorGUI() {
             // 
             var propStates = serializedObject.FindProperty("stateDescriptions");
+            var propNeverDisable = serializedObject.FindProperty("neverDisable");
 
             //
             var root = new VisualElement();
@@ -67,6 +68,7 @@ namespace Jenga {
 
             var propDelay = serializedObject.FindProperty("delayBeforeStart");
             root.Add(new PropertyField(propDelay));
+            root.Add(new PropertyField(propNeverDisable));
             root.Add(stateList);
             root.Add(new HelpBox() {
                 text = "Earlier state in list takes priority. \n"
