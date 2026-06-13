@@ -86,6 +86,11 @@ namespace Jenga {
 
         public static HashSet<T> Copy<T>(this HashSet<T> set)
             => new(set);
+        public static T[] Copy<T>(this T[] array) {
+            var dest = new T[array.Length];
+            array.CopyTo(dest, 0);
+            return dest;
+        }
 
         public static T[] ConvertToArray<T>(this IEnumerable<T> collection) {
             var list = new List<T>();
