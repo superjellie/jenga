@@ -39,6 +39,19 @@ namespace Jenga.Sparse {
             foreach (var index in GetRowIndices(rowIndex))
                 yield return (index, true);
         }
+
+        public IEnumerable<int> GetNonemptyRows() {
+            if (rows == null) yield break;
+            for (int i = 0; i < rows.Count; ++i)
+                if (rows[i].indices.Count > 0) 
+                    yield return i;
+        }
+
+        public IEnumerable<Indexed2Value<bool>> GetValues() {
+            foreach (var i in GetNonemptyRows())
+            foreach (var (j, x) in GetRow(i))
+                yield return (i, j, x);
+        }
     }
 
     public partial class LILAdjacencyMatrix : IColumnIterableMatrix<bool> {
@@ -52,6 +65,17 @@ namespace Jenga.Sparse {
         public IEnumerable<IndexedValue<bool>> GetColumn(int columnIndex) {
             foreach (var index in GetColumnIndices(columnIndex))
                 yield return (index, true);
+        }
+
+        public IEnumerable<int> GetNonemptyColumns() {
+            if (rows == null) return Iterators.Empty<int>();
+            var columns = new HashSet<int>();
+            foreach (var row in rows)
+            foreach (var index in row.indices)
+                columns.Add(index);
+            var list = new List<int>(columns);
+            list.Sort();
+            return list;
         }
     }
 
@@ -82,6 +106,19 @@ namespace Jenga.Sparse {
             => rows != null && rowIndex < rows.Count 
                 ? rows[rowIndex].GetIndexedValues() 
                 : Iterators.Empty<IndexedValue<T>>();
+
+        public IEnumerable<int> GetNonemptyRows() {
+            if (rows == null) yield break;
+            for (int i = 0; i < rows.Count; ++i)
+                if (rows[i].indices.Count > 0) 
+                    yield return i;
+        }
+
+        public IEnumerable<Indexed2Value<T>> GetValues() {
+            foreach (var i in GetNonemptyRows())
+            foreach (var (j, x) in GetRow(i))
+                yield return (i, j, x);
+        }
     }
 
     public partial class LILMatrix<T> : IColumnIterableMatrix<T> {
@@ -100,6 +137,17 @@ namespace Jenga.Sparse {
                     continue;
                 yield return (rowIndex, value);
             }
+        }  
+
+        public IEnumerable<int> GetNonemptyColumns() {
+            if (rows == null) return Iterators.Empty<int>();
+            var columns = new HashSet<int>();
+            foreach (var row in rows)
+            foreach (var index in row.indices)
+                columns.Add(index);
+            var list = new List<int>(columns);
+            list.Sort();
+            return list;
         }
     }
 

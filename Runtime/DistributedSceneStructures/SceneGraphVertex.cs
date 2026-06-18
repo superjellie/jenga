@@ -8,8 +8,8 @@ namespace Jenga {
         // Index in DistributedSceneGraph
         // Should be stable during lifetime of vertex
         // These values controlled by ownerGraph
-        public int vertexIndex = 0;
-        public DistributedSceneGraph ownerGraph;
+        [ReadOnly] public int vertexIndex = 0;
+        [ReadOnly] public DistributedSceneGraph ownerGraph;
 
     }
 }

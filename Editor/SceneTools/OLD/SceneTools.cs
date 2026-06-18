@@ -310,7 +310,8 @@ namespace Jenga {
             if (doIncrementGroup)
                 Undo.IncrementCurrentGroup();
 
-            if (PrefabUtility.IsPartOfPrefabInstance(prefab))
+            if (PrefabUtility.IsPartOfPrefabInstance(prefab)
+                && !PrefabUtility.IsPartOfPrefabAsset(prefab))
                 prefab = PrefabUtility.GetCorrespondingObjectFromSource(prefab);
 
             var o = PrefabUtility.InstantiatePrefab(prefab);

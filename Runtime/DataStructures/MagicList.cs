@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Jenga.Sparse;
 
 namespace Jenga {
 
@@ -88,7 +89,7 @@ namespace Jenga {
         // Iterates over all items
         public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
-        public IEnumerable<(int id, T item)> GetItemIDPairs() {
+        public IEnumerable<IndexedValue<T>> GetIndexedValues() {
             for (var index = 0; index < items.Count; ++index)
                 yield return (index2id[index], items[index]);
         }

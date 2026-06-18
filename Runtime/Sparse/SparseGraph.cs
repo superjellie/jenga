@@ -122,6 +122,30 @@ namespace Jenga.Sparse {
             return false;
         }
 
+        // Iterators
+
+        public static IEnumerable<IndexedValue<V>>
+        GetIndexedVertices<M, V>(this SparseGraph<M, V> graph)
+        where M : new()  
+            => graph.vertices.GetIndexedValues();
+
+        public static IEnumerable<V>
+        GetVertices<M, V>(this SparseGraph<M, V> graph)
+        where M : new()  
+            => graph.vertices;
+
+        public static IEnumerable<Indexed2Value<E>>
+        GetIndexedEdges<M, V, E>(this SparseGraph<M, V> graph)
+        where M : IValueIterableMatrix<E>, new() 
+            => graph.matrix.GetValues();
+
+        public static IEnumerable<E>
+        GetEdges<M, V, E>(this SparseGraph<M, V> graph)
+        where M : IValueIterableMatrix<E>, new() {
+            foreach (var (p, e) in graph.matrix.GetValues())
+                yield return e;
+        }
+
         public static IEnumerable<IndexedValue<E>> 
         GetOutgoingEdges<M, V, E>(this SparseGraph<M, V> graph, int i) 
         where M : IRowIterableMatrix<E>, new() { 

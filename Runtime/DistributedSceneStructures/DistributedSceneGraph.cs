@@ -9,7 +9,7 @@ using UnityEditor;
 namespace Jenga {
     public class DistributedSceneGraph : MonoBehaviour {
 
-        [SerializeField]
+        [ReadOnly, SerializeField]
         LILDirectedMultiEdgeGraph<SceneGraphVertex, SceneGraphEdge>
             graph = new();
 
@@ -171,5 +171,17 @@ namespace Jenga {
         public IEnumerable<SceneGraphEdge> 
         GetIncidentEdges(SceneGraphVertex vertex) 
             => GetIncidentEdges(vertex.vertexIndex);
+
+        public IEnumerable<SceneGraphVertex> GetVertices() 
+            => graph.GetVertices();
+        
+        public IEnumerable<SceneGraphEdge> GetEdges() { 
+            foreach (var me in graph.GetEdges<
+                LILMatrix<MultiEdge<SceneGraphEdge>>,
+                SceneGraphVertex, MultiEdge<SceneGraphEdge>
+            >())
+            foreach (var e in me.GetEdges())
+                yield return e;
+        }
     }
 }

@@ -8,9 +8,9 @@ namespace Jenga {
         // Index in DistributedSceneGraph
         // Should be stable during lifetime of edge
         // These values controlled by ownerGraph
-        public Vector2Int edgeIndex = Vector2Int.zero;
-        public int edgeId = 0;
-        public DistributedSceneGraph ownerGraph;
+        [ReadOnly] public Vector2Int edgeIndex = Vector2Int.zero;
+        [ReadOnly] public int edgeId = 0;
+        [ReadOnly] public DistributedSceneGraph ownerGraph;
 
 
         //        
