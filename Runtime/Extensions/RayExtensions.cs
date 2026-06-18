@@ -10,6 +10,7 @@ namespace Jenga {
             return ray.origin + y;
         }
 
+
         public static float DistanceTo(this Ray ray, Vector3 other) {
             return (ray.ClosestPoint(other) - other).magnitude;
         }

@@ -50,7 +50,7 @@ namespace Jenga {
 
         public static void PaintScene<T>(
             System.Func<Ray, (T, bool)> canvas, System.Action<T> preview,
-            System.Action<T> paint, bool allowDrag = false 
+            System.Action<T> paint, bool allowDrag = false
         ) {
             var rect = SceneView.currentDrawingSceneView.cameraViewport;
             var mousePos = Event.current.mousePosition;
@@ -298,18 +298,22 @@ namespace Jenga {
             showBounds: showBounds
         );
         
-
         public static GameObject SpawnGameObject(
-            GameObject prefab, Matrix4x4 matrix, Transform parent
+            GameObject prefab, Matrix4x4 matrix, Transform parent,
+            bool doIncrementGroup = true
         ) {
             var ps = PrefabStageUtility.GetCurrentPrefabStage();
 
             if (parent == null && ps != null)
                 parent = ps.prefabContentsRoot.transform;
 
-            Undo.IncrementCurrentGroup();
+            if (doIncrementGroup)
+                Undo.IncrementCurrentGroup();
 
-            var o = PrefabUtility.InstantiatePrefab(prefab.gameObject);
+            if (PrefabUtility.IsPartOfPrefabInstance(prefab))
+                prefab = PrefabUtility.GetCorrespondingObjectFromSource(prefab);
+
+            var o = PrefabUtility.InstantiatePrefab(prefab);
 
             var go = o as GameObject;
             Undo.RegisterCreatedObjectUndo(o, $"Instantiate {go.name}");
@@ -319,7 +323,9 @@ namespace Jenga {
             go.transform.SetFromLocalMatrix(instTRS, true, false, 1f);
 
             Undo.SetTransformParent(go.transform, parent, $"Parent {go.name}");
-            Undo.SetCurrentGroupName($"Spawn {go.name}");
+
+            if (doIncrementGroup)
+                Undo.SetCurrentGroupName($"Spawn {go.name}");
             return go;
 
         }

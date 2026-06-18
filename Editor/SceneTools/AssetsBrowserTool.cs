@@ -16,9 +16,11 @@ namespace Jenga {
             new("Asset", selectedGUID)
         };
 
+        // Earlier tools may setup these
         public string assetPath = $"Assets/Prefabs/";
-        public string typeFilter = $"GameHouse";
+        public System.Func<string, bool> assetFilter = guid => true;
 
+        // 
         public Vector2 scrollPosition;
 
         public float previewSize = 50f;
@@ -148,7 +150,14 @@ namespace Jenga {
 
         }
 
-        public override void OnActivate() => isChanged = true;
+        public override void OnActivate() {
+            isChanged = true;
+            
+            if (selectedGUID != null && !assetFilter(selectedGUID)) {
+                selectedGUID = null;
+                // Debug.Log("Reset selectedGUID");
+            }
+        }
 
         public string CategoryOf(string guid) {
             var path = AssetDatabase.GUIDToAssetPath(guid);
@@ -160,9 +169,14 @@ namespace Jenga {
         }
 
         public void Search(SerializedObject so) {
-            var myGUIDs = AssetDatabase.FindAssets(
+            var allGUIDs = AssetDatabase.FindAssets(
                 $"t:Object", new string[] { assetPath }
             );
+            var myGUIDsList = new List<string>();
+            foreach (var guid in allGUIDs)
+                if (assetFilter(guid))
+                    myGUIDsList.Add(guid);
+            var myGUIDs = myGUIDsList.ToArray();
 
             System.Array.Sort(myGUIDs, (x, y) => {
                 var pathX = AssetDatabase.GUIDToAssetPath(x);
@@ -185,6 +199,11 @@ namespace Jenga {
             var catsArray = new string[cats.Count];
             cats.CopyTo(catsArray);
             System.Array.Sort(catsArray);
+
+            if (selectedGUID != null && !assetFilter(selectedGUID)) {
+                selectedGUID = null;
+                // Debug.Log("Reset selectedGUID");
+            }
 
             if (isDifferent) {
                 Undo.RecordObject(this, "Update GUIDs");

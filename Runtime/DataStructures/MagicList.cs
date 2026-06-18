@@ -69,7 +69,7 @@ namespace Jenga {
             if (!HasItemAt(id)) return;
 
             var lastIndex = items.Count - 1;
-            var index = index2id[id];
+            var index = id2index[id];
             var lastId = index2id[lastIndex];
 
             // Swap index and lastIndex 

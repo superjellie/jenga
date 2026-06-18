@@ -79,9 +79,16 @@ namespace Jenga {
                 edge.edgeId = 0;
                 edge.ownerGraph = null;
 
-                if (graph.TryGetEdge(i, j, out MultiEdge<SceneGraphEdge> me))
+                if (graph.TryGetEdge(i, j, out MultiEdge<SceneGraphEdge> me)) {
                     me.RemoveAt(id);
+                    if (me.Count() == 0)
+                        graph.RemoveEdge(i, j);
+                }
             }
+        }
+
+        public void RemoveEdge(SceneGraphEdge edge) {
+            RemoveEdge(edge.edgeIndex.x, edge.edgeIndex.y, edge.edgeId);
         }
 
         public void RemoveMultiEdge(int i, int j) { 
@@ -150,5 +157,19 @@ namespace Jenga {
             edge.edgeId = me.Add(edge);
             return edge.edgeId;
         }
+
+
+        public IEnumerable<SceneGraphEdge> GetIncidentEdges(int vertex) {
+            foreach (var (i, me) in graph.GetIncidentEdges<
+                LILMatrix<MultiEdge<SceneGraphEdge>>,
+                SceneGraphVertex, MultiEdge<SceneGraphEdge>
+            >(vertex))
+            foreach (var e in me.GetEdges())
+                yield return e;
+        }
+
+        public IEnumerable<SceneGraphEdge> 
+        GetIncidentEdges(SceneGraphVertex vertex) 
+            => GetIncidentEdges(vertex.vertexIndex);
     }
 }

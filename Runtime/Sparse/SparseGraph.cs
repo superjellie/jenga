@@ -123,15 +123,47 @@ namespace Jenga.Sparse {
         }
 
         public static IEnumerable<IndexedValue<E>> 
-        GetNeighbours<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        GetOutgoingEdges<M, V, E>(this SparseGraph<M, V> graph, int i) 
         where M : IRowIterableMatrix<E>, new() { 
             return graph.matrix.GetRow(i); 
         }
 
+
         public static IEnumerable<int> 
-        GetNeighbourIndices<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        GetOutgoingEdgesIndices<M, V, E>(this SparseGraph<M, V> graph, int i) 
         where M : IRowIterableMatrix<E>, new() { 
             return graph.matrix.GetRowIndices(i); 
+        }
+
+        public static IEnumerable<IndexedValue<E>> 
+        GetIncomingEdges<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        where M : IColumnIterableMatrix<E>, new() { 
+            return graph.matrix.GetColumn(i); 
+        }
+
+
+        public static IEnumerable<int> 
+        GetIncomingEdgesIndices<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        where M : IColumnIterableMatrix<E>, new() { 
+            return graph.matrix.GetColumnIndices(i); 
+        }
+
+        public static IEnumerable<IndexedValue<E>> 
+        GetIncidentEdges<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        where M : IRowIterableMatrix<E>, IColumnIterableMatrix<E>, new() { 
+            foreach (var e in graph.GetIncomingEdges<M, V, E>(i))
+                yield return e;
+            foreach (var e in graph.GetOutgoingEdges<M, V, E>(i))
+                yield return e;
+        }
+
+        public static IEnumerable<int> 
+        GetIncidentEdgesIndices<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        where M : IRowIterableMatrix<E>, IColumnIterableMatrix<E>, new() { 
+            foreach (var e in graph.GetIncomingEdgesIndices<M, V, E>(i))
+                yield return e;
+            foreach (var e in graph.GetOutgoingEdgesIndices<M, V, E>(i))
+                yield return e;
         }
         
     }

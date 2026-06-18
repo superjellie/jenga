@@ -68,7 +68,7 @@ namespace Jenga.Sparse {
             get => i < rows.Count ? rows[i][j] : default(T);
             set {
                 // if (value) return;
-                rows.EnsureCount(i + 1, new SparseVector<T>());
+                rows.EnsureCount(i + 1, () => new SparseVector<T>());
                 rows[i][j] = value;                 
             }
         }
