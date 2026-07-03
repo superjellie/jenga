@@ -204,6 +204,45 @@ namespace Jenga {
         }
         
         public static int Div(int x, int y) => x / y - (x % y < 0 ? 1 : 0);
+
+        // Geomertry
+
+        // Solves following minimization problem:
+        // |(1 - t)B + tA - (P + qD)| -> min (over t, q)
+        // and returns (1 - t)B + tA
+        // Does not place any border conditions
+        public static Vector3 ClosestPointOnSegmentToRayUnclamped(
+            Vector3 A, Vector3 B, Vector3 P, Vector3 D,
+            out float t, out float q
+        ) {
+            // We need to solve following linear equation:
+            // | (A - B)^2  (A - B) * D | |  t | = | (P - B) * (A - B) |
+            // | (A - B) * D        D^2 | | -q |   | (P - B) * D |
+
+            float a = Vector3.Dot(A - B, A - B);
+            float b = Vector3.Dot(A - B, D);
+            float c = b;
+            float d = Vector3.Dot(D, D);
+
+            float f = Vector3.Dot(P - B, A - B);
+            float g = Vector3.Dot(P - B, D);
+
+            // Will use following formula:
+            //  | a b |^-1 = 1/(ad - bc) * |  d -b |
+            //  | c d |                    | -c  a |
+            float det = a * d - b * c;
+
+            // Ray is nearly parralel to segment
+            if (Mathf.Abs(det) < .001f) {
+                t = 0f;
+                q = 0f;
+                return P;
+            }
+
+            t = (d * f - b * g) / det;       
+            q = -(-c * f + a * g) / det; 
+            return (1 - t) * B + t * A;       
+        }
     }
 
 }

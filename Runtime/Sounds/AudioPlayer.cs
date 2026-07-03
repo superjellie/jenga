@@ -12,12 +12,12 @@ namespace Jenga {
         public virtual IEnumerator PlayUsing(AudioSource source) => null;
 
         [System.Obsolete("Use CoroutineMaster explicitly")]
-        public IEnumerator PlayUsingMaster(AudioSource source) 
+        public IEnumerator PlayUsingMaster(AudioSource source)
             => CoroutineMaster
                 .StartOnObject(source.gameObject, PlayUsing(source));
-        
+
         [System.Obsolete("Use CoroutineMaster explicitly")]
-        public Coroutine PlayUsingNewSource(Vector3 pos) 
+        public Coroutine PlayUsingNewSource(Vector3 pos)
             => CoroutineMaster.main.StartCoroutine(PlayOnNewSourceCrtn(pos));
 
         IEnumerator PlayOnNewSourceCrtn(Vector3 pos) {
@@ -31,7 +31,7 @@ namespace Jenga {
                 GameObject.Destroy(go);
         }
 
-        public static AudioSource 
+        public static AudioSource
         GetNewSource(Vector3 position, Transform parent = null) {
             var go = new GameObject("AudioPlayer");
             var src = go.AddComponent<AudioSource>();
@@ -43,17 +43,19 @@ namespace Jenga {
         }
 
 
-        public void PlayAt(Vector3 position, Transform parent = null) {
+        public AudioSource PlayAt(Vector3 position, Transform parent = null) {
             var src = GetNewSource(position, parent);
             var master = CoroutineMaster.GetOnObject(src.gameObject);
-            master.PlayCoroutineAndDestroy(PlayUsing(src));
+            var crtn = PlayUsing(src);
+            master.PlayCoroutineAndDestroy(crtn);
+            return src;
         }
 
-        public static void PlayClipAt(
+        public static AudioSource PlayClipAt(
             AudioClip clip, Vector3 position, Transform parent = null
         ) {
             var player = new ClipAudioPlayer() { clip = clip };
-            player.PlayAt(position, parent);
+            return player.PlayAt(position, parent);
         }
 
     }

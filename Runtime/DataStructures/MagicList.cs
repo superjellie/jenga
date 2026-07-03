@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Jenga.Sparse;
 
 namespace Jenga {
 
@@ -69,7 +70,7 @@ namespace Jenga {
             if (!HasItemAt(id)) return;
 
             var lastIndex = items.Count - 1;
-            var index = index2id[id];
+            var index = id2index[id];
             var lastId = index2id[lastIndex];
 
             // Swap index and lastIndex 
@@ -88,7 +89,7 @@ namespace Jenga {
         // Iterates over all items
         public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
-        public IEnumerable<(int id, T item)> GetItemIDPairs() {
+        public IEnumerable<IndexedValue<T>> GetIndexedValues() {
             for (var index = 0; index < items.Count; ++index)
                 yield return (index2id[index], items[index]);
         }

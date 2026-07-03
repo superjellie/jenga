@@ -61,4 +61,7 @@ namespace Jenga {
 
     // public class ValidatePropertyAttribute : MethodAttribute { } 
     public class EmitGUIAttribute : MethodAttribute { } // NOT IMPLEMENTED 
+
+    //
+    public class ReadOnlyAttribute : PropertyAttribute { }
 }

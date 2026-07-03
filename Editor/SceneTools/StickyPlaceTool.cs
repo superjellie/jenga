@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 
 namespace Jenga {
     [RegisterInToolSelector("Sticky Place")]
@@ -34,7 +35,11 @@ namespace Jenga {
         public float previewCameraDistance = 1f;
         public PivotMode pivotMode;
 
+        // Earlier tools may setup these OnActivate
         public string assetPath = "Assets/Prefabs/";
+
+        // And subsribe to events
+        public UnityEvent<GameObject> onPlace = new();
 
         [Header("Colors")]
         public Color clrPlaceBounds  = Color.yellow;
@@ -185,6 +190,7 @@ namespace Jenga {
 
                     var go = SceneTools.SpawnGameObject(asset, mat, parent);
                     Selection.activeObject = go;
+                    onPlace.Invoke(go);
                 }
             );
         } 

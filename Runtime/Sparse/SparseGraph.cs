@@ -122,16 +122,72 @@ namespace Jenga.Sparse {
             return false;
         }
 
+        // Iterators
+
+        public static IEnumerable<IndexedValue<V>>
+        GetIndexedVertices<M, V>(this SparseGraph<M, V> graph)
+        where M : new()  
+            => graph.vertices.GetIndexedValues();
+
+        public static IEnumerable<V>
+        GetVertices<M, V>(this SparseGraph<M, V> graph)
+        where M : new()  
+            => graph.vertices;
+
+        public static IEnumerable<Indexed2Value<E>>
+        GetIndexedEdges<M, V, E>(this SparseGraph<M, V> graph)
+        where M : IValueIterableMatrix<E>, new() 
+            => graph.matrix.GetValues();
+
+        public static IEnumerable<E>
+        GetEdges<M, V, E>(this SparseGraph<M, V> graph)
+        where M : IValueIterableMatrix<E>, new() {
+            foreach (var (p, e) in graph.matrix.GetValues())
+                yield return e;
+        }
+
         public static IEnumerable<IndexedValue<E>> 
-        GetNeighbours<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        GetOutgoingEdges<M, V, E>(this SparseGraph<M, V> graph, int i) 
         where M : IRowIterableMatrix<E>, new() { 
             return graph.matrix.GetRow(i); 
         }
 
+
         public static IEnumerable<int> 
-        GetNeighbourIndices<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        GetOutgoingEdgesIndices<M, V, E>(this SparseGraph<M, V> graph, int i) 
         where M : IRowIterableMatrix<E>, new() { 
             return graph.matrix.GetRowIndices(i); 
+        }
+
+        public static IEnumerable<IndexedValue<E>> 
+        GetIncomingEdges<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        where M : IColumnIterableMatrix<E>, new() { 
+            return graph.matrix.GetColumn(i); 
+        }
+
+
+        public static IEnumerable<int> 
+        GetIncomingEdgesIndices<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        where M : IColumnIterableMatrix<E>, new() { 
+            return graph.matrix.GetColumnIndices(i); 
+        }
+
+        public static IEnumerable<IndexedValue<E>> 
+        GetIncidentEdges<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        where M : IRowIterableMatrix<E>, IColumnIterableMatrix<E>, new() { 
+            foreach (var e in graph.GetIncomingEdges<M, V, E>(i))
+                yield return e;
+            foreach (var e in graph.GetOutgoingEdges<M, V, E>(i))
+                yield return e;
+        }
+
+        public static IEnumerable<int> 
+        GetIncidentEdgesIndices<M, V, E>(this SparseGraph<M, V> graph, int i) 
+        where M : IRowIterableMatrix<E>, IColumnIterableMatrix<E>, new() { 
+            foreach (var e in graph.GetIncomingEdgesIndices<M, V, E>(i))
+                yield return e;
+            foreach (var e in graph.GetOutgoingEdgesIndices<M, V, E>(i))
+                yield return e;
         }
         
     }

@@ -22,8 +22,14 @@ namespace Jenga.Sparse {
                 var id = indices.BinarySearch(i);
                 if (id >= 0 && object.Equals(value, default(T)))
                     { indices.RemoveAt(id); values.RemoveAt(id); } 
-                else if (!object.Equals(value, default(T))) 
-                    { indices.Insert(~id, i); values.Insert(~id, value); }       
+                else if (object.Equals(value, default(T))) 
+                    return;
+                else if (id >= 0)
+                    { indices[id] = i; values[id] = value; }
+                else if (~id < indices.Count)
+                    { indices.Insert(~id, i); values.Insert(~id, value); }
+                else 
+                    { indices.Add(i); values.Add(value); }      
             }
         }
     }
