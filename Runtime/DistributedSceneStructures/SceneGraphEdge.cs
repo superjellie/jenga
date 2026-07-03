@@ -11,6 +11,5 @@ namespace Jenga {
         [HideInInspector] public Vector2Int edgeIndex = Vector2Int.zero;
         [HideInInspector] public int edgeId = 0;
         [HideInInspector] public DistributedSceneGraph ownerGraph;
-
     }
 }
