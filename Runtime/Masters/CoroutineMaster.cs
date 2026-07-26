@@ -129,5 +129,26 @@ namespace Jenga {
                 crtn = crtn.Current as IEnumerator;
             }
         }
+
+        // 
+        public static IEnumerator CatchException<E>(
+            IEnumerator ie,
+            System.Action<E> handle,
+            System.Action noException = null
+        ) where E : System.Exception {
+        REPEAT:
+            try { if (!ie.MoveNext()) goto DONE; }
+            catch(E e) { handle(e); goto FAIL; }
+            yield return ie.Current;
+            goto REPEAT;
+        
+        DONE:
+            if (noException != null)
+                noException();
+            yield break;
+
+        FAIL:
+            yield break;
+        }
     }
 }
