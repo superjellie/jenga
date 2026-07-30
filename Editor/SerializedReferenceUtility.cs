@@ -56,6 +56,7 @@ namespace Jenga {
 
             if (IsNull()) return null;
             var o = EditorUtility.InstanceIDToObject(instanceID);
+            if (o == null) return null;
             so = new SerializedObject(o);
             soCache[instanceID] = so;
             return so.FindProperty(path);

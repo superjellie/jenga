@@ -86,6 +86,11 @@ namespace Jenga {
 
         public static HashSet<T> Copy<T>(this HashSet<T> set)
             => new(set);
+        public static T[] Copy<T>(this T[] array) {
+            var dest = new T[array.Length];
+            array.CopyTo(dest, 0);
+            return dest;
+        }
 
         public static T[] ConvertToArray<T>(this IEnumerable<T> collection) {
             var list = new List<T>();
@@ -94,14 +99,6 @@ namespace Jenga {
             return list.ToArray();
         }
 
-        public static Vector3 ClosestPoint(this Ray ray, Vector3 other) {
-            var y = Vector3.Project(other - ray.origin, ray.direction);
-            return ray.origin + y;
-        }
-
-        public static float DistanceTo(this Ray ray, Vector3 other) {
-            return (ray.ClosestPoint(other) - other).magnitude;
-        }
 
     }
 }

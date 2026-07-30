@@ -5,18 +5,18 @@ using UnityEngine;
 namespace Jenga {
     public class CoroutineMaster : MonoBehaviour {
 
-        static CoroutineMaster main_; 
+        static CoroutineMaster main_;
 
-        public static CoroutineMaster main => 
+        public static CoroutineMaster main =>
             main_ != null ? main_ : main_ = SpawnMaster();
         public static bool hasMain => main_ != null;
 
         [System.Obsolete("Use hasMain")]
-        public static CoroutineMaster mainDoNotInstantiate; 
+        public static CoroutineMaster mainDoNotInstantiate;
 
         public static CoroutineMaster SpawnMaster() {
             var go = new GameObject(
-                "CoroutineMaster", 
+                "CoroutineMaster",
                 typeof(CoroutineMaster)
             );
             DontDestroyOnLoad(go);
@@ -29,11 +29,11 @@ namespace Jenga {
 
             if (master != null)
                 return master;
-                
+
             return go.AddComponent<CoroutineMaster>();
         }
 
-        public static IEnumerator 
+        public static IEnumerator
         StartOnObject(GameObject go, IEnumerator crtn) {
             var master = GetOnObject(go);
             master.StartCoroutine(crtn);
@@ -41,7 +41,7 @@ namespace Jenga {
         }
 
         public void PlayCoroutineAndDestroy(IEnumerator crtn) {
-            
+
             IEnumerator Play() {
                 yield return crtn;
 
@@ -54,10 +54,10 @@ namespace Jenga {
 
 
         // General Coroutine Utils
-        public static IEnumerator 
+        public static IEnumerator
         RunTogether(params IEnumerator[] enums) {
             try {
-                var crtns = new Coroutine[enums.Length]; 
+                var crtns = new Coroutine[enums.Length];
 
                 for (int i = 0; i < enums.Length; ++i)
                     crtns[i] = main.StartCoroutine(enums[i]);
@@ -69,15 +69,15 @@ namespace Jenga {
                 for (int i = 0; i < enums.Length; ++i)
                     StopAndFinalize(enums[i]);
             }
-        }   
+        }
 
-        public static IEnumerator 
+        public static IEnumerator
         RunInSequence(params IEnumerator[] enums) {
             foreach (var e in enums)
                 yield return e;
-        }   
+        }
 
-        public static IEnumerator 
+        public static IEnumerator
         RunWithMain(IEnumerator main, IEnumerator side) {
             try {
                 Start(side);
@@ -87,7 +87,7 @@ namespace Jenga {
             }
         }
 
-        public static IEnumerator 
+        public static IEnumerator
         RunWhile(IEnumerator main, System.Func<bool> condition) {
             bool mainDone = false;
             IEnumerator crtn = null;
@@ -100,7 +100,7 @@ namespace Jenga {
             try {
                 crtn = Start(PlayMain());
                 while (condition() && !mainDone) yield return null;
-                
+
             } finally {
                 if (!mainDone)
                     StopAndFinalize(crtn);
@@ -123,11 +123,32 @@ namespace Jenga {
         // You can finilize any stopped coroutine using this
         // It will run all code that is inside finally blocks in IEnumerators
         public static void Finalize(IEnumerator crtn) {
-            while (crtn != null) { 
+            while (crtn != null) {
                 if (crtn is System.IDisposable disposable)
-                    disposable.Dispose(); 
-                crtn = crtn.Current as IEnumerator; 
-            } 
+                    disposable.Dispose();
+                crtn = crtn.Current as IEnumerator;
+            }
+        }
+
+        // 
+        public static IEnumerator CatchException<E>(
+            IEnumerator ie,
+            System.Action<E> handle,
+            System.Action noException = null
+        ) where E : System.Exception {
+        REPEAT:
+            try { if (!ie.MoveNext()) goto DONE; }
+            catch(E e) { handle(e); goto FAIL; }
+            yield return ie.Current;
+            goto REPEAT;
+        
+        DONE:
+            if (noException != null)
+                noException();
+            yield break;
+
+        FAIL:
+            yield break;
         }
     }
 }
