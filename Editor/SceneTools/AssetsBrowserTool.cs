@@ -54,8 +54,11 @@ namespace Jenga {
             stySelected.margin  = GUI.skin.box.margin;
             stySelected.padding = GUI.skin.box.padding;
 
+            var width = EditorGUIUtility.currentViewWidth - 100f;
+            EditorGUILayout.BeginVertical(GUILayout.Width(width));
+
             var columns  
-                = (int)(EditorGUIUtility.currentViewWidth / (size + 5f));
+                = (int)(width / (size + 5f));
             // var previewMargin = 
 
             EditorGUI.indentLevel--;
@@ -79,7 +82,7 @@ namespace Jenga {
 
             selected = GUILayout.SelectionGrid(
                 selected, categories, 
-                (int)(EditorGUIUtility.currentViewWidth / categorySize)
+                (int)(width / categorySize)
             );
 
             if (selected >= 0 && selected < categories.Length)
@@ -147,6 +150,7 @@ namespace Jenga {
             // GUILayout.FlexibleSpace();
             // EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndVertical();
 
         }
 
