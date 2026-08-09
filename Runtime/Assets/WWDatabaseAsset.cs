@@ -132,7 +132,7 @@ namespace Jenga {
                 var id = System.Array.BinarySearch(keys, matchKeys[i].key);
 
                 // Skip unknown keys
-                if (id < 0) continue;
+                // if (id < 0) return { };
 
                 //
                 var searchFor = matchKeys[i].value;
