@@ -139,15 +139,26 @@ namespace Jenga {
         REPEAT:
             try { if (!ie.MoveNext()) goto DONE; }
             catch(E e) { handle(e); goto FAIL; }
-            yield return ie.Current;
+
+            if (ie.Current is IEnumerator iecur) {
+                E e = null;
+                yield return CatchException<E>(iecur, x => e = x);
+                if (e != null) { handle(e); goto FAIL; }
+            }
+            else
+                yield return ie.Current;
+
+
             goto REPEAT;
         
         DONE:
             if (noException != null)
                 noException();
+            Finalize(ie);
             yield break;
 
         FAIL:
+            Finalize(ie);
             yield break;
         }
     }
