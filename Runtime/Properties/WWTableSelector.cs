@@ -15,6 +15,8 @@ public class WWDatabaseSelector {
     // public WWDatabaseAsset.Match[] defaultMatchers = { };
     public WWDatabaseAsset.Match[] userMatchers = { };
 
+    public WWDatabaseSelector Copy() => new(asset, userMatchers);
+
     public WWDatabaseSelector(params WWDatabaseAsset.Match[] userMatchers) {
         this.userMatchers = userMatchers;
     }

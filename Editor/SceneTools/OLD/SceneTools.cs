@@ -274,11 +274,16 @@ namespace Jenga {
 
             foreach (var renderer in go.GetComponentsInChildren<Renderer>()) {
                 // var prms = new RenderParams(mat);
-                var mesh = renderer.GetComponent<MeshFilter>().sharedMesh;
-                previewMaterial.SetPass(0);
+                var filter = renderer.GetComponent<MeshFilter>();
+                if (filter != null) {
+                    var mesh = filter.sharedMesh;
+                    if (mesh != null) {
+                        previewMaterial.SetPass(0);
 
-                var trs = matrix * renderer.transform.localToWorldMatrix;
-                Graphics.DrawMeshNow(mesh, trs);
+                        var trs = matrix * renderer.transform.localToWorldMatrix;
+                        Graphics.DrawMeshNow(mesh, trs);
+                    }
+                }
             }
 
             if (showBounds) {
