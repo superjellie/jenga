@@ -67,8 +67,10 @@ namespace Jenga {
             };
 
             var propDelay = serializedObject.FindProperty("delayBeforeStart");
+            var propManual = serializedObject.FindProperty("inManualMode");
             root.Add(new PropertyField(propDelay));
             root.Add(new PropertyField(propNeverDisable));
+            root.Add(new PropertyField(propManual));
             root.Add(stateList);
             root.Add(new HelpBox() {
                 text = "Earlier state in list takes priority. \n"

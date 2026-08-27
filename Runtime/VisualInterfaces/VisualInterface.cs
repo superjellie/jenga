@@ -20,12 +20,14 @@ namespace Jenga {
             public MonoCondition condition = new ConstCondition();
         }
 
-        // State is updated automaticaly, based on conditions
+        // State is updated automaticaly, based on conditions,
+        // except when in manual mode
         [HideInInspector]
         public int state;
 
         public float delayBeforeStart = 0f;
         public bool immediatelyDisableOnEnable = true;
+        public bool inManualMode = false;
 
         // You should subscribe to event in transition handler components
         public delegate void StateChangeDelegate(
@@ -42,6 +44,18 @@ namespace Jenga {
         [System.NonSerialized]
         public bool canBeDisabled = false;
         public bool neverDisable = true;
+
+        // Automatically sets manual mode and changes state
+        // Reset automatic control by setting inManualMode to false
+        public void SetStateManual(int state, bool immediate = false) {
+            inManualMode = true;
+            SetState(state, immediate);
+        }
+
+        public void EnableManual(bool immediate = false) 
+            => SetStateManual(1, immediate);
+        public void DisableManual(bool immediate = false) 
+            => SetStateManual(0, immediate);
 
 
         // Private
@@ -87,14 +101,17 @@ namespace Jenga {
                     gameObject.SetActive(true);
             }
             
-            foreach (var desc in stateDescriptions) {
-                if (desc.condition.Check()) { 
-                    SetState(desc.id, false);
-                    goto REPEAT;
+            if (!inManualMode) {
+                foreach (var desc in stateDescriptions) {
+                    if (desc.condition.Check()) { 
+                        SetState(desc.id, false);
+                        goto REPEAT;
+                    }
                 }
-            }
 
-            SetState(0, false);
+                SetState(0, false);
+            }
+            
             goto REPEAT;
         }
     }
