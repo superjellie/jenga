@@ -18,7 +18,7 @@ namespace Jenga {
             t.localEulerAngles = localEuler;
             t.localScale = localScale;
         }
-
+        
         public static TransformSnapshot FromTransform(Transform t) 
             => new TransformSnapshot() {
                 localPosition = t.localPosition,
@@ -78,6 +78,38 @@ namespace Jenga {
                     : (parent.rotation * Quaternion.Euler(localEuler))
                         .eulerAngles
             };
+    }
+
+    public struct TransformScaledWorldSnapshot {
+        public Vector3 position;
+        public Vector3 eulerAngles;
+        public Vector3 scale;
+
+        public void SetTransform(Transform t) {
+            t.position = position;
+            t.eulerAngles = eulerAngles;
+            t.localScale = scale;
+        }
+
+        public static TransformScaledWorldSnapshot FromTransform(Transform t) 
+            => new TransformScaledWorldSnapshot() {
+                position = t.position,
+                eulerAngles = t.eulerAngles,
+                scale = t.localScale
+            };
+
+        public static TransformScaledWorldSnapshot Lerp(
+            TransformScaledWorldSnapshot from, 
+            TransformScaledWorldSnapshot to, float t
+        ) => new() {
+            position = Vector3.Lerp(from.position, to.position, t),
+            eulerAngles = Quaternion.Slerp(
+                Quaternion.Euler(from.eulerAngles), 
+                Quaternion.Euler(to.eulerAngles), 
+                t
+            ).eulerAngles,
+            scale = Vector3.Lerp(from.scale, to.scale, t)
+        };
     }
 
     [System.Serializable]
