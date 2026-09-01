@@ -20,6 +20,7 @@ SubShader {
             #pragma fragment frag
             #pragma target 2.0
             #pragma multi_compile_fog
+            #pragma multi_compile_instancing
 
             #include "UnityCG.cginc"
 
@@ -32,6 +33,7 @@ SubShader {
                 float4 vertex : SV_POSITION;
                 UNITY_FOG_COORDS(0)
                 UNITY_VERTEX_OUTPUT_STEREO
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             fixed4 _Color;
@@ -40,6 +42,7 @@ SubShader {
             {
                 v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_TRANSFER_INSTANCE_ID(v, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 UNITY_TRANSFER_FOG(o,o.vertex);
@@ -48,6 +51,7 @@ SubShader {
 
             fixed4 frag (v2f i) : SV_Target
             {
+                UNITY_SETUP_INSTANCE_ID(i);
                 fixed4 col = _Color;
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 UNITY_OPAQUE_ALPHA(col.a);
