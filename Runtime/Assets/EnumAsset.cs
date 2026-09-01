@@ -12,7 +12,7 @@ namespace Jenga {
         public List<string> values = new();
     }
 
-    [System.Serializable]
+    [System.Serializable] 
     public class EnumValue {
         public EnumAsset asset;
         public string value;

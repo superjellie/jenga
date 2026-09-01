@@ -21,7 +21,7 @@ namespace Jenga {
             EditorGUI.indentLevel = 0;
 
             var toggleRect = new Rect(pos.x, pos.y, 20f, 20f);
-            var fieldRect = new Rect(pos.x + 20f, pos.y, pos.width - 30f, pos.height);
+            var fieldRect = new Rect(pos.x + 30f, pos.y, pos.width - 30f, pos.height);
 
             usageProperty.boolValue 
                 = EditorGUI.Toggle(toggleRect, usageProperty.boolValue);
@@ -36,6 +36,12 @@ namespace Jenga {
             EditorGUI.indentLevel = indent;
 
             EditorGUI.EndProperty();
+        }
+
+        public override float GetPropertyHeight(
+            SerializedProperty property, GUIContent label
+        ) {
+            return EditorGUI.GetPropertyHeight(property, label, true);
         }
     }
 }
