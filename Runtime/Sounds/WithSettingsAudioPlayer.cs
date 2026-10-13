@@ -7,6 +7,9 @@ namespace Jenga {
 
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/WithSettings")]
+    /** @brief Setup AudioSource setting before playing
+     * @see @ref manual-audio-player
+     */
     public class WithSettingsAudioPlayer : AudioPlayer { 
 
         // Usage

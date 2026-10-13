@@ -6,6 +6,9 @@ using UnityEngine.Audio;
 namespace Jenga {
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/Silence")]
+    /** @brief Plays nothing for given number of seconds
+     * @see @ref manual-audio-player
+     */
     public class SilenceAudioPlayer : AudioPlayer {
 
         // Usage

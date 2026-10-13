@@ -7,6 +7,10 @@ namespace Jenga {
 
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/Asset")]
+    /** @brief AudioPlayer that plays AudioPlayerAsset.
+     * @see Jenga.AudioPlayerAsset
+     * @see @ref manual-audio-player
+     */
     public class AssetAudioPlayer : AudioPlayer {
 
         [HideInInspector] public bool useVolume;
