@@ -7,12 +7,12 @@ namespace Jenga {
 
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/WithSettings")]
-    /** @brief Setup AudioSource setting before playing
+    /** Setup AudioSource setting before playing.
      * @see @ref manual-audio-player
      */
     public class WithSettingsAudioPlayer : AudioPlayer { 
 
-        // Usage
+        // Usage Toggles
         [HideInInspector] public bool useVolume;
         [HideInInspector] public bool usePitch;
         [HideInInspector] public bool useLoop;
@@ -51,8 +51,8 @@ namespace Jenga {
         public bool keepOnListener;
         
 
-        // Bypass
         [System.Serializable]
+        /** Groups together bypass settings. */
         public struct BypassSettings {
             [HideInInspector] public bool useBypassEffects;
             [HideInInspector] public bool useBypassListenerEffects;
@@ -68,8 +68,8 @@ namespace Jenga {
 
         public BypassSettings bypassSettings = new();
 
-        // 3D Sound Settings
         [System.Serializable]
+        /** Groups together 3D-sound settings. */
         public struct Audio3DSettings {
 
             // Usage

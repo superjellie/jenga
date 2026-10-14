@@ -120,16 +120,16 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('class_jenga_1_
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a052a7ec0ca5e02bd0879a007e19a8e87" id="r_a052a7ec0ca5e02bd0879a007e19a8e87"><td class="memItemLeft">virtual IEnumerator&#160;</td><td class="memItemRight"><a class="el" href="#a052a7ec0ca5e02bd0879a007e19a8e87">PlayUsing</a> (AudioSource source)</td></tr>
-<tr class="memitem:a37ec40a3a7ce667f6250264d84360fc0" id="r_a37ec40a3a7ce667f6250264d84360fc0"><td class="memItemLeft"><a id="a37ec40a3a7ce667f6250264d84360fc0" name="a37ec40a3a7ce667f6250264d84360fc0"></a>
-IEnumerator&#160;</td><td class="memItemRight"><b>PlayUsingMaster</b> (AudioSource source)</td></tr>
-<tr class="memitem:a8d8481fb7745d495f61f0c4df7312117" id="r_a8d8481fb7745d495f61f0c4df7312117"><td class="memItemLeft"><a id="a8d8481fb7745d495f61f0c4df7312117" name="a8d8481fb7745d495f61f0c4df7312117"></a>
-Coroutine&#160;</td><td class="memItemRight"><b>PlayUsingNewSource</b> (Vector3 pos)</td></tr>
+<tr class="memdesc:a052a7ec0ca5e02bd0879a007e19a8e87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Play <a class="el" href="class_jenga_1_1_audio_player.html" title="Base class of AudioPlayers.">AudioPlayer</a> on given audio source.  <br /></td></tr>
 <tr class="memitem:a653e34600c46f1997414df64968390bd" id="r_a653e34600c46f1997414df64968390bd"><td class="memItemLeft">AudioSource&#160;</td><td class="memItemRight"><a class="el" href="#a653e34600c46f1997414df64968390bd">PlayAt</a> (Vector3 position, Transform parent=null)</td></tr>
+<tr class="memdesc:a653e34600c46f1997414df64968390bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create AudioSource at given position, play <a class="el" href="class_jenga_1_1_audio_player.html" title="Base class of AudioPlayers.">AudioPlayer</a> and destroy source after.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ac0771b83a545f2606873c029f124d4e7" id="r_ac0771b83a545f2606873c029f124d4e7"><td class="memItemLeft">static AudioSource&#160;</td><td class="memItemRight"><a class="el" href="#ac0771b83a545f2606873c029f124d4e7">GetNewSource</a> (Vector3 position, Transform parent=null)</td></tr>
+<tr class="memdesc:ac0771b83a545f2606873c029f124d4e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new AudioSource to use later.  <br /></td></tr>
 <tr class="memitem:ab674b7f0ce97fd6e1b8846e3ffdcf231" id="r_ab674b7f0ce97fd6e1b8846e3ffdcf231"><td class="memItemLeft">static AudioSource&#160;</td><td class="memItemRight"><a class="el" href="#ab674b7f0ce97fd6e1b8846e3ffdcf231">PlayClipAt</a> (AudioClip clip, Vector3 position, Transform parent=null)</td></tr>
+<tr class="memdesc:ab674b7f0ce97fd6e1b8846e3ffdcf231"><td class="mdescLeft">&#160;</td><td class="mdescRight">Play AudioClip at given position.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class of AudioPlayers. </p>
@@ -162,10 +162,12 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create new AudioSource to use later. </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Create new AudioSource to use later. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">position</td><td>where to place AudioSource </td></tr>
-    <tr><td class="paramname">parent</td><td>optional parent for new source </td></tr>
+    <tr><td class="paramname">position</td><td>Where to place AudioSource. </td></tr>
+    <tr><td class="paramname">parent</td><td>Optional parent for new source. </td></tr>
   </table>
   </dd>
 </dl>
@@ -190,10 +192,12 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Create AudioSource at given position, play <a class="el" href="class_jenga_1_1_audio_player.html" title="Base class of AudioPlayers.">AudioPlayer</a> and destroy source after. </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Create AudioSource at given position, play <a class="el" href="class_jenga_1_1_audio_player.html" title="Base class of AudioPlayers.">AudioPlayer</a> and destroy source after. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">position</td><td>where to place AudioSource </td></tr>
-    <tr><td class="paramname">parent</td><td>optional parent for new source </td></tr>
+    <tr><td class="paramname">position</td><td>Where to place AudioSource. </td></tr>
+    <tr><td class="paramname">parent</td><td>Optional parent for new source. </td></tr>
   </table>
   </dd>
 </dl>
@@ -231,11 +235,13 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Play AudioClip at given position. Will play metadata if there is any. </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Play AudioClip at given position. </p>
+<p>Will play metadata if there is any. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">clip</td><td>AudioClip to play </td></tr>
-    <tr><td class="paramname">position</td><td>where to place AudioSource </td></tr>
-    <tr><td class="paramname">parent</td><td>optional parent for new source </td></tr>
+    <tr><td class="paramname">clip</td><td>AudioClip to play. </td></tr>
+    <tr><td class="paramname">position</td><td>Where to place AudioSource. </td></tr>
+    <tr><td class="paramname">parent</td><td>Optional parent for new source. </td></tr>
   </table>
   </dd>
 </dl>
@@ -264,9 +270,11 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Play <a class="el" href="class_jenga_1_1_audio_player.html" title="Base class of AudioPlayers.">AudioPlayer</a> on given audio source </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Play <a class="el" href="class_jenga_1_1_audio_player.html" title="Base class of AudioPlayers.">AudioPlayer</a> on given audio source. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">source</td><td>given source </td></tr>
+    <tr><td class="paramname">source</td><td>Given source. </td></tr>
   </table>
   </dd>
 </dl>

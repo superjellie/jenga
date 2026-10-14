@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace Jenga {
 
-    /** @brief Base class of AudioPlayers.
-     * 
+    /** Base class of AudioPlayers.
      * To create new AudioPlayer inherit from this one and override 
      * PlayUsing method. 
      * 
@@ -17,18 +16,9 @@ namespace Jenga {
     public class AudioPlayer {
 
         /** Play AudioPlayer on given audio source 
-         * @param source given source 
+         * @param source Given source. 
          */
         public virtual IEnumerator PlayUsing(AudioSource source) => null;
-
-        [System.Obsolete("Use CoroutineMaster explicitly")]
-        public IEnumerator PlayUsingMaster(AudioSource source)
-            => CoroutineMaster
-                .StartOnObject(source.gameObject, PlayUsing(source));
-
-        [System.Obsolete("Use CoroutineMaster explicitly")]
-        public Coroutine PlayUsingNewSource(Vector3 pos)
-            => CoroutineMaster.main.StartCoroutine(PlayOnNewSourceCrtn(pos));
 
         IEnumerator PlayOnNewSourceCrtn(Vector3 pos) {
             var go = new GameObject();
@@ -42,8 +32,8 @@ namespace Jenga {
         }
 
         /** Create new AudioSource to use later. 
-         * @param position where to place AudioSource
-         * @param parent optional parent for new source
+         * @param position Where to place AudioSource.
+         * @param parent Optional parent for new source.
          */
         public static AudioSource
         GetNewSource(Vector3 position, Transform parent = null) {
@@ -59,8 +49,8 @@ namespace Jenga {
         /** 
          * Create AudioSource at given position, play AudioPlayer and destroy
          * source after.
-         * @param position where to place AudioSource
-         * @param parent optional parent for new source
+         * @param position Where to place AudioSource.
+         * @param parent Optional parent for new source.
          */
         public AudioSource PlayAt(Vector3 position, Transform parent = null) {
             var src = GetNewSource(position, parent);
@@ -72,9 +62,9 @@ namespace Jenga {
 
         /** 
          * Play AudioClip at given position. Will play metadata if there is any. 
-         * @param clip AudioClip to play
-         * @param position where to place AudioSource
-         * @param parent optional parent for new source
+         * @param clip AudioClip to play.
+         * @param position Where to place AudioSource.
+         * @param parent Optional parent for new source.
          */
         public static AudioSource PlayClipAt(
             AudioClip clip, Vector3 position, Transform parent = null
@@ -83,5 +73,15 @@ namespace Jenga {
             return player.PlayAt(position, parent);
         }
 
+        /** @cond void */
+        [System.Obsolete("Use CoroutineMaster explicitly")]
+        public IEnumerator PlayUsingMaster(AudioSource source)
+            => CoroutineMaster
+                .StartOnObject(source.gameObject, PlayUsing(source));
+
+        [System.Obsolete("Use CoroutineMaster explicitly")]
+        public Coroutine PlayUsingNewSource(Vector3 pos)
+            => CoroutineMaster.main.StartCoroutine(PlayOnNewSourceCrtn(pos));
+        /** @endcond */
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Jenga {
-    /** @brief Simple Ambiance Zone on Collider
+    /** Simple Ambiance Zone on Collider.
      * 
      * Moves AudioSource to closest point to AudioListener inside collider,
      * and blends sound to stereo if AudioListener is far away, making it sound

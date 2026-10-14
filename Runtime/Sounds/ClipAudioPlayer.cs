@@ -7,7 +7,7 @@ namespace Jenga {
 
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/Clip")]
-    /** @brief Plays AudioClip, or its metadata, if there is any.
+    /** Plays AudioClip, or its metadata, if there is any.
      * @see Jenga.ClipIgnoreMetadataAudioPlayer
      * @see @ref manual-audio-player
      */
@@ -48,7 +48,7 @@ namespace Jenga {
     // Still need to do smth about preventing recoursion
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/ClipIgnoreMetadata")]
-    /** @brief Plays AudioClip but ignores its metadata
+    /** Plays AudioClip but ignores its metadata
      * @see Jenga.ClipAudioPlayer
      * @see @ref manual-audio-player
      */

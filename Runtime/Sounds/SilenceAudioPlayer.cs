@@ -6,17 +6,10 @@ using UnityEngine.Audio;
 namespace Jenga {
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/Silence")]
-    /** @brief Plays nothing for given number of seconds
+    /** Plays nothing for given number of seconds.
      * @see @ref manual-audio-player
      */
     public class SilenceAudioPlayer : AudioPlayer {
-
-        // Usage
-        // [ALay.Skip] public bool useVolume;
-        // [ALay.Skip] public bool useMixerGroup;
-        // [ALay.UsageToggle("useVolume"), Range(0f, 1f)] public float volume = 1f;
-        // [ALay.UsageToggle("useMixerGroup")]   
-        // public AudioMixerGroup outputAudioMixerGroup;
         public float seconds = 1f;
 
         public override IEnumerator PlayUsing(AudioSource source) {

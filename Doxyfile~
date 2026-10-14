@@ -219,7 +219,7 @@ SHORT_NAMES            = NO
 # требуется явная команда @brief для получения краткого описания).
 # Значение по умолчанию: NO.
 
-JAVADOC_AUTOBRIEF      = NO
+JAVADOC_AUTOBRIEF      = YES
 
 # Если тег JAVADOC_BANNER установлен в YES, Doxygen будет интерпретировать
 # строки типа

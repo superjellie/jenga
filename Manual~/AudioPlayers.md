@@ -2,7 +2,7 @@
 Audio Player System is created so that designers can setup and create complex sounds with minimal coding input. Audio Players are composable pieces of code that user can setup from Inspector in-place, Scriptable object assets or via separate metadata of AudioClipAssets. To extend functionality of AudioPlayers System one writes new class derived from AudioPlayer (for example refer to code of Jenga.ClipAudioPlayer). Audio Players are not separate audio system, they
 are built on top of AudioSources.
 
-#### Usage from code
+### Usage from code
 To use AudioPlayers one only needs to add serialized property to your MonoBehaviour, or any serializable via Unity class, with correct attributes
 and call one of its public function when you need to use it:
 ~~~~~~~~~~~~~{.cs}
@@ -37,7 +37,7 @@ var player = new PlaylistAudioPlayer() {
 player.PlayAt(transform.position);
 ~~~~~~~~~~~~~
 
-#### Usage in Inspector with TypeMenu's 
+### Usage in Inspector with TypeMenu's 
 You can use jenga's type menu to create Audio Player entirely in inspector.
 Player, analogues to one in previous section, will look like this in inspector: 
 
@@ -51,14 +51,14 @@ You can also use right-click menu to get some advanced functionality:
 
 ![Type Menu Advanced functionality](/Images/TypeMenus-AdvancedFunctionality.jpg){html:width=20%}
 
-#### Move player to asset
+### Move player to asset
 If you want to setup complex audio player and then use it multiple times you probably should consider creating specific AudioPlayer Asset:
 
 ![AudioPlayer Asset](/Images/AudioPlayers-CreateAsset.jpg){html:width=80%}
 
 One sets up AudioPlayer asset in the same manner. Use AssetAudioPlayer (or just Asset in type-menu) to play AudioPlayer asset.
 
-#### Use Metadata
+### Use Metadata
 Audio Metadata is AudioPlayer asset created for any AudioClip Asset you need to.
 If you use ClipAudioPlayer and clip has such metadata, metadata will be played instead. All metadata contained in single asset called Metadata Master: 
 
@@ -76,11 +76,11 @@ Once window open (and metadata master selected in it), select AudioClip, click o
 
 Main use case for metadata is to set up mixer group, change volume, modify sound before usage in game.
 
-#### Hints
+### Hints
 - Use Jenga.AudioModificatorPlayer to modify volume instead of Jenga.WithSettingsAudioPlayer if you want to make sound louder. They also stack with each other, compared to Settings, that rewrite.
 - Check out Jenga.AmbianceZone if you need one.
 
-#### See Also
+### See Also
 - Jenga.AudioPlayer
 - Jenga.PlaylistAudioPlayer
 - Jenga.ClipAudioPlayer

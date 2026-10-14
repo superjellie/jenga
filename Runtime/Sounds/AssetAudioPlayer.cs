@@ -7,7 +7,7 @@ namespace Jenga {
 
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/Asset")]
-    /** @brief AudioPlayer that plays AudioPlayerAsset.
+    /** AudioPlayer that plays AudioPlayerAsset.
      * @see Jenga.AudioPlayerAsset
      * @see @ref manual-audio-player
      */

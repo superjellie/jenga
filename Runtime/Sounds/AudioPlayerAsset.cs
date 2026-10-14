@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 namespace Jenga {
     [CreateAssetMenu(fileName = "AudioPlayer", menuName = "Jenga/Audio Player")]
-    /** @brief ScriptableObject Asset containing AudioPlayer.
+    /** ScriptableObject Asset containing AudioPlayer.
      * @see Jenga.AssetAudioPlayer
      * @see @ref manual-audio-player
      */

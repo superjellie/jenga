@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rng_0',['rng',['../class_jenga_1_1_playlist_audio_player.html#a0959a2e9fc76913d8cf5b18397e4490e',1,'Jenga::PlaylistAudioPlayer']]]
+  ['volumefactor_0',['volumeFactor',['../class_jenga_1_1_audio_modificator_player.html#a175d1a5ba66586ed5b3bd57a67d5aa1b',1,'Jenga::AudioModificatorPlayer']]]
 ];

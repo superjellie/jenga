@@ -29,7 +29,7 @@ namespace Jenga {
     // in AddTypeMenu attribute will correspond to name in TypeMenu.
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/AudioModificator")]
-    /** \brief Changes volume of sound.
+    /** Changes volume of sound.
      * 
      * This class helps you modify volume of your sound.
      * It will also probably have some common modificators later.
@@ -40,7 +40,7 @@ namespace Jenga {
         // any MonoBehaviour
         
         public float volumeFactor = 1f; 
-            /** Volume factor by witch to change volume. */
+            /**< Volume factor by witch to change volume. */
 
         // Composition hierarchy is made using AudioPlayer values 
         // in AudioPlayers. Wrapper Attribute adds Wrap functionality.  

@@ -113,8 +113,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('manual-audio-p
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md__manual_0i_2_audio_players"></a></p>
 <p>Audio Player System is created so that designers can setup and create complex sounds with minimal coding input. Audio Players are composable pieces of code that user can setup from Inspector in-place, Scriptable object assets or via separate metadata of AudioClipAssets. To extend functionality of AudioPlayers System one writes new class derived from AudioPlayer (for example refer to code of <a class="el" href="class_jenga_1_1_clip_audio_player.html" title="Plays AudioClip, or its metadata, if there is any.">Jenga.ClipAudioPlayer</a>). Audio Players are not separate audio system, they are built on top of AudioSources.</p>
-<h3 class="doxsection"><a class="anchor" id="autotoc_md0"></a>
-Usage from code</h3>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md0"></a>
+Usage from code</h2>
 <p>To use AudioPlayers one only needs to add serialized property to your MonoBehaviour, or any serializable via Unity class, with correct attributes and call one of its public function when you need to use it: </p><div class="fragment"><div class="line"><span class="keyword">using </span>UnityEngine;</div>
 <div class="line"><span class="keyword">using </span><a class="code hl_namespace" href="namespace_jenga.html">Jenga</a>;</div>
 <div class="line"> </div>
@@ -127,8 +127,8 @@ Usage from code</h3>
 <div class="line">        testPlayer.<a class="code hl_function" href="class_jenga_1_1_audio_player.html#a653e34600c46f1997414df64968390bd">PlayAt</a>(transform.position);</div>
 <div class="line">    }</div>
 <div class="line">}</div>
-<div class="ttc" id="aclass_jenga_1_1_audio_player_html"><div class="ttname"><a href="class_jenga_1_1_audio_player.html">Jenga.AudioPlayer</a></div><div class="ttdoc">Base class of AudioPlayers.</div><div class="ttdef"><b>Definition</b> AudioPlayer.cs:17</div></div>
-<div class="ttc" id="aclass_jenga_1_1_audio_player_html_a653e34600c46f1997414df64968390bd"><div class="ttname"><a href="class_jenga_1_1_audio_player.html#a653e34600c46f1997414df64968390bd">Jenga.AudioPlayer.PlayAt</a></div><div class="ttdeci">AudioSource PlayAt(Vector3 position, Transform parent=null)</div><div class="ttdef"><b>Definition</b> AudioPlayer.cs:65</div></div>
+<div class="ttc" id="aclass_jenga_1_1_audio_player_html"><div class="ttname"><a href="class_jenga_1_1_audio_player.html">Jenga.AudioPlayer</a></div><div class="ttdoc">Base class of AudioPlayers.</div><div class="ttdef"><b>Definition</b> AudioPlayer.cs:16</div></div>
+<div class="ttc" id="aclass_jenga_1_1_audio_player_html_a653e34600c46f1997414df64968390bd"><div class="ttname"><a href="class_jenga_1_1_audio_player.html#a653e34600c46f1997414df64968390bd">Jenga.AudioPlayer.PlayAt</a></div><div class="ttdeci">AudioSource PlayAt(Vector3 position, Transform parent=null)</div><div class="ttdoc">Create AudioSource at given position, play AudioPlayer and destroy source after.</div><div class="ttdef"><b>Definition</b> AudioPlayer.cs:55</div></div>
 <div class="ttc" id="anamespace_jenga_html"><div class="ttname"><a href="namespace_jenga.html">Jenga</a></div><div class="ttdef"><b>Definition</b> Drawing.cs:7</div></div>
 </div><!-- fragment --><p>One can also built requred AudioPlayer entierly from code; it is convenient to use curly-braced initializers for this: </p><div class="fragment"><div class="line">var player = <span class="keyword">new</span> <a class="code hl_class" href="class_jenga_1_1_playlist_audio_player.html">PlaylistAudioPlayer</a>() {</div>
 <div class="line">    playbackMode = <a class="code hl_class" href="class_jenga_1_1_playlist_audio_player.html">PlaylistAudioPlayer</a>.<a class="code hl_enumeration" href="class_jenga_1_1_playlist_audio_player.html#a6f89fe7c65c97d7b3ec99a994c9b8d58">PlaybackMode</a>.PlayAll,</div>
@@ -143,12 +143,12 @@ Usage from code</h3>
 <div class="line"> </div>
 <div class="line">player.<a class="code hl_function" href="class_jenga_1_1_audio_player.html#a653e34600c46f1997414df64968390bd">PlayAt</a>(transform.position);</div>
 <div class="ttc" id="aclass_jenga_1_1_clip_audio_player_html"><div class="ttname"><a href="class_jenga_1_1_clip_audio_player.html">Jenga.ClipAudioPlayer</a></div><div class="ttdoc">Plays AudioClip, or its metadata, if there is any.</div><div class="ttdef"><b>Definition</b> ClipAudioPlayer.cs:14</div></div>
-<div class="ttc" id="aclass_jenga_1_1_playlist_audio_player_html"><div class="ttname"><a href="class_jenga_1_1_playlist_audio_player.html">Jenga.PlaylistAudioPlayer</a></div><div class="ttdoc">Multifunctional audio playlist Use this one if you want to merge many sounds in one playlist You can ...</div><div class="ttdef"><b>Definition</b> PlaylistAudioPlayer.cs:14</div></div>
+<div class="ttc" id="aclass_jenga_1_1_playlist_audio_player_html"><div class="ttname"><a href="class_jenga_1_1_playlist_audio_player.html">Jenga.PlaylistAudioPlayer</a></div><div class="ttdoc">Multifunctional audio playlist.</div><div class="ttdef"><b>Definition</b> PlaylistAudioPlayer.cs:14</div></div>
 <div class="ttc" id="aclass_jenga_1_1_playlist_audio_player_html_a6f89fe7c65c97d7b3ec99a994c9b8d58"><div class="ttname"><a href="class_jenga_1_1_playlist_audio_player.html#a6f89fe7c65c97d7b3ec99a994c9b8d58">Jenga.PlaylistAudioPlayer.PlaybackMode</a></div><div class="ttdeci">PlaybackMode</div><div class="ttdoc">What to do when played.</div><div class="ttdef"><b>Definition</b> PlaylistAudioPlayer.cs:26</div></div>
 <div class="ttc" id="aclass_jenga_1_1_playlist_audio_player_html_aea235b2d600ba6dd1d72bf61879b9a2e"><div class="ttname"><a href="class_jenga_1_1_playlist_audio_player.html#aea235b2d600ba6dd1d72bf61879b9a2e">Jenga.PlaylistAudioPlayer.SequenceMode</a></div><div class="ttdeci">SequenceMode</div><div class="ttdoc">How to sequence sounds in this playlist.</div><div class="ttdef"><b>Definition</b> PlaylistAudioPlayer.cs:18</div></div>
 <div class="ttc" id="aclass_jenga_1_1_silence_audio_player_html"><div class="ttname"><a href="class_jenga_1_1_silence_audio_player.html">Jenga.SilenceAudioPlayer</a></div><div class="ttdoc">Plays nothing for given number of seconds.</div><div class="ttdef"><b>Definition</b> SilenceAudioPlayer.cs:12</div></div>
-</div><!-- fragment --><h3 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
-Usage in Inspector with TypeMenu's</h3>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
+Usage in Inspector with TypeMenu's</h2>
 <p>You can use jenga's type menu to create Audio Player entirely in inspector. Player, analogues to one in previous section, will look like this in inspector:</p>
 <div class="image">
 <img src="AudioPlayers-ExampleLooks.jpg" alt="" width="40%"/>
@@ -164,16 +164,16 @@ Audio Player Type Menu</div></div>
 <img src="TypeMenus-AdvancedFunctionality.jpg" alt="" width="20%"/>
 <div class="caption">
 Type Menu Advanced functionality</div></div>
-    <h3 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
-Move player to asset</h3>
+    <h2 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
+Move player to asset</h2>
 <p>If you want to setup complex audio player and then use it multiple times you probably should consider creating specific AudioPlayer Asset:</p>
 <div class="image">
 <img src="AudioPlayers-CreateAsset.jpg" alt="" width="80%"/>
 <div class="caption">
 AudioPlayer Asset</div></div>
     <p>One sets up AudioPlayer asset in the same manner. Use AssetAudioPlayer (or just Asset in type-menu) to play AudioPlayer asset.</p>
-<h3 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
-Use Metadata</h3>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
+Use Metadata</h2>
 <p>Audio Metadata is AudioPlayer asset created for any AudioClip Asset you need to. If you use ClipAudioPlayer and clip has such metadata, metadata will be played instead. All metadata contained in single asset called Metadata Master:</p>
 <div class="image">
 <img src="AudioPlayers-MetadataMaster.jpg" alt="" width="40%"/>
@@ -191,17 +191,17 @@ Audio Metadata Editor window path</div></div>
 Audio Metadata Editor Usage</div></div>
     <p><em>Be careful! Dont use ClipAudioPlayer inside metadata, as it will trigger infinite recursion. Use ClipIgnoreMetadataAudioPlayer instead.</em></p>
 <p>Main use case for metadata is to set up mixer group, change volume, modify sound before usage in game.</p>
-<h3 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
-Hints</h3>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
+Hints</h2>
 <ul>
 <li>Use <a class="el" href="class_jenga_1_1_audio_modificator_player.html" title="Changes volume of sound.">Jenga.AudioModificatorPlayer</a> to modify volume instead of <a class="el" href="class_jenga_1_1_with_settings_audio_player.html" title="Setup AudioSource setting before playing.">Jenga.WithSettingsAudioPlayer</a> if you want to make sound louder. They also stack with each other, compared to Settings, that rewrite.</li>
 <li>Check out <a class="el" href="class_jenga_1_1_ambiance_zone.html" title="Simple Ambiance Zone on Collider.">Jenga.AmbianceZone</a> if you need one.</li>
 </ul>
-<h3 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
-See Also</h3>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
+See Also</h2>
 <ul>
 <li><a class="el" href="class_jenga_1_1_audio_player.html" title="Base class of AudioPlayers.">Jenga.AudioPlayer</a></li>
-<li><a class="el" href="class_jenga_1_1_playlist_audio_player.html" title="Multifunctional audio playlist Use this one if you want to merge many sounds in one playlist You can ...">Jenga.PlaylistAudioPlayer</a></li>
+<li><a class="el" href="class_jenga_1_1_playlist_audio_player.html" title="Multifunctional audio playlist.">Jenga.PlaylistAudioPlayer</a></li>
 <li><a class="el" href="class_jenga_1_1_clip_audio_player.html" title="Plays AudioClip, or its metadata, if there is any.">Jenga.ClipAudioPlayer</a></li>
 <li><a class="el" href="class_jenga_1_1_clip_ignore_metadata_audio_player.html" title="Plays AudioClip but ignores its metadata.">Jenga.ClipIgnoreMetadataAudioPlayer</a></li>
 <li><a class="el" href="class_jenga_1_1_silence_audio_player.html" title="Plays nothing for given number of seconds.">Jenga.SilenceAudioPlayer</a></li>
