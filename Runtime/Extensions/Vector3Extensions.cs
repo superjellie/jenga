@@ -14,5 +14,8 @@ namespace Jenga {
         public static float[] ConvertToArray(this Vector3 v)
             => new float[3] { v.x, v.y, v.z };
 
+        public static Vector3 HadamardProduct(this Vector3 a, Vector3 b)
+            => new(a.x * b.x, a.y * b.y, a.z * b.z);
+
     }
 }

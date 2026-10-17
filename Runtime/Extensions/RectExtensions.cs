@@ -97,5 +97,17 @@ namespace Jenga {
             => new(r.x, r.y - extend, r.width, r.height + extend);
 
         public static Rect Copy(this Rect r) => r;
+
+        public static Rect CropBy(this Rect r, Rect crop) 
+            => Rect.MinMaxRect(
+                Mathx.Max(r.xMin, crop.xMin), Mathx.Max(r.yMin, crop.yMin), 
+                Mathx.Min(r.xMax, crop.xMax), Mathx.Min(r.yMax, crop.yMax) 
+            );
+
+        public static Rect NormalizeInRect(this Rect me, Rect master) {
+            var min = Rect.PointToNormalized(master, me.min);
+            var max = Rect.PointToNormalized(master, me.max);
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        }
     }
 }
