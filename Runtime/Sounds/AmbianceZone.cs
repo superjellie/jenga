@@ -4,6 +4,13 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Jenga {
+    /** Simple Ambiance Zone on Collider.
+     * 
+     * Moves AudioSource to closest point to AudioListener inside collider,
+     * and blends sound to stereo if AudioListener is far away, making it sound
+     * as if given AudioPlayer plays inside some zone. You may also want
+     * to setup some reverb on sound separately.
+     */
     public class AmbianceZone : MonoBehaviour {
         [Range(0f, 100f)] public float rolloffDistance = 5f;
         [Range(0f, 100f)] public float maxDistance = 10f;

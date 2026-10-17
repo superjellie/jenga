@@ -4,8 +4,13 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 namespace Jenga {
+
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/Clip")]
+    /** Plays AudioClip, or its metadata, if there is any.
+     * @see Jenga.ClipIgnoreMetadataAudioPlayer
+     * @see @ref manual-audio-player
+     */
     public class ClipAudioPlayer : AudioPlayer {
 
         public AudioClip clip;
@@ -43,6 +48,10 @@ namespace Jenga {
     // Still need to do smth about preventing recoursion
     [System.Serializable]
     [AddTypeMenu("Jenga.AudioPlayer/ClipIgnoreMetadata")]
+    /** Plays AudioClip but ignores its metadata
+     * @see Jenga.ClipAudioPlayer
+     * @see @ref manual-audio-player
+     */
     public class ClipIgnoreMetadataAudioPlayer : ClipAudioPlayer {
         protected override bool ignoreMetadata => true;
     }
